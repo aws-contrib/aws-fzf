@@ -1,0 +1,356 @@
+#!/bin/bash
+set -o pipefail
+
+_aws_ecs_source_dir=$(dirname "${BASH_SOURCE[0]}")
+
+# _aws_ecs_cluster_list()
+#
+# Interactive fuzzy finder for ECS clusters
+#
+# DESCRIPTION:
+#   Displays a list of ECS clusters with statistics in an interactive fzf
+#   interface. Users can view details, drill down to services/tasks, or
+#   open the AWS Console.
+#
+# PARAMETERS:
+#   $@ - Optional flags to pass to AWS CLI (--region, --profile, etc.)
+#
+# RETURNS:
+#   0 - Success
+#   1 - Failure
+#
+_aws_ecs_cluster_list() {
+	local list_clusters_args=("$@")
+
+	local cluster_list
+	# Define jq formatting
+	local cluster_list_jq='(["NAME", "STATUS", "TASKS", "SERVICES"] | @tsv),
+	                       (.clusters[] | [.clusterName, .status, .runningTasksCount, .activeServicesCount] | @tsv)'
+
+	# Get and describe clusters in batches
+	# shellcheck disable=SC2086
+	# shellcheck disable=SC2128
+	cluster_list="$(
+		gum spin --title "Loading AWS ECS Clusters..." -- \
+			$_aws_ecs_source_dir/aws_ecs_cmd.sh batch-describe-clusters $list_clusters_args |
+			jq -r "$cluster_list_jq" | column -t -s $'\t'
+	)"
+
+	# Check if any clusters were found
+	if [ -z "$cluster_list" ]; then
+		gum log --level warn "No clusters found"
+		return 1
+	fi
+
+	# Display in fzf with full keybindings
+	echo "$cluster_list" | fzf --ansi \
+		--with-nth 1.. \
+		--accept-nth 1 \
+		--header-lines 1 \
+		--header-border sharp \
+		--color header:yellow \
+		--color footer:yellow \
+		--footer "  ECS Clusters" \
+		--footer-border sharp \
+		--input-border sharp \
+		--layout 'reverse-list' \
+		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
+		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})"
+}
+
+# _aws_ecs_service_list()
+#
+# Interactive fuzzy finder for ECS services in a cluster
+#
+# DESCRIPTION:
+#   Displays a list of ECS services for a specific cluster. Requires
+#   --cluster parameter.
+#
+# PARAMETERS:
+#   --cluster <cluster>  - Required cluster name
+#   $@ - Additional flags passed to AWS CLI
+#
+# RETURNS:
+#   0 - Success
+#   1 - Failure or missing cluster parameter
+#
+_aws_ecs_service_list() {
+	local cluster
+	local list_services_args=()
+	# Extract cluster name from arguments
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		--cluster)
+			cluster="$2"
+			shift 2
+			;;
+		*)
+			list_services_args+=("$1")
+			shift
+			;;
+		esac
+	done
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Missing required parameter: --cluster"
+		gum log --level info "Usage: aws fzf ecs service list --cluster <cluster>"
+		return 1
+	fi
+
+	local service_list
+	# Define jq formatting for service list
+	local service_list_jq='[["NAME", "STATUS", "DESIRED", "RUNNING", "PENDING"]] +
+	                       ([.[].services[]] | map([.serviceName, .status, .desiredCount, .runningCount, .pendingCount])) | .[] | @tsv'
+
+	# Get and describe services in batches
+	service_list="$(
+		gum spin --title "Loading AWS ECS Services..." -- \
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" batch-describe-services "$cluster" "${list_services_args[@]}" |
+			jq -rs "$service_list_jq" | column -t -s $'\t'
+	)"
+
+	if [ -z "$service_list" ]; then
+		gum log --level warn "No services found in cluster '$cluster'"
+		return 1
+	fi
+
+	# Display service list with keybindings
+	echo "$service_list" | fzf --ansi \
+		--with-nth 1.. \
+		--accept-nth 1 \
+		--header-lines 1 \
+		--header-border sharp \
+		--color header:yellow \
+		--color footer:yellow \
+		--footer "  ECS Services in $cluster" \
+		--footer-border sharp \
+		--input-border sharp \
+		--layout 'reverse-list' \
+		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
+		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})"
+}
+
+# _aws_ecs_task_list()
+#
+# Interactive fuzzy finder for ECS tasks in a cluster
+#
+# DESCRIPTION:
+#   Displays a list of ECS tasks for a specific cluster. Requires
+#   --cluster parameter.
+#
+# PARAMETERS:
+#   --cluster <cluster>  - Required cluster name
+#   $@ - Additional flags passed to AWS CLI (e.g., --desired-status)
+#
+# RETURNS:
+#   0 - Success
+#   1 - Failure or missing cluster parameter
+#
+_aws_ecs_task_list() {
+	local cluster
+	local list_tasks_args=()
+	# Extract cluster name from arguments
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		--cluster)
+			cluster="$2"
+			shift 2
+			;;
+		*)
+			list_tasks_args+=("$1")
+			shift
+			;;
+		esac
+	done
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Missing required parameter: --cluster"
+		gum log --level info "Usage: aws fzf ecs task list --cluster <cluster>"
+		return 1
+	fi
+
+	local task_list
+	# Task list jq formatting
+	local task_list_jq='[["ARN", "DEFINITION", "DESIRED STATUS", "ACTUAL STATUS"]] +
+											([.[].tasks[]] | map([.taskArn, .taskDefinitionArn, .desiredStatus, .healthStatus])) | .[] | @tsv'
+
+	# Get the AWS ECS Task IDs - batch process to handle API limits
+	task_list="$(
+		gum spin --title "Loading AWS ECS Tasks..." -- \
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" batch-describe-tasks "$cluster" "${list_tasks_args[@]}" |
+			jq -rs "$task_list_jq" | column -t -s $'\t'
+	)"
+
+	if [ -z "$task_list" ]; then
+		gum log --level warn "No tasks found in cluster '$cluster'"
+		return 1
+	fi
+
+	# Display task IDs with on-demand preview
+	echo "$task_list" | fzf --ansi \
+		--with-nth 1.. \
+		--accept-nth 1 \
+		--header-lines 1 \
+		--header-border sharp \
+		--color header:yellow \
+		--color footer:yellow \
+		--footer "  ECS Tasks in $cluster" \
+		--footer-border sharp \
+		--input-border sharp \
+		--layout 'reverse-list' \
+		--bind "enter:execute(aws ecs describe-tasks --cluster $cluster --tasks {1} | jq .)+abort" \
+		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})"
+}
+
+# _aws_ecs_help()
+#
+# Show ECS command help
+#
+_aws_ecs_help() {
+	cat <<'EOF'
+aws fzf ecs - Interactive ECS browser
+
+USAGE:
+    aws fzf ecs cluster list [options]
+    aws fzf ecs service list --cluster <cluster> [options]
+    aws fzf ecs task list --cluster <cluster> [options]
+
+OPTIONS:
+    All AWS CLI options are passed through:
+    --region <region>           AWS region
+    --profile <profile>         AWS profile
+    --cluster <cluster>         Cluster name (required for services/tasks)
+    --status <status>           Service/task status filter
+    --desired-status <status>   Task desired status filter
+
+KEYBOARD SHORTCUTS:
+    Clusters:
+        ctrl-o      Open cluster in AWS Console
+        alt-enter   List services in cluster
+
+    Services:
+        ctrl-o      Open service in AWS Console
+        ctrl-t      List tasks for service
+
+    Tasks:
+        enter       Show task details
+        ctrl-o      Open task in AWS Console
+
+EXAMPLES:
+    aws fzf ecs cluster list
+    aws fzf ecs cluster list --region us-west-2
+    aws fzf ecs service list --cluster my-cluster
+    aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
+EOF
+}
+
+# aws_ecs.sh - ECS cluster/service/task browsing for aws fzf
+#
+# This file is sourced by the main aws fzf script and provides
+# ECS cluster, service, and task listing with interactive functionality.
+#
+# Dependencies from main aws fzf:
+#   - $_aws_fzf_source_dir (source directory path)
+#   - aws CLI
+#   - fzf
+#   - jq
+#   - gum
+#   - Utility functions from utils/ (clipboard, console_url)
+
+# _aws_ecs_main()
+#
+# Handle ecs resource and action routing
+#
+# DESCRIPTION:
+#   Routes ecs commands using nested resource → action structure.
+#   Supports cluster, service, and task resources with list actions.
+#
+# PARAMETERS:
+#   $1 - Resource (cluster|service|task)
+#   $2 - Action (list)
+#   $@ - Additional arguments passed to AWS CLI
+#
+# RETURNS:
+#   0 - Success
+#   1 - Unknown resource/action or error
+#
+_aws_ecs_main() {
+	local resource="$1"
+	shift
+
+	case $resource in
+	cluster)
+		local action="$1"
+		shift
+		case $action in
+		list)
+			_aws_ecs_cluster_list "$@"
+			;;
+		--help | -h | help | "")
+			_aws_ecs_help
+			;;
+		*)
+			gum log --level error "Unknown cluster action '$action'"
+			gum log --level info "Supported: list"
+			gum log --level info "Run 'aws fzf ecs --help' for usage"
+			return 1
+			;;
+		esac
+		;;
+	service)
+		local action="$1"
+		shift
+		case $action in
+		list)
+			_aws_ecs_service_list "$@"
+			;;
+		--help | -h | help | "")
+			_aws_ecs_help
+			;;
+		*)
+			gum log --level error "Unknown service action '$action'"
+			gum log --level info "Supported: list"
+			gum log --level info "Run 'aws fzf ecs --help' for usage"
+			return 1
+			;;
+		esac
+		;;
+	task)
+		local action="$1"
+		shift
+		case $action in
+		list)
+			_aws_ecs_task_list "$@"
+			;;
+		--help | -h | help | "")
+			_aws_ecs_help
+			;;
+		*)
+			gum log --level error "Unknown task action '$action'"
+			gum log --level info "Supported: list"
+			gum log --level info "Run 'aws fzf ecs --help' for usage"
+			return 1
+			;;
+		esac
+		;;
+	--help | -h | help | "")
+		_aws_ecs_help
+		;;
+	*)
+		gum log --level error "Unknown ecs resource '$resource'"
+		gum log --level info "Supported: cluster, service, task"
+		gum log --level info "Run 'aws fzf ecs --help' for usage"
+		return 1
+		;;
+	esac
+}
+
+# ------------------------------------------------------------------------------
+# Direct Execution Support
+# ------------------------------------------------------------------------------
+# When run directly (not sourced), pass all arguments to hsdk-env.
+# This enables tmux integration and scripted usage.
+# ------------------------------------------------------------------------------
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+	_aws_ecs_main "$@"
+fi

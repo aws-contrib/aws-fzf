@@ -1,0 +1,208 @@
+#!/bin/bash
+
+[ -z "$DEBUG" ] || set -x
+
+_aws_fzf_source_dir=$(dirname "${BASH_SOURCE[0]}")
+
+# _check_dependencies()
+#
+# Check for required dependencies
+#
+# DESCRIPTION:
+#   Verifies that all required tools are installed and available in PATH.
+#   Exits with error if any required dependency is missing.
+#
+# REQUIRED DEPENDENCIES:
+#   - aws   : AWS CLI for API calls
+#   - fzf   : Fuzzy finder for interactive selection
+#   - jq    : JSON processor for data formatting
+#   - gum   : Terminal UI for spinners, logging, and prompts
+#
+# RETURNS:
+#   0 - All dependencies present
+#   1 - One or more dependencies missing (exits script)
+#
+_check_dependencies() {
+    local missing_required=()
+
+    command -v aws >/dev/null 2>&1 || missing_required+=("aws")
+    command -v fzf >/dev/null 2>&1 || missing_required+=("fzf")
+    command -v jq >/dev/null 2>&1 || missing_required+=("jq")
+    command -v gum >/dev/null 2>&1 || missing_required+=("gum")
+
+    if [ ${#missing_required[@]} -gt 0 ]; then
+        echo "Error: Missing required dependencies: ${missing_required[*]}" >&2
+        echo "" >&2
+        echo "Install with:" >&2
+        echo "  macOS:  brew install ${missing_required[*]}" >&2
+        echo "  Linux:  See installation instructions for each tool" >&2
+        return 1
+    fi
+}
+
+# Source command implementations
+source "$_aws_fzf_source_dir/scripts/aws_secret.sh"
+source "$_aws_fzf_source_dir/scripts/aws_param.sh"
+source "$_aws_fzf_source_dir/scripts/aws_lambda.sh"
+source "$_aws_fzf_source_dir/scripts/aws_log.sh"
+source "$_aws_fzf_source_dir/scripts/aws_ecs.sh"
+source "$_aws_fzf_source_dir/scripts/aws_s3.sh"
+
+# _show_root_help()
+#
+# Display help information for aws fzf
+#
+# DESCRIPTION:
+#   Prints the main help documentation for the aws fzf tool, including
+#   usage instructions, available commands (matching AWS CLI structure),
+#   and examples showing AWS CLI parity.
+#
+# PARAMETERS:
+#   None
+#
+# RETURNS:
+#   0 - Always returns success
+#
+# OUTPUT:
+#   Writes help text to stdout
+#
+_show_root_help() {
+    cat <<'EOF'
+aws fzf - Interactive fuzzy finder for AWS resources
+
+DESCRIPTION:
+    aws fzf provides an interactive interface for browsing AWS resources
+    using fzf (fuzzy finder). Inspired by GitHub CLI.
+
+USAGE:
+    aws fzf <command> [options]
+    aws fzf <service> <resource> <action> [options]
+
+COMMANDS:
+    Secrets Manager:
+        aws fzf secret list                       Browse secrets
+
+    Parameter Store:
+        aws fzf param list                        Browse parameters
+
+    S3:
+        aws fzf s3 bucket list                    Browse S3 buckets
+        aws fzf s3 object list --bucket <name>    Browse objects in bucket
+
+    ECS:
+        aws fzf ecs cluster list                  Browse ECS clusters
+        aws fzf ecs service list --cluster <name> Browse services in cluster
+        aws fzf ecs task list --cluster <name>    Browse tasks in cluster
+
+    Lambda:
+        aws fzf lambda list                       Browse Lambda functions
+
+    CloudWatch Logs:
+        aws fzf logs group list                   Browse log groups
+        aws fzf logs stream list --log-group-name Browse log streams in group
+
+GLOBAL OPTIONS:
+    All AWS CLI options are supported and passed through:
+    --region <region>       AWS region (overrides default)
+    --profile <profile>     AWS profile (overrides default)
+
+KEYBOARD SHORTCUTS:
+    Common shortcuts (most commands):
+    enter       View resource details
+    ctrl-o      Open in AWS Console
+
+    Additional shortcuts (service-specific):
+    ctrl-v      Get secret/parameter value (secret, param)
+    alt-c       Copy resource name/ID
+    alt-a       Copy resource ARN
+
+EXAMPLES:
+    # Browse secrets
+    aws fzf secret list
+
+    # Browse parameters in specific region
+    aws fzf param list --region us-west-2
+
+    # Browse S3 buckets
+    aws fzf s3 bucket list
+
+    # Browse objects in a bucket
+    aws fzf s3 object list --bucket my-bucket
+
+    # Browse ECS clusters
+    aws fzf ecs cluster list
+
+    # Browse services in a cluster
+    aws fzf ecs service list --cluster my-cluster
+
+    # Browse running tasks
+    aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
+
+DEPENDENCIES:
+    Required: aws, fzf, jq, gum
+    Optional: pbcopy/xclip/xsel/wl-copy (for clipboard support)
+
+SEE ALSO:
+    AWS CLI documentation: https://docs.aws.amazon.com/cli/
+    fzf: https://github.com/junegunn/fzf
+    gum: https://github.com/charmbracelet/gum
+EOF
+}
+
+# main()
+#
+# Main entry point for aws fzf
+#
+# DESCRIPTION:
+#   Processes command line arguments and dispatches to appropriate sub-commands.
+#   Handles command routing for s3, params, secrets, and ecs commands, as well
+#   as help requests and error cases.
+#
+# PARAMETERS:
+#   $1 - Service name (s3|params|secrets|ecs|help|--help|-h)
+#   $2 - Command (list-buckets|describe-parameters|etc.)
+#   $@ - Additional options passed to AWS CLI
+#
+# RETURNS:
+#   0   - Success (command executed successfully)
+#   1   - Error (unknown command or dependency check failed)
+#   Exit code from sub-command if applicable
+#
+main() {
+    _check_dependencies || exit 1
+
+    local service="$1"
+    shift
+
+    case $service in
+    lambda)
+        _aws_lambda_main "$@"
+        ;;
+    param)
+        _aws_param_main "$@"
+        ;;
+    secret)
+        _aws_secret_main "$@"
+        ;;
+    ecs)
+        _aws_ecs_main "$@"
+        ;;
+    log)
+        _aws_log_main "$@"
+        ;;
+    s3)
+        _aws_s3_main "$@"
+        ;;
+    --help | -h | help | "")
+        _show_root_help
+        ;;
+    *)
+        gum log --level error "Unknown service '$service'"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs"
+        gum log --level info "Run 'aws fzf --help' for detailed usage information"
+        exit 1
+        ;;
+    esac
+}
+
+main "$@"

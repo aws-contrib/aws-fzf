@@ -1,0 +1,279 @@
+set -o pipefail
+
+# aws_s3.sh - S3 bucket and object browsing for aws fzf
+#
+# This file is sourced by the main aws fzf script and provides
+# S3 bucket and object listing with interactive functionality.
+#
+# Dependencies from main aws fzf:
+#   - $_aws_fzf_source_dir (source directory path)
+#   - aws CLI
+#   - fzf
+#   - jq
+#   - gum
+#   - Utility functions from utils/ (clipboard)
+
+_aws_s3_source_dir=$(dirname "${BASH_SOURCE[0]}")
+
+# _aws_s3_bucket_list()
+#
+# Interactive fuzzy finder for S3 buckets
+#
+# DESCRIPTION:
+#   Displays a list of S3 buckets in an interactive fuzzy finder (fzf)
+#   with various keyboard shortcuts for common S3 operations.
+#
+# PARAMETERS:
+#   $@ - Optional flags to pass to AWS CLI (--region, --profile, etc.)
+#
+# RETURNS:
+#   0 - Success
+#   1 - Failure (no buckets found or AWS CLI error)
+#
+_aws_s3_bucket_list() {
+	local list_buckets_args=("$@")
+
+	local bucket_list
+	local bucket_list_jq
+	# Define jq formatting
+	bucket_list_jq='(["NAME", "CREATED"] | @tsv),
+	                (.Buckets[] | [.Name, (.CreationDate[0:19] | gsub("T"; " "))] | @tsv)'
+
+	# Fetch bucket list
+	# shellcheck disable=SC2086
+	# shellcheck disable=SC2128
+	bucket_list="$(
+		gum spin --title "Loading S3 Buckets..." -- \
+			aws s3api list-buckets $list_buckets_args --output json |
+			jq -r "$bucket_list_jq" | column -t -s $'\t'
+	)"
+
+	if [ -z "$bucket_list" ]; then
+		gum log --level warn "No S3 buckets found"
+		return 1
+	fi
+
+	# Display in fzf with bindings
+	echo "$bucket_list" | fzf --ansi \
+		--with-nth 1.. \
+		--accept-nth 1 \
+		--header-lines 1 \
+		--header-border sharp \
+		--color header:yellow \
+		--color footer:yellow \
+		--footer "  S3 Buckets" \
+		--footer-border sharp \
+		--input-border sharp \
+		--layout 'reverse-list' \
+		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
+		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})"
+}
+
+# _aws_s3_object_list()
+#
+# Interactive fuzzy finder for S3 objects in a bucket
+#
+# DESCRIPTION:
+#   Displays a list of S3 objects for a specific bucket. Requires
+#   --bucket parameter.
+#
+# PARAMETERS:
+#   --bucket <bucket>  - Required bucket name
+#   $@ - Additional flags passed to AWS CLI (--prefix, --delimiter, etc.)
+#
+# RETURNS:
+#   0 - Success
+#   1 - Failure or missing bucket parameter
+#
+_aws_s3_object_list() {
+	local bucket
+	local list_objects_args=()
+	# Extract bucket name from arguments
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		--bucket)
+			bucket="$2"
+			shift 2
+			;;
+		*)
+			list_objects_args+=("$1")
+			shift
+			;;
+		esac
+	done
+
+	if [ -z "$bucket" ]; then
+		gum log --level error "Missing required parameter: --bucket"
+		gum log --level info "Usage: aws fzf s3 object list --bucket <bucket>"
+		return 1
+	fi
+
+	local object_list
+	# Define jq formatting for object list (single page response)
+	local object_list_jq='[["KEY", "SIZE", "STORAGE CLASS", "MODIFIED"]] +
+	                      ([.Contents[]? // []] | map([.Key, .Size, .StorageClass, (.LastModified[0:19] | gsub("T"; " "))])) | .[] | @tsv'
+
+	# Get first page of objects (up to 1000)
+	object_list="$(
+		gum spin --title "Loading S3 Objects from $bucket..." -- \
+			aws s3api list-objects-v2 --bucket "$bucket" --max-items 1000 "${list_objects_args[@]}" --output json |
+			jq -r "$object_list_jq" | column -t -s $'\t'
+	)"
+
+	if [ -z "$object_list" ]; then
+		gum log --level warn "No objects found in bucket '$bucket'"
+		return 1
+	fi
+
+	# Display object list with keybindings
+	echo "$object_list" | fzf --ansi \
+		--with-nth 1.. \
+		--accept-nth 1 \
+		--header-lines 1 \
+		--header-border sharp \
+		--color header:yellow \
+		--color footer:yellow \
+		--footer "  S3 Objects in $bucket" \
+		--footer-border sharp \
+		--input-border sharp \
+		--layout 'reverse-list' \
+		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
+		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})"
+}
+
+# _aws_s3_help()
+#
+# Show S3API command help
+#
+_aws_s3_help() {
+	cat <<'EOF'
+aws fzf s3 - Interactive S3 bucket and object browser
+
+USAGE:
+    aws fzf s3 bucket list [options]
+    aws fzf s3 object list --bucket <bucket> [options]
+
+OPTIONS:
+    All AWS CLI options are passed through:
+    --region <region>       AWS region
+    --profile <profile>     AWS profile
+    --bucket <bucket>       Bucket name (required for object list)
+    --prefix <prefix>       Object prefix filter (RECOMMENDED for large buckets)
+    --delimiter <delim>     Delimiter for grouping
+    --max-items <number>    Max objects to load (default: 1000)
+
+PERFORMANCE:
+    Object listing loads only the first 1000 objects by default.
+    For large buckets, use --prefix to filter at the API level:
+
+    Examples:
+        --prefix logs/              # All objects under logs/
+        --prefix logs/2024/         # Objects in logs/2024/
+        --prefix data/prod/         # Objects in data/prod/
+
+KEYBOARD SHORTCUTS:
+    Buckets:
+        ctrl-o      Open bucket in AWS Console
+        alt-enter   List objects in bucket
+
+    Objects:
+        enter       View object metadata
+        ctrl-o      Open object in AWS Console
+
+EXAMPLES:
+    # Bucket listing
+    aws fzf s3 bucket list
+    aws fzf s3 bucket list --region us-west-2
+    aws fzf s3 bucket list --profile production
+
+    # Object listing (first 1000 objects)
+    aws fzf s3 object list --bucket my-bucket
+
+    # With prefix filter (RECOMMENDED for large buckets)
+    aws fzf s3 object list --bucket my-bucket --prefix logs/
+    aws fzf s3 object list --bucket my-bucket --prefix logs/2024/01/
+
+    # Load more objects if needed
+    aws fzf s3 object list --bucket my-bucket --max-items 5000
+EOF
+}
+
+# _aws_s3_main()
+#
+# Handle s3 resource and action routing
+#
+# DESCRIPTION:
+#   Routes s3 commands using nested resource → action structure.
+#   Supports bucket and object resources with list actions.
+#
+# PARAMETERS:
+#   $1 - Resource (bucket|object)
+#   $2 - Action (list)
+#   $@ - Additional arguments passed to AWS CLI
+#
+# RETURNS:
+#   0 - Success
+#   1 - Unknown resource/action or error
+#
+_aws_s3_main() {
+	local resource="$1"
+	shift
+
+	case $resource in
+	bucket)
+		local action="$1"
+		shift
+		case $action in
+		list)
+			_aws_s3_bucket_list "$@"
+			;;
+		--help | -h | help | "")
+			_aws_s3_help
+			;;
+		*)
+			gum log --level error "Unknown bucket action '$action'"
+			gum log --level info "Supported: list"
+			gum log --level info "Run 'aws fzf s3 --help' for usage"
+			return 1
+			;;
+		esac
+		;;
+	object)
+		local action="$1"
+		shift
+		case $action in
+		list)
+			_aws_s3_object_list "$@"
+			;;
+		--help | -h | help | "")
+			_aws_s3_help
+			;;
+		*)
+			gum log --level error "Unknown object action '$action'"
+			gum log --level info "Supported: list"
+			gum log --level info "Run 'aws fzf s3 --help' for usage"
+			return 1
+			;;
+		esac
+		;;
+	--help | -h | help | "")
+		_aws_s3_help
+		;;
+	*)
+		gum log --level error "Unknown s3 resource '$resource'"
+		gum log --level info "Supported: bucket, object"
+		gum log --level info "Run 'aws fzf s3 --help' for usage"
+		return 1
+		;;
+	esac
+}
+
+# ------------------------------------------------------------------------------
+# Direct Execution Support
+# ------------------------------------------------------------------------------
+# When run directly (not sourced), pass all arguments to _aws_s3_main.
+# This enables tmux integration and scripted usage.
+# ------------------------------------------------------------------------------
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+	_aws_s3_main "$@"
+fi
