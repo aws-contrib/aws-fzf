@@ -7,7 +7,7 @@
 # USAGE:
 #   aws_log_cmd view-group <log-group-name>
 #   aws_log_cmd view-stream <log-group-name> <stream-name>
-#   aws_log_cmd tail-logs <log-group-name> <stream-name>
+#   aws_log_cmd tail <log-group-name> [stream-name]
 #
 # DESCRIPTION:
 #   Opens CloudWatch Logs resources in the AWS Console with proper URL encoding.
@@ -52,84 +52,52 @@ _view_log_group() {
 	_open_url "$url"
 }
 
-# _tail_log_group()
+# _tail_log()
 #
-# Tail CloudWatch logs for an entire log group (all streams)
+# Tail CloudWatch logs for a log group or specific stream
 #
 # PARAMETERS:
 #   <log-group-name> - Log group name (required, positional)
-#   --exec <command> - Optional command to pipe output through
+#   [stream-name]    - Optional stream name (positional). If omitted, tails all streams.
 #
 # ENVIRONMENT VARIABLES:
 #   AWS_FZF_LOG_PAGER - Default pager command (e.g., lnav, less, cat)
 #
 # DESCRIPTION:
-#   Tail CloudWatch logs for all streams in a log group in real-time.
-#   Uses 'aws logs tail' without --log-stream-names to tail all streams.
-#   Logs from all streams are interleaved chronologically with stream name prefixes.
-#   Priority: --exec flag > AWS_FZF_LOG_PAGER > no piping.
-#   If a pager is specified and the command exists, pipes output through it.
+#   Tail CloudWatch logs in real-time.
+#   - If stream-name is provided: tails that specific stream
+#   - If stream-name is omitted: tails all streams in the log group
 #   Exit with Ctrl+C to stop tailing and return.
 #
-_tail_log_group() {
-	local log_group_name=""
-	local exec_command=""
+_tail_log() {
+	local log_tail_cmd=()
+	local log_group_name="${1:-}"
+	local log_stream_name="${2:-}"
 
-	# Parse arguments
-	while [[ $# -gt 0 ]]; do
-		case "$1" in
-		--exec)
-			if [ -z "${2:-}" ]; then
-				echo "Error: --exec requires a command argument" >&2
-				exit 1
-			fi
-			exec_command="$2"
-			shift 2
-			;;
-		*)
-			if [ -z "$log_group_name" ]; then
-				log_group_name="$1"
-				shift
-			else
-				echo "Error: Unexpected argument '$1'" >&2
-				exit 1
-			fi
-			;;
-		esac
-	done
-
-	# Validate required parameters
-	if [ -z "$log_group_name" ]; then
-		echo "Error: Log group name is required" >&2
-		exit 1
+	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed)
+	# Add log stream name if provided
+	if [ -n "$log_stream_name" ]; then
+		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	# Priority: --exec flag > AWS_FZF_LOG_PAGER env var > no piping
-	if [ -z "$exec_command" ] && [ -n "${AWS_FZF_LOG_PAGER:-}" ]; then
-		exec_command="$AWS_FZF_LOG_PAGER"
-	fi
+	if [[ "$AWS_FZF_LOG_PAGER" == "lnav" ]]; then
+		local log_file
+		local log_file_name
 
-	# Execute with or without piping
-	if [ -n "$exec_command" ]; then
-		local base_command
-		base_command=$(echo "$exec_command" | awk '{print $1}')
+		# Prepare sanitized temp file name
+		log_file_name="$log_group_name$log_stream_name"
+		log_file_name="${log_file_name//\//-}"
+		log_file_name="${log_file_name#-}"
+		log_file_name="${log_file_name%-}"
+		# Generate temp file for lnav
+		log_file=$(mktemp -t "$log_file_name")
+		# shellcheck disable=SC2064
+		trap "rm -f '$log_file'" RETURN
 
-		if command -v "$base_command" >/dev/null 2>&1; then
-			aws logs tail "$log_group_name" \
-				--follow \
-				--format detailed | eval "$exec_command"
-		else
-			echo "Warning: Command '$base_command' not found in PATH. Falling back to normal output." >&2
-			aws logs tail "$log_group_name" \
-				--follow \
-				--format detailed
-		fi
+		# Pipe output through lnav
+		lnav -e "${log_tail_cmd[*]} > $log_file" "$log_file"
 	else
-		# Tail entire log group (all streams)
-		# Omitting --log-stream-names tails all streams in the group
-		aws logs tail "$log_group_name" \
-			--follow \
-			--format detailed
+		"${log_tail_cmd[@]}"
 	fi
 }
 
@@ -170,115 +138,19 @@ _view_log_stream() {
 	_open_url "$url"
 }
 
-# _tail_log_stream()
-#
-# Tail CloudWatch logs for a stream
-#
-# PARAMETERS:
-#   <log-group-name> - Log group name (required, positional)
-#   <stream-name>    - Stream name (required, positional)
-#   --exec <command> - Optional command to pipe output through
-#
-# ENVIRONMENT VARIABLES:
-#   AWS_FZF_LOG_PAGER - Default pager command (e.g., lnav, less, cat)
-#
-# DESCRIPTION:
-#   Tail CloudWatch logs for a specific stream in real-time.
-#   Uses 'aws logs tail' with --follow to stream new log events.
-#   Priority: --exec flag > AWS_FZF_LOG_PAGER > no piping.
-#   If a pager is specified and the command exists, pipes output through it.
-#   Exit with Ctrl+C to stop tailing and return.
-#
-_tail_log_stream() {
-	local log_group_name=""
-	local stream_name=""
-	local exec_command=""
-	local positional_count=0
-
-	# Parse arguments
-	while [[ $# -gt 0 ]]; do
-		case "$1" in
-		--exec)
-			if [ -z "${2:-}" ]; then
-				echo "Error: --exec requires a command argument" >&2
-				exit 1
-			fi
-			exec_command="$2"
-			shift 2
-			;;
-		*)
-			if [ "$positional_count" -eq 0 ]; then
-				log_group_name="$1"
-				positional_count=$((positional_count + 1))
-				shift
-			elif [ "$positional_count" -eq 1 ]; then
-				stream_name="$1"
-				positional_count=$((positional_count + 1))
-				shift
-			else
-				echo "Error: Unexpected argument '$1'" >&2
-				exit 1
-			fi
-			;;
-		esac
-	done
-
-	# Validate required parameters
-	if [ -z "$log_group_name" ] || [ -z "$stream_name" ]; then
-		echo "Error: Log group name and stream name are required" >&2
-		exit 1
-	fi
-
-	# Priority: --exec flag > AWS_FZF_LOG_PAGER env var > no piping
-	if [ -z "$exec_command" ] && [ -n "${AWS_FZF_LOG_PAGER:-}" ]; then
-		exec_command="$AWS_FZF_LOG_PAGER"
-	fi
-
-	# Execute with or without piping
-	if [ -n "$exec_command" ]; then
-		local base_command
-		base_command=$(echo "$exec_command" | awk '{print $1}')
-
-		if command -v "$base_command" >/dev/null 2>&1; then
-			aws logs tail "$log_group_name" \
-				--log-stream-names "$stream_name" \
-				--follow \
-				--format detailed | eval "$exec_command"
-		else
-			echo "Warning: Command '$base_command' not found in PATH. Falling back to normal output." >&2
-			aws logs tail "$log_group_name" \
-				--log-stream-names "$stream_name" \
-				--follow \
-				--format detailed
-		fi
-	else
-		# Tail logs in real-time using AWS CLI
-		# The --follow flag will continue streaming logs as they arrive
-		# User can exit with Ctrl+C
-		aws logs tail "$log_group_name" \
-			--log-stream-names "$stream_name" \
-			--follow \
-			--format detailed
-	fi
-}
-
 # Command router
 case "${1:-}" in
 view-group)
 	shift
 	_view_log_group "$@"
 	;;
-tail-group)
-	shift
-	_tail_log_group "$@"
-	;;
 view-stream)
 	shift
 	_view_log_stream "$@"
 	;;
-tail-stream)
+tail-log)
 	shift
-	_tail_log_stream "$@"
+	_tail_log "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'
@@ -286,50 +158,37 @@ aws_log_cmd - CloudWatch Logs operations
 
 USAGE:
     aws_log_cmd view-group <log-group-name>
-    aws_log_cmd tail-group <log-group-name> [--exec <command>]
     aws_log_cmd view-stream <log-group-name> <stream-name>
-    aws_log_cmd tail-stream <log-group-name> <stream-name> [--exec <command>]
+    aws_log_cmd tail <log-group-name> [stream-name]
 
 DESCRIPTION:
     View and tail CloudWatch Logs resources.
     - view-group: Opens log group in AWS Console
-    - tail-group: Streams all logs from the group in real-time (exit with Ctrl+C)
     - view-stream: Opens log stream in AWS Console
-    - tail-stream: Streams logs from a specific stream in real-time (exit with Ctrl+C)
+    - tail: Streams logs in real-time (exit with Ctrl+C)
+            If stream-name omitted: tails all streams in group
+            If stream-name provided: tails specific stream
 
 ENVIRONMENT VARIABLES:
-    AWS_FZF_LOG_PAGER   Default pager for tail commands (e.g., lnav, less, cat).
-                        If set and the command exists, tail output is piped through it.
-                        Can be overridden per-invocation with --exec flag.
-
-OPTIONS:
-    --exec <command>    Override AWS_FZF_LOG_PAGER for this invocation.
-                        Pipe tail output through the specified command.
-                        Command can include arguments (e.g., "grep ERROR" or "jq -R").
+    AWS_FZF_LOG_PAGER   Default pager for tail command (e.g., lnav).
+                        Currently only lnav is specially handled.
 
 EXAMPLES:
-    # Set default pager for all tail commands
+    # Tail all streams in a log group
+    aws_log_cmd tail /aws/lambda/my-function
+
+    # Tail specific stream
+    aws_log_cmd tail /aws/lambda/my-function 2025/01/01/[$LATEST]abc123
+
+    # Use lnav for interactive viewing
     export AWS_FZF_LOG_PAGER=lnav
-    aws_log_cmd tail-group /aws/lambda/my-function  # Uses lnav
-
-    # Basic tailing (no pager)
-    aws_log_cmd tail-group /aws/lambda/my-function
-
-    # Override pager for one-off filtering
-    export AWS_FZF_LOG_PAGER=lnav
-    aws_log_cmd tail-group /aws/lambda/my-function --exec "grep ERROR"
-
-    # Disable pager temporarily
-    aws_log_cmd tail-group /aws/lambda/my-function --exec cat
-
-    # Stream-specific tailing
-    aws_log_cmd tail-stream /aws/lambda/my-function 2025/01/01/[$LATEST]abc123
+    aws_log_cmd tail /aws/lambda/my-function
 
 EOF
 	;;
 *)
 	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_log_cmd {view-group|tail-group|view-stream|tail-stream} [args]" >&2
+	echo "Usage: aws_log_cmd {view-group|view-stream|tail} [args]" >&2
 	echo "Run 'aws_log_cmd --help' for more information" >&2
 	exit 1
 	;;
