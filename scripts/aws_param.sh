@@ -49,7 +49,9 @@ _aws_param_list() {
 		--footer "$_fzf_icon Parameters" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
-		--bind "ctrl-v:execute($_aws_param_source_dir/aws_param_cmd.sh get-value {1})+abort"
+		--bind "ctrl-v:execute($_aws_param_source_dir/aws_param_cmd.sh get-value {1})+abort" \
+		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})"
 }
 
 # _aws_param_help()
@@ -71,17 +73,42 @@ OPTIONS:
     --filters <filters>         Parameter filters
 
 KEYBOARD SHORTCUTS:
-    enter       Show parameter metadata (without value)
-    ctrl-o      Open parameter in AWS Console
-    ctrl-v      Get parameter value (prompts for SecureString)
+    All resources:
+        enter       Show parameter metadata (without value)
+        ctrl-o      Open parameter in AWS Console
+        ctrl-v      Get parameter value (prompts for SecureString)
+        alt-a       Copy parameter ARN to clipboard
+        alt-n       Copy parameter name to clipboard
 
 SECURITY:
-    SecureString parameters require confirmation before decryption
+    SecureString parameters require explicit confirmation before decryption.
+    This prevents accidental exposure of encrypted sensitive values.
+    Press ctrl-v only when you need to view the actual decrypted value.
+
+PERFORMANCE:
+    The describe-parameters API paginates results automatically.
+    Use --max-results to control page size (default: 50, max: 50).
+    Use --parameter-filters to narrow results at the API level.
+    For large parameter sets, filtering at the API level is more efficient.
 
 EXAMPLES:
+    # List all parameters
     aws fzf param list
+
+    # List parameters in specific region
     aws fzf param list --region us-west-2
+
+    # Control pagination
     aws fzf param list --max-results 100
+
+    # Use with specific profile
+    aws fzf param list --profile production
+
+    # Filter parameters by path
+    aws fzf param list --parameter-filters "Key=Name,Option=BeginsWith,Values=/prod/"
+
+SEE ALSO:
+    AWS CLI SSM Parameter Store: https://docs.aws.amazon.com/cli/latest/reference/ssm/
 EOF
 }
 

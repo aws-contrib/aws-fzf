@@ -62,7 +62,9 @@ _aws_s3_bucket_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Buckets" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
-		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})"
+		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
+		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-name {1})"
 }
 
 # _aws_s3_object_list()
@@ -126,7 +128,9 @@ _aws_s3_object_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon  S3 Objects in $bucket" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
-		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})"
+		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})" \
+		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn $bucket {1})" \
+		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})"
 }
 
 # _aws_s3_help()
@@ -163,10 +167,14 @@ KEYBOARD SHORTCUTS:
     Buckets:
         ctrl-o      Open bucket in AWS Console
         alt-enter   List objects in bucket
+        alt-a       Copy bucket ARN to clipboard
+        alt-n       Copy bucket name to clipboard
 
     Objects:
         enter       View object metadata
         ctrl-o      Open object in AWS Console
+        alt-a       Copy object ARN to clipboard
+        alt-n       Copy object key to clipboard
 
 EXAMPLES:
     # Bucket listing
@@ -183,6 +191,10 @@ EXAMPLES:
 
     # Load more objects if needed
     aws fzf s3 object list --bucket my-bucket --max-items 5000
+
+SEE ALSO:
+    AWS CLI S3: https://docs.aws.amazon.com/cli/latest/reference/s3/
+    AWS CLI S3API: https://docs.aws.amazon.com/cli/latest/reference/s3api/
 EOF
 }
 

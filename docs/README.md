@@ -17,6 +17,7 @@ Complete guide for using aws-fzf, an interactive fuzzy finder for AWS resources.
   - [RDS](#rds)
   - [DSQL](#dsql)
   - [DynamoDB](#dynamodb)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -169,6 +170,19 @@ aws fzf logs group list  # alt-t will pipe through lnav
 
 Complete reference of keyboard shortcuts across all services.
 
+### Common Keybindings
+
+These keybindings are available across all services:
+
+| Key | Action |
+|-----|--------|
+| `enter` | View resource details (full JSON or metadata) |
+| `ctrl-o` | Open resource in AWS Console |
+| `alt-a` | Copy resource ARN to clipboard |
+| `alt-n` | Copy resource name/identifier to clipboard |
+
+Additional service-specific keybindings are documented below.
+
 ### S3
 
 #### Buckets
@@ -176,12 +190,16 @@ Complete reference of keyboard shortcuts across all services.
 |-----|--------|
 | `ctrl-o` | Open bucket in AWS Console |
 | `alt-enter` | List objects in bucket |
+| `alt-a` | Copy bucket ARN to clipboard |
+| `alt-n` | Copy bucket name to clipboard |
 
 #### Objects
 | Key | Action |
 |-----|--------|
 | `enter` | View object metadata |
 | `ctrl-o` | Open object in AWS Console |
+| `alt-a` | Copy object ARN to clipboard |
+| `alt-n` | Copy object key to clipboard |
 
 ### SSM Parameter Store
 
@@ -190,6 +208,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | Show parameter metadata (without value) |
 | `ctrl-o` | Open parameter in AWS Console |
 | `ctrl-v` | Get parameter value (prompts confirmation for SecureString) |
+| `alt-a` | Copy parameter ARN to clipboard |
+| `alt-n` | Copy parameter name to clipboard |
 
 ### Secrets Manager
 
@@ -198,6 +218,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | Show secret metadata (without value) |
 | `ctrl-o` | Open secret in AWS Console |
 | `ctrl-v` | Get secret value (requires confirmation) |
+| `alt-a` | Copy secret ARN to clipboard |
+| `alt-n` | Copy secret name to clipboard |
 
 ### ECS
 
@@ -206,19 +228,23 @@ Complete reference of keyboard shortcuts across all services.
 |-----|--------|
 | `ctrl-o` | Open cluster in AWS Console |
 | `alt-enter` | List services in cluster |
-| `ctrl-t` | List tasks in cluster |
+| `alt-a` | Copy cluster ARN to clipboard |
+| `alt-n` | Copy cluster name to clipboard |
 
 #### Services
 | Key | Action |
 |-----|--------|
 | `ctrl-o` | Open service in AWS Console |
-| `ctrl-t` | List tasks for service |
+| `alt-enter` | List tasks for service |
+| `alt-a` | Copy service ARN to clipboard |
+| `alt-n` | Copy service name to clipboard |
 
 #### Tasks
 | Key | Action |
 |-----|--------|
 | `enter` | View task details |
 | `ctrl-o` | Open task in AWS Console |
+| `alt-a` | Copy task ARN to clipboard |
 
 ### Lambda
 
@@ -226,6 +252,9 @@ Complete reference of keyboard shortcuts across all services.
 |-----|--------|
 | `enter` | Show function configuration |
 | `ctrl-o` | Open function in AWS Console |
+| `alt-t` | Tail function logs in real-time |
+| `alt-a` | Copy function ARN to clipboard |
+| `alt-n` | Copy function name to clipboard |
 
 ### CloudWatch Logs
 
@@ -235,6 +264,8 @@ Complete reference of keyboard shortcuts across all services.
 | `ctrl-o` | Open log group in AWS Console |
 | `alt-t` | Tail all streams in log group |
 | `alt-enter` | List streams in log group |
+| `alt-a` | Copy log group ARN to clipboard |
+| `alt-n` | Copy log group name to clipboard |
 
 #### Log Streams
 | Key | Action |
@@ -242,6 +273,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View stream metadata |
 | `ctrl-o` | Open log stream in AWS Console |
 | `alt-t` | Tail logs from this stream |
+| `alt-a` | Copy log stream ARN to clipboard |
+| `alt-n` | Copy log stream name to clipboard |
 
 ### RDS
 
@@ -251,6 +284,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View instance details (full JSON) |
 | `ctrl-o` | Open instance in AWS Console |
 | `alt-c` | Connect with psql (PostgreSQL only, IAM auth required) |
+| `alt-a` | Copy instance ARN to clipboard |
+| `alt-n` | Copy instance identifier to clipboard |
 
 #### DB Clusters (Aurora)
 | Key | Action |
@@ -258,6 +293,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View cluster details (full JSON) |
 | `ctrl-o` | Open cluster in AWS Console |
 | `alt-c` | Connect with psql (PostgreSQL only, IAM auth required) |
+| `alt-a` | Copy cluster ARN to clipboard |
+| `alt-n` | Copy cluster identifier to clipboard |
 
 ### DSQL
 
@@ -267,6 +304,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View cluster details (full JSON) |
 | `ctrl-o` | Open cluster in AWS Console |
 | `alt-c` | Connect with psql (IAM auth) |
+| `alt-a` | Copy cluster ARN to clipboard |
+| `alt-n` | Copy cluster identifier to clipboard |
 
 ### DynamoDB
 
@@ -276,6 +315,8 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View table details (full JSON) |
 | `ctrl-o` | Open table in AWS Console (overview) |
 | `alt-enter` | Open items explorer in AWS Console |
+| `alt-a` | Copy table ARN to clipboard |
+| `alt-n` | Copy table name to clipboard |
 
 ---
 
@@ -315,10 +356,14 @@ aws fzf s3 object list --bucket my-bucket --prefix logs/2024/ --max-items 5000
 **Buckets:**
 - `ctrl-o` - Open bucket in AWS Console
 - `alt-enter` - List objects in bucket
+- `alt-a` - Copy bucket ARN to clipboard
+- `alt-n` - Copy bucket name to clipboard
 
 **Objects:**
 - `enter` - View object metadata
 - `ctrl-o` - Open object in AWS Console
+- `alt-a` - Copy object ARN to clipboard
+- `alt-n` - Copy object key to clipboard
 
 #### Tips
 
@@ -353,6 +398,8 @@ aws fzf param list --profile production
 - `enter` - Show parameter metadata (without value)
 - `ctrl-o` - Open parameter in AWS Console
 - `ctrl-v` - Get parameter value (prompts confirmation for SecureString)
+- `alt-a` - Copy parameter ARN to clipboard
+- `alt-n` - Copy parameter name to clipboard
 
 #### Security
 
@@ -391,6 +438,8 @@ aws fzf secret list --filters Key=name,Values=prod*
 - `enter` - Show secret metadata (without value)
 - `ctrl-o` - Open secret in AWS Console
 - `ctrl-v` - Get secret value (requires confirmation)
+- `alt-a` - Copy secret ARN to clipboard
+- `alt-n` - Copy secret name to clipboard
 
 #### Security
 
@@ -442,15 +491,19 @@ aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
 **Clusters:**
 - `ctrl-o` - Open cluster in AWS Console
 - `alt-enter` - List services in cluster
-- `ctrl-t` - List tasks in cluster
+- `alt-a` - Copy cluster ARN to clipboard
+- `alt-n` - Copy cluster name to clipboard
 
 **Services:**
 - `ctrl-o` - Open service in AWS Console
-- `ctrl-t` - List tasks for service
+- `alt-enter` - List tasks for service
+- `alt-a` - Copy service ARN to clipboard
+- `alt-n` - Copy service name to clipboard
 
 **Tasks:**
 - `enter` - View task details
 - `ctrl-o` - Open task in AWS Console
+- `alt-a` - Copy task ARN to clipboard
 
 #### Tips
 
@@ -481,11 +534,15 @@ aws fzf lambda list --profile production
 
 - `enter` - Show function configuration
 - `ctrl-o` - Open function in AWS Console
+- `alt-t` - Tail function logs in real-time
+- `alt-a` - Copy function ARN to clipboard
+- `alt-n` - Copy function name to clipboard
 
 #### Tips
 
 - Press `enter` to view function details including runtime, memory, timeout, and environment variables
 - Use `ctrl-o` to open in AWS Console for more detailed configuration or to view logs
+- Press `alt-t` to tail CloudWatch logs for this function in real-time
 - Use `--region` to list functions in different AWS regions
 
 ---
@@ -522,11 +579,15 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 - `ctrl-o` - Open log group in AWS Console
 - `alt-t` - Tail all streams in log group
 - `alt-enter` - List streams in log group
+- `alt-a` - Copy log group ARN to clipboard
+- `alt-n` - Copy log group name to clipboard
 
 **Log Streams:**
 - `enter` - View stream metadata
 - `ctrl-o` - Open log stream in AWS Console
 - `alt-t` - Tail logs from this stream
+- `alt-a` - Copy log stream ARN to clipboard
+- `alt-n` - Copy log stream name to clipboard
 
 #### Log Tailing
 
@@ -587,10 +648,16 @@ aws fzf rds cluster list --profile production
 **DB Instances:**
 - `enter` - View instance details (full JSON)
 - `ctrl-o` - Open instance in AWS Console
+- `alt-c` - Connect with psql (PostgreSQL only, IAM auth required)
+- `alt-a` - Copy instance ARN to clipboard
+- `alt-n` - Copy instance identifier to clipboard
 
 **DB Clusters:**
 - `enter` - View cluster details (full JSON)
 - `ctrl-o` - Open cluster in AWS Console
+- `alt-c` - Connect with psql (PostgreSQL only, IAM auth required)
+- `alt-a` - Copy cluster ARN to clipboard
+- `alt-n` - Copy cluster identifier to clipboard
 
 #### Instance Information
 
@@ -672,6 +739,8 @@ aws fzf dsql cluster list --profile production
 - `enter` - Show cluster details (full JSON)
 - `ctrl-o` - Open cluster in AWS Console
 - `alt-c` - Connect to cluster with psql
+- `alt-a` - Copy cluster ARN to clipboard
+- `alt-n` - Copy cluster identifier to clipboard
 
 #### Connecting to Clusters
 
@@ -730,6 +799,8 @@ aws fzf dynamodb table list --profile production
 - `enter` - Show table details (full JSON including schema, provisioned throughput, indexes)
 - `ctrl-o` - Open table overview in AWS Console (shows schema, indexes, metrics)
 - `alt-enter` - Open items explorer in AWS Console (browse and query table data)
+- `alt-a` - Copy table ARN to clipboard
+- `alt-n` - Copy table name to clipboard
 
 #### Table Information
 
@@ -755,3 +826,349 @@ When viewing table details with `enter`, you'll see:
 - Use `--region` to list tables in different AWS regions
 - DynamoDB tables are region-specific (unlike global services)
 - DynamoDB is a managed NoSQL service - no client connection like psql
+
+---
+
+## Troubleshooting
+
+Common issues and solutions for aws-fzf.
+
+### AWS Credentials Issues
+
+**Problem:** "Unable to locate credentials" or permission denied errors
+
+**Solutions:**
+```bash
+# Verify AWS CLI configuration
+aws configure list
+
+# Check current identity
+aws sts get-caller-identity
+
+# Verify specific profile
+aws sts get-caller-identity --profile production
+
+# List available profiles
+cat ~/.aws/credentials | grep '\[' | tr -d '[]'
+```
+
+**Common Fixes:**
+- Run `aws configure` to set up default credentials
+- Use `--profile <name>` to specify the correct profile
+- Ensure AWS_PROFILE environment variable matches your intent
+- Check IAM permissions for your user/role
+
+---
+
+### No Resources Found
+
+**Problem:** "No resources found" when listing services
+
+**Solutions:**
+```bash
+# Verify you're in the correct region
+aws fzf <service> <resource> list --region us-east-1
+
+# List all regions for a service
+aws ec2 describe-regions --query 'Regions[].RegionName' --output table
+
+# Check if resources exist
+aws <service> list-<resources> --region <region>
+```
+
+**Common Causes:**
+- Resources exist in a different region
+- Using wrong AWS profile
+- Resources don't exist in your account
+- Insufficient IAM permissions to list resources
+
+---
+
+### Database Connection Issues
+
+**Problem:** Cannot connect to RDS/DSQL databases using alt-c
+
+**RDS/Aurora Requirements:**
+1. **PostgreSQL engine only** - IAM auth only works with postgres/aurora-postgresql
+2. **IAM authentication enabled** - Must be enabled on the instance/cluster
+3. **IAM permissions** - Your user/role needs `rds-db:connect` permission
+4. **psql client installed** - `brew install postgresql` (macOS)
+
+**DSQL Requirements:**
+1. **IAM permissions** - Your user/role needs `dsql:DbConnect` permission
+2. **psql client installed** - `brew install postgresql` (macOS)
+
+**Verification Steps:**
+```bash
+# Check if psql is installed
+which psql
+
+# Verify IAM auth is enabled (RDS)
+aws rds describe-db-instances --db-instance-identifier <name> \
+  --query 'DBInstances[0].IAMDatabaseAuthenticationEnabled'
+
+# Test IAM token generation (RDS)
+aws rds generate-db-auth-token \
+  --hostname <endpoint> \
+  --port 5432 \
+  --username <username> \
+  --region <region>
+
+# Test IAM token generation (DSQL)
+aws dsql generate-db-connect-admin-auth-token \
+  --hostname <endpoint> \
+  --region <region>
+```
+
+**Enable IAM Authentication:**
+1. Go to RDS Console
+2. Select your database instance/cluster
+3. Click "Modify"
+4. Under "Database authentication", enable "Password and IAM database authentication"
+5. Click "Continue" and apply changes
+
+**Required IAM Policy (RDS):**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "rds-db:connect",
+      "Resource": "arn:aws:rds-db:REGION:ACCOUNT:dbuser:RESOURCE-ID/USERNAME"
+    }
+  ]
+}
+```
+
+**Required IAM Policy (DSQL):**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "dsql:DbConnect",
+      "Resource": "arn:aws:dsql:REGION:ACCOUNT:cluster/CLUSTER-ID"
+    }
+  ]
+}
+```
+
+---
+
+### Clipboard Not Working
+
+**Problem:** alt-a or alt-n keybindings don't copy to clipboard
+
+**Solutions:**
+
+**macOS:**
+```bash
+# pbcopy should be available by default
+which pbcopy
+```
+
+**Linux (X11):**
+```bash
+# Install xclip
+sudo apt-get install xclip  # Ubuntu/Debian
+sudo yum install xclip      # RHEL/CentOS
+
+# OR install xsel
+sudo apt-get install xsel   # Ubuntu/Debian
+```
+
+**Linux (Wayland):**
+```bash
+# Install wl-clipboard
+sudo apt-get install wl-clipboard  # Ubuntu/Debian
+```
+
+**Verification:**
+```bash
+# Test clipboard
+echo "test" | pbcopy && pbpaste  # macOS
+echo "test" | xclip -selection clipboard && xclip -selection clipboard -o  # Linux X11
+echo "test" | wl-copy && wl-paste  # Linux Wayland
+```
+
+---
+
+### Performance Issues
+
+**Problem:** Slow listing or timeouts
+
+**S3 Objects:**
+```bash
+# Use --prefix to filter at API level
+aws fzf s3 object list --bucket my-bucket --prefix logs/2024/
+
+# Limit results
+aws fzf s3 object list --bucket my-bucket --max-items 1000
+```
+
+**Parameters/Secrets:**
+```bash
+# Use filters to narrow results
+aws fzf secret list --filters Key=name,Values=prod*
+aws fzf param list --parameter-filters "Key=Name,Option=BeginsWith,Values=/prod/"
+```
+
+**ECS:**
+```bash
+# Filter tasks by status
+aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
+```
+
+**DynamoDB:**
+```bash
+# Query specific region only
+aws fzf dynamodb table list --region us-east-1
+```
+
+---
+
+### fzf Not Found or Not Working
+
+**Problem:** "fzf: command not found" or fzf doesn't display correctly
+
+**Installation:**
+```bash
+# macOS
+brew install fzf
+
+# Ubuntu/Debian
+sudo apt-get install fzf
+
+# Or install from source
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+```
+
+**Verification:**
+```bash
+# Test fzf
+echo -e "option1\noption2\noption3" | fzf
+```
+
+---
+
+### Log Tailing Issues
+
+**Problem:** alt-t doesn't tail logs or lnav not working
+
+**Install lnav (optional but recommended):**
+```bash
+# macOS
+brew install lnav
+
+# Ubuntu/Debian
+sudo apt-get install lnav
+```
+
+**Set log pager:**
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+export AWS_FZF_LOG_PAGER=lnav
+
+# Reload shell
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+**Without lnav:**
+Logs will be displayed directly in terminal using `aws logs tail` command.
+
+---
+
+### Permission Errors
+
+**Problem:** "Access Denied" or "UnauthorizedOperation" errors
+
+**Required IAM Permissions by Service:**
+
+**S3:**
+- `s3:ListAllMyBuckets`
+- `s3:ListBucket`
+- `s3:GetObject` (for metadata)
+
+**Secrets Manager:**
+- `secretsmanager:ListSecrets`
+- `secretsmanager:DescribeSecret`
+- `secretsmanager:GetSecretValue` (for ctrl-v)
+
+**Parameter Store:**
+- `ssm:DescribeParameters`
+- `ssm:GetParameter` (for ctrl-v)
+- `kms:Decrypt` (for SecureString)
+
+**Lambda:**
+- `lambda:ListFunctions`
+- `lambda:GetFunction`
+
+**CloudWatch Logs:**
+- `logs:DescribeLogGroups`
+- `logs:DescribeLogStreams`
+- `logs:GetLogEvents`
+- `logs:FilterLogEvents`
+- `logs:TailLogs`
+
+**ECS:**
+- `ecs:ListClusters`
+- `ecs:DescribeClusters`
+- `ecs:ListServices`
+- `ecs:DescribeServices`
+- `ecs:ListTasks`
+- `ecs:DescribeTasks`
+
+**RDS:**
+- `rds:DescribeDBInstances`
+- `rds:DescribeDBClusters`
+- `rds-db:connect` (for IAM auth)
+
+**DSQL:**
+- `dsql:ListClusters`
+- `dsql:GetCluster`
+- `dsql:DbConnect` (for IAM auth)
+
+**DynamoDB:**
+- `dynamodb:ListTables`
+- `dynamodb:DescribeTable`
+
+**Debugging Permissions:**
+```bash
+# Simulate IAM policy
+aws iam simulate-principal-policy \
+  --policy-source-arn <your-user-arn> \
+  --action-names <service>:<action> \
+  --resource-arns <resource-arn>
+
+# Check attached policies
+aws iam list-attached-user-policies --user-name <username>
+aws iam list-user-policies --user-name <username>
+```
+
+---
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. **Check AWS CLI:** Verify the underlying AWS CLI command works:
+   ```bash
+   aws <service> <operation> [options]
+   ```
+
+2. **Enable debug mode:** Add `set -x` to the top of any script to see what commands are being executed
+
+3. **Check logs:** Look for error messages in the terminal output
+
+4. **Verify dependencies:**
+   ```bash
+   which aws    # AWS CLI
+   which fzf    # fuzzy finder
+   which jq     # JSON processor
+   which gum    # TUI library
+   ```
+
+5. **Report issues:** https://github.com/aws-contrib/aws-fzf/issues

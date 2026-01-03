@@ -45,26 +45,134 @@ _aws_lambda_view_function() {
 	_open_url "https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${function_name}"
 }
 
+# _aws_lambda_copy_arn()
+#
+# Copy function ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Function name (required)
+#
+# DESCRIPTION:
+#   Fetches the function ARN and copies it to the clipboard
+#
+_aws_lambda_copy_arn() {
+	local function="${1:-}"
+
+	if [ -z "$function" ]; then
+		gum log --level error "Function name is required"
+		exit 1
+	fi
+
+	local arn
+	arn=$(aws lambda get-function --function-name "$function" --query 'Configuration.FunctionArn' --output text 2>/dev/null)
+
+	if [ -z "$arn" ]; then
+		gum log --level error "Failed to fetch function ARN"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$arn" "function ARN"
+}
+
+# _aws_lambda_copy_name()
+#
+# Copy function name to clipboard
+#
+# PARAMETERS:
+#   $1 - Function name (required)
+#
+# DESCRIPTION:
+#   Copies the function name to the clipboard
+#
+_aws_lambda_copy_name() {
+	local function="${1:-}"
+
+	if [ -z "$function" ]; then
+		gum log --level error "Function name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$function" "function name"
+}
+
+# _aws_lambda_tail_logs()
+#
+# Tail Lambda function logs
+#
+# PARAMETERS:
+#   $1 - Function name (required)
+#
+# DESCRIPTION:
+#   Tails logs for the Lambda function from CloudWatch Logs.
+#   Lambda functions have log groups named /aws/lambda/<function-name>
+#
+_aws_lambda_tail_logs() {
+	local function="${1:-}"
+
+	if [ -z "$function" ]; then
+		gum log --level error "Function name is required"
+		exit 1
+	fi
+
+	local log_group="/aws/lambda/${function}"
+
+	# Check if AWS_FZF_LOG_PAGER is set (e.g., lnav)
+	if [ -n "${AWS_FZF_LOG_PAGER:-}" ]; then
+		aws logs tail "$log_group" --follow --format short | "$AWS_FZF_LOG_PAGER"
+	else
+		aws logs tail "$log_group" --follow --format short
+	fi
+}
+
 # Command router
 case "${1:-}" in
 view-function)
 	shift
 	_aws_lambda_view_function "$@"
 	;;
+copy-arn)
+	shift
+	_aws_lambda_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_lambda_copy_name "$@"
+	;;
+tail-logs)
+	shift
+	_aws_lambda_tail_logs "$@"
+	;;
 --help | -h | help | "")
 	cat <<'EOF'
 aws_lambda_cmd - Utility commands for Lambda operations
 
-OPERATIONS:
+CONSOLE VIEWS:
     aws_lambda_cmd view-function <function-name>
+
+CLIPBOARD OPERATIONS:
+    aws_lambda_cmd copy-arn <function-name>
+    aws_lambda_cmd copy-name <function-name>
+
+LOG OPERATIONS:
+    aws_lambda_cmd tail-logs <function-name>
 
 DESCRIPTION:
     Utility commands for Lambda operations.
     view-function opens Lambda functions in the AWS Console.
+    copy-arn copies the function ARN to clipboard.
+    copy-name copies the function name to clipboard.
+    tail-logs tails the function's CloudWatch Logs.
 
 EXAMPLES:
-    # Open in console
+    # Console view
     aws_lambda_cmd view-function my-function
+
+    # Clipboard operations
+    aws_lambda_cmd copy-arn my-function
+    aws_lambda_cmd copy-name my-function
+
+    # Tail logs
+    aws_lambda_cmd tail-logs my-function
 
 EOF
 	;;

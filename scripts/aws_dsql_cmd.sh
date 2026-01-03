@@ -74,6 +74,9 @@ _aws_dsql_connect_cluster() {
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe cluster: $cluster"
+		gum log --level info "Check that the cluster exists and you have permissions"
+		gum log --level info "Required IAM permissions: dsql:GetCluster"
+		gum log --level info "Run 'aws dsql list-clusters' to see available clusters"
 		exit 1
 	fi
 
@@ -81,10 +84,18 @@ _aws_dsql_connect_cluster() {
 	local endpoint
 	endpoint=$(echo "$cluster_info" | jq -r '.endpoint')
 
+	if [ -z "$endpoint" ] || [ "$endpoint" = "null" ]; then
+		gum log --level error "Cluster endpoint not found for: $cluster"
+		gum log --level info "The cluster may not be ready or may not exist"
+		exit 1
+	fi
+
 	# Check if psql is installed
 	if ! command -v psql >/dev/null 2>&1; then
 		gum log --level error "psql client not found"
 		gum log --level info "Install PostgreSQL client: brew install postgresql"
+		gum log --level info "macOS: brew install postgresql"
+		gum log --level info "Ubuntu/Debian: apt-get install postgresql-client"
 		exit 1
 	fi
 
@@ -101,7 +112,11 @@ _aws_dsql_connect_cluster() {
 	)
 
 	if [ $? -ne 0 ]; then
-		gum log --level error "Failed to generate auth token"
+		gum log --level error "Failed to generate IAM auth token"
+		gum log --level info "Check your AWS credentials and IAM permissions"
+		gum log --level info "Required IAM permissions: dsql:DbConnect"
+		gum log --level info "IAM policy resource: arn:aws:dsql:${region}:*:cluster/${cluster}"
+		gum log --level info "Run 'aws sts get-caller-identity' to verify your identity"
 		exit 1
 	fi
 
@@ -116,6 +131,56 @@ _aws_dsql_connect_cluster() {
 	psql -d postgres
 }
 
+# _copy_cluster_arn()
+#
+# Copy DSQL cluster ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Cluster identifier (required)
+#
+# DESCRIPTION:
+#   Fetches the cluster ARN and copies it to the clipboard
+#
+_copy_cluster_arn() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Cluster identifier is required"
+		exit 1
+	fi
+
+	local arn
+	arn=$(aws dsql get-cluster --identifier "$cluster" --query 'arn' --output text 2>/dev/null)
+
+	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
+		gum log --level error "Failed to fetch cluster ARN"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$arn" "cluster ARN"
+}
+
+# _copy_cluster_name()
+#
+# Copy DSQL cluster identifier to clipboard
+#
+# PARAMETERS:
+#   $1 - Cluster identifier (required)
+#
+# DESCRIPTION:
+#   Copies the cluster identifier to the clipboard
+#
+_copy_cluster_name() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Cluster identifier is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$cluster" "cluster identifier"
+}
+
 # Command router
 case "${1:-}" in
 view-cluster)
@@ -125,6 +190,14 @@ view-cluster)
 connect-cluster)
 	shift
 	_aws_dsql_connect_cluster "$@"
+	;;
+copy-cluster-arn)
+	shift
+	_copy_cluster_arn "$@"
+	;;
+copy-cluster-name)
+	shift
+	_copy_cluster_name "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'
@@ -136,9 +209,14 @@ CONSOLE VIEWS:
 DATABASE CONNECTION:
     aws_dsql_cmd connect-cluster <cluster-identifier>
 
+CLIPBOARD OPERATIONS:
+    aws_dsql_cmd copy-cluster-arn <cluster-identifier>
+    aws_dsql_cmd copy-cluster-name <cluster-identifier>
+
 DESCRIPTION:
     View commands open DSQL resources in the AWS Console via the default browser.
     Connection commands use psql with IAM authentication.
+    Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
     # Console views

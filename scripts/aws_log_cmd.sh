@@ -138,6 +138,74 @@ _view_log_stream() {
 	_open_url "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_group}/log-events/${encoded_stream}"
 }
 
+# _copy_group_arn()
+#
+# Copy log group ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Log group name (required)
+#
+# DESCRIPTION:
+#   Constructs the log group ARN and copies it to the clipboard
+#
+_copy_group_arn() {
+	local log_group="${1:-}"
+
+	if [ -z "$log_group" ]; then
+		gum log --level error "Log group name is required"
+		exit 1
+	fi
+
+	local region account_id
+	region=$(_get_aws_region)
+	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+
+	local arn="arn:aws:logs:${region}:${account_id}:log-group:${log_group}:*"
+	_copy_to_clipboard "$arn" "log group ARN"
+}
+
+# _copy_group_name()
+#
+# Copy log group name to clipboard
+#
+# PARAMETERS:
+#   $1 - Log group name (required)
+#
+# DESCRIPTION:
+#   Copies the log group name to the clipboard
+#
+_copy_group_name() {
+	local log_group="${1:-}"
+
+	if [ -z "$log_group" ]; then
+		gum log --level error "Log group name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$log_group" "log group name"
+}
+
+# _copy_stream_name()
+#
+# Copy log stream name to clipboard
+#
+# PARAMETERS:
+#   $1 - Stream name (required, log group not needed for simple name copy)
+#
+# DESCRIPTION:
+#   Copies the log stream name to the clipboard
+#
+_copy_stream_name() {
+	local stream="${1:-}"
+
+	if [ -z "$stream" ]; then
+		gum log --level error "Stream name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$stream" "log stream name"
+}
+
 # Command router
 case "${1:-}" in
 view-group)
@@ -152,14 +220,33 @@ tail-log)
 	shift
 	_tail_log "$@"
 	;;
+copy-group-arn)
+	shift
+	_copy_group_arn "$@"
+	;;
+copy-group-name)
+	shift
+	_copy_group_name "$@"
+	;;
+copy-stream-name)
+	shift
+	_copy_stream_name "$@"
+	;;
 --help | -h | help | "")
 	cat <<'EOF'
 aws_log_cmd - CloudWatch Logs operations
 
-USAGE:
+CONSOLE VIEWS:
     aws_log_cmd view-group <log-group-name>
     aws_log_cmd view-stream <log-group-name> <stream-name>
+
+LOG OPERATIONS:
     aws_log_cmd tail <log-group-name> [stream-name]
+
+CLIPBOARD OPERATIONS:
+    aws_log_cmd copy-group-arn <log-group-name>
+    aws_log_cmd copy-group-name <log-group-name>
+    aws_log_cmd copy-stream-name <stream-name>
 
 DESCRIPTION:
     View and tail CloudWatch Logs resources.
@@ -168,6 +255,9 @@ DESCRIPTION:
     - tail: Streams logs in real-time (exit with Ctrl+C)
             If stream-name omitted: tails all streams in group
             If stream-name provided: tails specific stream
+    - copy-group-arn: Copies log group ARN to clipboard
+    - copy-group-name: Copies log group name to clipboard
+    - copy-stream-name: Copies stream name to clipboard
 
 ENVIRONMENT VARIABLES:
     AWS_FZF_LOG_PAGER   Default pager for tail command (e.g., lnav).

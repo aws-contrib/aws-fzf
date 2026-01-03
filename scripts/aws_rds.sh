@@ -49,7 +49,9 @@ _aws_rds_instance_list() {
 		--footer "$_fzf_icon RDS Instances" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq .)+abort" \
-		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})"
+		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})" \
+		--bind "alt-a:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-name {1})"
 }
 
 # _aws_rds_cluster_list()
@@ -96,7 +98,9 @@ _aws_rds_cluster_list() {
 		--footer "$_fzf_icon RDS Clusters" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq .)+abort" \
-		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})"
+		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})" \
+		--bind "alt-a:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-name {1})"
 }
 
 # _aws_rds_help()
@@ -122,15 +126,44 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open resource in AWS Console
         enter       View resource details (full JSON)
         alt-c       Connect to database with psql (PostgreSQL only, requires IAM auth)
+        alt-a       Copy resource ARN to clipboard
+        alt-n       Copy resource identifier to clipboard
+
+SECURITY:
+    Database connections (alt-c) require:
+    - PostgreSQL engine (postgres or aurora-postgresql)
+    - IAM database authentication enabled on the instance/cluster
+    - IAM policy allowing rds-db:connect action
+    - psql client installed (brew install postgresql)
+
+    IAM auth tokens are valid for 15 minutes and provide secure, temporary access.
+    Use caution when connecting to production databases.
+
+PERFORMANCE:
+    RDS listing APIs paginate automatically.
+    Each describe-db-instances call returns up to 100 instances.
+    Each describe-db-clusters call returns up to 100 clusters.
+    Use --filters to narrow results at the API level if needed.
 
 EXAMPLES:
-    # List RDS instances
+    # List all RDS instances
     aws fzf rds instance list
+
+    # List instances in specific region
     aws fzf rds instance list --region us-west-2
 
-    # List Aurora clusters
+    # List instances with specific profile
+    aws fzf rds instance list --profile production
+
+    # List all Aurora clusters
     aws fzf rds cluster list
-    aws fzf rds cluster list --profile production
+
+    # List clusters in specific region
+    aws fzf rds cluster list --region eu-west-1 --profile prod
+
+SEE ALSO:
+    AWS CLI RDS: https://docs.aws.amazon.com/cli/latest/reference/rds/
+    IAM Database Authentication: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html
 EOF
 }
 

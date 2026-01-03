@@ -99,6 +99,9 @@ _aws_rds_connect_instance() {
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe instance: $instance"
+		gum log --level info "Check that the instance exists and you have permissions"
+		gum log --level info "Required IAM permissions: rds:DescribeDBInstances"
+		gum log --level info "Run 'aws rds describe-db-instances' to verify access"
 		exit 1
 	fi
 
@@ -110,24 +113,39 @@ _aws_rds_connect_instance() {
 	username=$(echo "$instance_info" | jq -r '.DBInstances[0].MasterUsername')
 	iam_enabled=$(echo "$instance_info" | jq -r '.DBInstances[0].IAMDatabaseAuthenticationEnabled')
 
+	# Check for valid endpoint
+	if [ -z "$endpoint" ] || [ "$endpoint" = "null" ]; then
+		gum log --level error "Instance endpoint not available"
+		gum log --level info "The instance may not be ready or in 'available' state"
+		gum log --level info "Check instance status with: aws rds describe-db-instances --db-instance-identifier $instance"
+		exit 1
+	fi
+
 	# Check for PostgreSQL engine
 	if [[ ! "$engine" =~ ^(postgres|aurora-postgresql) ]]; then
-		gum log --level error "Only PostgreSQL databases are supported"
-		gum log --level info "Engine: $engine"
+		gum log --level error "Only PostgreSQL databases are supported for IAM authentication"
+		gum log --level info "Current engine: $engine"
+		gum log --level info "Supported engines: postgres, aurora-postgresql"
 		exit 1
 	fi
 
 	# Check if IAM auth is enabled
 	if [ "$iam_enabled" != "true" ]; then
 		gum log --level error "IAM database authentication is not enabled for this instance"
-		gum log --level info "Enable IAM authentication in RDS console or use password-based connection"
+		gum log --level info "To enable IAM authentication:"
+		gum log --level info "1. Modify the DB instance in RDS console"
+		gum log --level info "2. Enable 'Password and IAM database authentication'"
+		gum log --level info "3. Apply changes (may require instance restart)"
 		exit 1
 	fi
 
 	# Check if psql is installed
 	if ! command -v psql >/dev/null 2>&1; then
 		gum log --level error "psql client not found"
-		gum log --level info "Install PostgreSQL client: brew install postgresql"
+		gum log --level info "Install PostgreSQL client:"
+		gum log --level info "macOS: brew install postgresql"
+		gum log --level info "Ubuntu/Debian: apt-get install postgresql-client"
+		gum log --level info "Amazon Linux: yum install postgresql"
 		exit 1
 	fi
 
@@ -144,7 +162,11 @@ _aws_rds_connect_instance() {
 		--region "$region" 2>&1)
 
 	if [ $? -ne 0 ]; then
-		gum log --level error "Failed to generate auth token"
+		gum log --level error "Failed to generate IAM auth token"
+		gum log --level info "Check your AWS credentials and IAM permissions"
+		gum log --level info "Required IAM permissions: rds-db:connect"
+		gum log --level info "IAM policy resource: arn:aws:rds-db:${region}:*:dbuser:*/${username}"
+		gum log --level info "Run 'aws sts get-caller-identity' to verify your identity"
 		exit 1
 	fi
 
@@ -190,6 +212,9 @@ _aws_rds_connect_cluster() {
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe cluster: $cluster"
+		gum log --level info "Check that the cluster exists and you have permissions"
+		gum log --level info "Required IAM permissions: rds:DescribeDBClusters"
+		gum log --level info "Run 'aws rds describe-db-clusters' to verify access"
 		exit 1
 	fi
 
@@ -201,24 +226,39 @@ _aws_rds_connect_cluster() {
 	username=$(echo "$cluster_info" | jq -r '.DBClusters[0].MasterUsername')
 	iam_enabled=$(echo "$cluster_info" | jq -r '.DBClusters[0].IAMDatabaseAuthenticationEnabled')
 
+	# Check for valid endpoint
+	if [ -z "$endpoint" ] || [ "$endpoint" = "null" ]; then
+		gum log --level error "Cluster endpoint not available"
+		gum log --level info "The cluster may not be ready or in 'available' state"
+		gum log --level info "Check cluster status with: aws rds describe-db-clusters --db-cluster-identifier $cluster"
+		exit 1
+	fi
+
 	# Check for PostgreSQL engine
 	if [[ ! "$engine" =~ ^(aurora-postgresql) ]]; then
-		gum log --level error "Only Aurora PostgreSQL clusters are supported"
-		gum log --level info "Engine: $engine"
+		gum log --level error "Only Aurora PostgreSQL clusters are supported for IAM authentication"
+		gum log --level info "Current engine: $engine"
+		gum log --level info "Supported engines: aurora-postgresql"
 		exit 1
 	fi
 
 	# Check if IAM auth is enabled
 	if [ "$iam_enabled" != "true" ]; then
 		gum log --level error "IAM database authentication is not enabled for this cluster"
-		gum log --level info "Enable IAM authentication in RDS console or use password-based connection"
+		gum log --level info "To enable IAM authentication:"
+		gum log --level info "1. Modify the DB cluster in RDS console"
+		gum log --level info "2. Enable 'Password and IAM database authentication'"
+		gum log --level info "3. Apply changes (may require cluster restart)"
 		exit 1
 	fi
 
 	# Check if psql is installed
 	if ! command -v psql >/dev/null 2>&1; then
 		gum log --level error "psql client not found"
-		gum log --level info "Install PostgreSQL client: brew install postgresql"
+		gum log --level info "Install PostgreSQL client:"
+		gum log --level info "macOS: brew install postgresql"
+		gum log --level info "Ubuntu/Debian: apt-get install postgresql-client"
+		gum log --level info "Amazon Linux: yum install postgresql"
 		exit 1
 	fi
 
@@ -235,7 +275,11 @@ _aws_rds_connect_cluster() {
 		--region "$region" 2>&1)
 
 	if [ $? -ne 0 ]; then
-		gum log --level error "Failed to generate auth token"
+		gum log --level error "Failed to generate IAM auth token"
+		gum log --level info "Check your AWS credentials and IAM permissions"
+		gum log --level info "Required IAM permissions: rds-db:connect"
+		gum log --level info "IAM policy resource: arn:aws:rds-db:${region}:*:dbuser:*/${username}"
+		gum log --level info "Run 'aws sts get-caller-identity' to verify your identity"
 		exit 1
 	fi
 
@@ -250,6 +294,106 @@ _aws_rds_connect_cluster() {
 
 	# Connect using psql
 	psql -d postgres
+}
+
+# _copy_instance_arn()
+#
+# Copy DB instance ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - DB instance identifier (required)
+#
+# DESCRIPTION:
+#   Fetches the instance ARN and copies it to the clipboard
+#
+_copy_instance_arn() {
+	local instance="${1:-}"
+
+	if [ -z "$instance" ]; then
+		gum log --level error "DB instance identifier is required"
+		exit 1
+	fi
+
+	local arn
+	arn=$(aws rds describe-db-instances --db-instance-identifier "$instance" --query 'DBInstances[0].DBInstanceArn' --output text 2>/dev/null)
+
+	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
+		gum log --level error "Failed to fetch instance ARN"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$arn" "instance ARN"
+}
+
+# _copy_instance_name()
+#
+# Copy DB instance identifier to clipboard
+#
+# PARAMETERS:
+#   $1 - DB instance identifier (required)
+#
+# DESCRIPTION:
+#   Copies the instance identifier to the clipboard
+#
+_copy_instance_name() {
+	local instance="${1:-}"
+
+	if [ -z "$instance" ]; then
+		gum log --level error "DB instance identifier is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$instance" "instance identifier"
+}
+
+# _copy_cluster_arn()
+#
+# Copy DB cluster ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - DB cluster identifier (required)
+#
+# DESCRIPTION:
+#   Fetches the cluster ARN and copies it to the clipboard
+#
+_copy_cluster_arn() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "DB cluster identifier is required"
+		exit 1
+	fi
+
+	local arn
+	arn=$(aws rds describe-db-clusters --db-cluster-identifier "$cluster" --query 'DBClusters[0].DBClusterArn' --output text 2>/dev/null)
+
+	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
+		gum log --level error "Failed to fetch cluster ARN"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$arn" "cluster ARN"
+}
+
+# _copy_cluster_name()
+#
+# Copy DB cluster identifier to clipboard
+#
+# PARAMETERS:
+#   $1 - DB cluster identifier (required)
+#
+# DESCRIPTION:
+#   Copies the cluster identifier to the clipboard
+#
+_copy_cluster_name() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "DB cluster identifier is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$cluster" "cluster identifier"
 }
 
 # Command router
@@ -270,6 +414,22 @@ connect-cluster)
 	shift
 	_aws_rds_connect_cluster "$@"
 	;;
+copy-instance-arn)
+	shift
+	_copy_instance_arn "$@"
+	;;
+copy-instance-name)
+	shift
+	_copy_instance_name "$@"
+	;;
+copy-cluster-arn)
+	shift
+	_copy_cluster_arn "$@"
+	;;
+copy-cluster-name)
+	shift
+	_copy_cluster_name "$@"
+	;;
 --help | -h | help | "")
 	cat <<'EOF'
 aws_rds_cmd - Utility commands for RDS operations
@@ -282,9 +442,16 @@ DATABASE CONNECTION:
     aws_rds_cmd connect-instance <db-instance-identifier>
     aws_rds_cmd connect-cluster <db-cluster-identifier>
 
+CLIPBOARD OPERATIONS:
+    aws_rds_cmd copy-instance-arn <db-instance-identifier>
+    aws_rds_cmd copy-instance-name <db-instance-identifier>
+    aws_rds_cmd copy-cluster-arn <db-cluster-identifier>
+    aws_rds_cmd copy-cluster-name <db-cluster-identifier>
+
 DESCRIPTION:
     View commands open RDS resources in the AWS Console via the default browser.
     Connection commands use psql with IAM authentication (PostgreSQL only).
+    Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
     # Console views

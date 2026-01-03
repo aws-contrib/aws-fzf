@@ -49,7 +49,9 @@ _aws_ecs_cluster_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Clusters" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
-		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})"
+		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
+		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-name {1})"
 }
 
 # _aws_ecs_service_list()
@@ -113,7 +115,9 @@ _aws_ecs_service_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Services in $cluster" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
-		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})"
+		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})" \
+		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn $cluster {1})" \
+		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-name {1})"
 }
 
 # _aws_ecs_task_list()
@@ -177,7 +181,8 @@ _aws_ecs_task_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "  ECS Tasks in $cluster" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster $cluster --tasks {1} | jq .)+abort" \
-		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})"
+		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})" \
+		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})"
 }
 
 # _aws_ecs_help()
@@ -205,20 +210,50 @@ KEYBOARD SHORTCUTS:
     Clusters:
         ctrl-o      Open cluster in AWS Console
         alt-enter   List services in cluster
+        alt-a       Copy cluster ARN to clipboard
+        alt-n       Copy cluster name to clipboard
 
     Services:
         ctrl-o      Open service in AWS Console
         alt-enter   List tasks for service
+        alt-a       Copy service ARN to clipboard
+        alt-n       Copy service name to clipboard
 
     Tasks:
         enter       Show task details
         ctrl-o      Open task in AWS Console
+        alt-a       Copy task ARN to clipboard
+
+PERFORMANCE:
+    ECS resources are fetched in batches to handle API limits:
+    - Clusters: Listed and described in batches of 100
+    - Services: Listed and described in batches of 10
+    - Tasks: Listed and described in batches of 100
+
+    For clusters with many services/tasks, initial loading may take a few seconds.
+    Use --desired-status to filter tasks (RUNNING, STOPPED, etc.) at the API level.
 
 EXAMPLES:
+    # List all ECS clusters
     aws fzf ecs cluster list
+
+    # List clusters in specific region
     aws fzf ecs cluster list --region us-west-2
+
+    # List services in a cluster
     aws fzf ecs service list --cluster my-cluster
+
+    # List services with specific profile
+    aws fzf ecs service list --cluster my-cluster --profile production
+
+    # List running tasks only
     aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
+
+    # List all tasks (running and stopped)
+    aws fzf ecs task list --cluster my-cluster
+
+SEE ALSO:
+    AWS CLI ECS: https://docs.aws.amazon.com/cli/latest/reference/ecs/
 EOF
 }
 

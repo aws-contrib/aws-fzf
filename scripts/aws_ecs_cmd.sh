@@ -54,15 +54,28 @@ _batch_describe_clusters() {
 #   JSON array of service descriptions
 #
 _batch_describe_services() {
-	local cluster="$1"
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Missing required parameter: cluster name"
+		gum log --level info "Usage: aws_ecs_cmd batch-describe-services <cluster-name> [options]"
+		gum log --level info "Run 'aws fzf ecs --help' for more information"
+		exit 1
+	fi
+
 	shift
 	local args=("$@")
 
-	aws ecs list-services --cluster "$cluster" "${args[@]}" --output json |
+	if ! aws ecs list-services --cluster "$cluster" "${args[@]}" --output json |
 		jq -r '.serviceArns | _nwise(10) | @sh' |
 		while read -r batch; do
 			eval "aws ecs describe-services --cluster '$cluster' --services $batch --output json"
-		done
+		done; then
+		gum log --level error "Failed to fetch services for cluster: $cluster"
+		gum log --level info "Check that the cluster exists and you have permissions"
+		gum log --level info "Run 'aws configure list' to verify AWS credentials"
+		exit 1
+	fi
 }
 
 # _batch_describe_tasks()
@@ -77,15 +90,28 @@ _batch_describe_services() {
 #   JSON array of task descriptions
 #
 _batch_describe_tasks() {
-	local cluster="$1"
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Missing required parameter: cluster name"
+		gum log --level info "Usage: aws_ecs_cmd batch-describe-tasks <cluster-name> [options]"
+		gum log --level info "Run 'aws fzf ecs --help' for more information"
+		exit 1
+	fi
+
 	shift
 	local args=("$@")
 
-	aws ecs list-tasks --cluster "$cluster" "${args[@]}" --output json |
+	if ! aws ecs list-tasks --cluster "$cluster" "${args[@]}" --output json |
 		jq -r '.taskArns | _nwise(10) | @sh' |
 		while read -r batch; do
 			eval "aws ecs describe-tasks --cluster '$cluster' --tasks $batch --output json"
-		done
+		done; then
+		gum log --level error "Failed to fetch tasks for cluster: $cluster"
+		gum log --level info "Check that the cluster exists and you have permissions"
+		gum log --level info "Run 'aws configure list' to verify AWS credentials"
+		exit 1
+	fi
 }
 
 # _aws_ecs_view_cluster()
@@ -172,6 +198,123 @@ _aws_ecs_view_task() {
 	_open_url "https://console.aws.amazon.com/ecs/v2/clusters/${cluster}/tasks/${task_id}?region=${region}"
 }
 
+# _copy_cluster_arn()
+#
+# Copy cluster ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Cluster name (required)
+#
+# DESCRIPTION:
+#   Constructs the cluster ARN and copies it to the clipboard
+#
+_copy_cluster_arn() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Cluster name is required"
+		exit 1
+	fi
+
+	local region account_id
+	region=$(_get_aws_region)
+	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+
+	local arn="arn:aws:ecs:${region}:${account_id}:cluster/${cluster}"
+	_copy_to_clipboard "$arn" "cluster ARN"
+}
+
+# _copy_cluster_name()
+#
+# Copy cluster name to clipboard
+#
+# PARAMETERS:
+#   $1 - Cluster name (required)
+#
+# DESCRIPTION:
+#   Copies the cluster name to the clipboard
+#
+_copy_cluster_name() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Cluster name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$cluster" "cluster name"
+}
+
+# _copy_service_arn()
+#
+# Copy service ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Cluster name (required)
+#   $2 - Service name (required)
+#
+# DESCRIPTION:
+#   Constructs the service ARN and copies it to the clipboard
+#
+_copy_service_arn() {
+	local cluster="${1:-}"
+	local service="${2:-}"
+
+	if [ -z "$cluster" ] || [ -z "$service" ]; then
+		gum log --level error "Cluster name and service name are required"
+		exit 1
+	fi
+
+	local region account_id
+	region=$(_get_aws_region)
+	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+
+	local arn="arn:aws:ecs:${region}:${account_id}:service/${cluster}/${service}"
+	_copy_to_clipboard "$arn" "service ARN"
+}
+
+# _copy_service_name()
+#
+# Copy service name to clipboard
+#
+# PARAMETERS:
+#   $1 - Service name (required, cluster not needed)
+#
+# DESCRIPTION:
+#   Copies the service name to the clipboard
+#
+_copy_service_name() {
+	local service="${1:-}"
+
+	if [ -z "$service" ]; then
+		gum log --level error "Service name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$service" "service name"
+}
+
+# _copy_task_arn()
+#
+# Copy task ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Task ARN (required)
+#
+# DESCRIPTION:
+#   Copies the task ARN to the clipboard
+#
+_copy_task_arn() {
+	local task="${1:-}"
+
+	if [ -z "$task" ]; then
+		gum log --level error "Task ARN is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$task" "task ARN"
+}
+
 # Command router
 case "${1:-}" in
 batch-describe-clusters)
@@ -198,6 +341,26 @@ view-task)
 	shift
 	_aws_ecs_view_task "$@"
 	;;
+copy-cluster-arn)
+	shift
+	_copy_cluster_arn "$@"
+	;;
+copy-cluster-name)
+	shift
+	_copy_cluster_name "$@"
+	;;
+copy-service-arn)
+	shift
+	_copy_service_arn "$@"
+	;;
+copy-service-name)
+	shift
+	_copy_service_name "$@"
+	;;
+copy-task-arn)
+	shift
+	_copy_task_arn "$@"
+	;;
 --help | -h | help | "")
 	cat <<'EOF'
 aws_ecs_cmd - Batch processing and utility commands for ECS operations
@@ -212,9 +375,17 @@ CONSOLE VIEWS:
     aws_ecs_cmd view-service <cluster-name> <service-name>
     aws_ecs_cmd view-task <cluster-name> <task-id>
 
+CLIPBOARD OPERATIONS:
+    aws_ecs_cmd copy-cluster-arn <cluster-name>
+    aws_ecs_cmd copy-cluster-name <cluster-name>
+    aws_ecs_cmd copy-service-arn <cluster-name> <service-name>
+    aws_ecs_cmd copy-service-name <service-name>
+    aws_ecs_cmd copy-task-arn <task-arn>
+
 DESCRIPTION:
     Batch processing commands perform AWS ECS API calls in batches to handle API limits.
     View commands open ECS resources in the AWS Console via the default browser.
+    Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
     # Batch processing

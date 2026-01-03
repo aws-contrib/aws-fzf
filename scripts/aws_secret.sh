@@ -49,7 +49,9 @@ _aws_secret_list() {
 		--footer "$_fzf_icon Secrets" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
-		--bind "ctrl-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh get-value {1})+abort"
+		--bind "ctrl-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh get-value {1})+abort" \
+		--bind "alt-a:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})"
 }
 
 # _aws_secret_help()
@@ -71,18 +73,41 @@ OPTIONS:
     --filters <filters>         Secret filters
 
 KEYBOARD SHORTCUTS:
-    enter       Show secret metadata (without value)
-    ctrl-o      Open secret in AWS Console
-    ctrl-v      Get secret value (requires confirmation)
+    All resources:
+        enter       Show secret metadata (without value)
+        ctrl-o      Open secret in AWS Console
+        ctrl-v      Get secret value (requires confirmation)
+        alt-a       Copy secret ARN to clipboard
+        alt-n       Copy secret name to clipboard
 
 SECURITY:
-    Secret values require confirmation before retrieval
+    Secret values require explicit confirmation before retrieval.
+    This prevents accidental exposure of sensitive information.
+    Press ctrl-v only when you need to view the actual secret value.
+
+PERFORMANCE:
+    The list-secrets API paginates results automatically.
+    Use --max-results to control page size (default: 100, max: 100).
+    Use --filters to narrow results at the API level for better performance.
 
 EXAMPLES:
+    # List all secrets
     aws fzf secret list
+
+    # List secrets in specific region
     aws fzf secret list --region us-west-2
+
+    # List secrets with specific profile
     aws fzf secret list --profile production
+
+    # Filter secrets by name pattern
     aws fzf secret list --filters Key=name,Values=prod*
+
+    # Combine filters and region
+    aws fzf secret list --region us-east-1 --filters Key=name,Values=database*
+
+SEE ALSO:
+    AWS CLI Secrets Manager: https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/
 EOF
 }
 

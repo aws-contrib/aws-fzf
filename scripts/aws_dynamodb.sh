@@ -50,7 +50,9 @@ _aws_dynamodb_table_list() {
 		--footer "$_fzf_icon DynamoDB Tables" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq .)+abort" \
-		--bind "alt-enter:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})"
+		--bind "alt-enter:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
+		--bind "alt-a:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-name {1})"
 }
 
 # _aws_dynamodb_help()
@@ -71,15 +73,42 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     All resources:
-        ctrl-o      Open table in AWS Console (overview)
         enter       View table details (full JSON)
+        ctrl-o      Open table in AWS Console (overview)
         alt-enter   Open items explorer in AWS Console
+        alt-a       Copy table ARN to clipboard
+        alt-n       Copy table name to clipboard
+
+PERFORMANCE:
+    Table listing is optimized for speed - only table names are fetched initially.
+    The list-tables API paginates results automatically (up to 100 per page).
+    Full table details (schema, indexes, capacity) are fetched on-demand when
+    you press enter on a specific table.
+
+    For accounts with many tables, consider querying specific regions to reduce
+    the list size, as DynamoDB tables are region-specific.
+
+CONSOLE INTEGRATION:
+    Press ctrl-o to open table overview (shows schema, indexes, metrics, settings).
+    Press alt-enter to open items explorer for browsing/querying table data.
+    DynamoDB is a managed NoSQL service - no direct client connection like psql.
 
 EXAMPLES:
-    # List DynamoDB tables
+    # List all DynamoDB tables
     aws fzf dynamodb table list
+
+    # List tables in specific region
     aws fzf dynamodb table list --region us-west-2
+
+    # Use with specific profile
     aws fzf dynamodb table list --profile production
+
+    # Combine region and profile
+    aws fzf dynamodb table list --region ap-southeast-1 --profile prod
+
+SEE ALSO:
+    AWS CLI DynamoDB: https://docs.aws.amazon.com/cli/latest/reference/dynamodb/
+    Amazon DynamoDB Guide: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/
 EOF
 }
 

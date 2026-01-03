@@ -68,6 +68,53 @@ _aws_dynamodb_view_items() {
 	_open_url "https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#item-explorer?operation=SCAN&table=${table}"
 }
 
+# _aws_dynamodb_copy_arn()
+#
+# Copy table ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Table name (required)
+#
+# DESCRIPTION:
+#   Constructs the table ARN and copies it to the clipboard
+#
+_aws_dynamodb_copy_arn() {
+	local table="${1:-}"
+
+	if [ -z "$table" ]; then
+		gum log --level error "Table name is required"
+		exit 1
+	fi
+
+	local region account_id
+	region=$(_get_aws_region)
+	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+
+	local arn="arn:aws:dynamodb:${region}:${account_id}:table/${table}"
+	_copy_to_clipboard "$arn" "table ARN"
+}
+
+# _aws_dynamodb_copy_name()
+#
+# Copy table name to clipboard
+#
+# PARAMETERS:
+#   $1 - Table name (required)
+#
+# DESCRIPTION:
+#   Copies the table name to the clipboard
+#
+_aws_dynamodb_copy_name() {
+	local table="${1:-}"
+
+	if [ -z "$table" ]; then
+		gum log --level error "Table name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$table" "table name"
+}
+
 # Command router
 case "${1:-}" in
 view-table)
@@ -78,6 +125,14 @@ view-items)
 	shift
 	_aws_dynamodb_view_items "$@"
 	;;
+copy-arn)
+	shift
+	_aws_dynamodb_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_dynamodb_copy_name "$@"
+	;;
 --help | -h | help | "")
 	cat <<'EOF'
 aws_dynamodb_cmd - Utility commands for DynamoDB operations
@@ -86,22 +141,33 @@ CONSOLE VIEWS:
     aws_dynamodb_cmd view-table <table-name>
     aws_dynamodb_cmd view-items <table-name>
 
+CLIPBOARD OPERATIONS:
+    aws_dynamodb_cmd copy-arn <table-name>
+    aws_dynamodb_cmd copy-name <table-name>
+
 DESCRIPTION:
     View commands open DynamoDB resources in the AWS Console via the default browser.
+    Clipboard commands copy resource identifiers to the system clipboard.
 
     view-table: Opens the table overview page (schema, indexes, metrics)
     view-items: Opens the items explorer page (browse, query, scan data)
+    copy-arn:   Copies the table ARN to clipboard
+    copy-name:  Copies the table name to clipboard
 
 EXAMPLES:
     # Console views
     aws_dynamodb_cmd view-table my-table
     aws_dynamodb_cmd view-items my-table
 
+    # Clipboard operations
+    aws_dynamodb_cmd copy-arn my-table
+    aws_dynamodb_cmd copy-name my-table
+
 EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_dynamodb_cmd {view-table|view-items} [args]"
+	gum log --level info "Usage: aws_dynamodb_cmd {view-table|view-items|copy-arn|copy-name} [args]"
 	gum log --level info "Run 'aws_dynamodb_cmd --help' for more information"
 	exit 1
 	;;

@@ -91,6 +91,55 @@ _aws_params_view_parameter() {
 	_open_url "https://console.aws.amazon.com/systems-manager/parameters/${encoded_name}/description?region=${region}"
 }
 
+# _aws_param_copy_arn()
+#
+# Copy parameter ARN to clipboard
+#
+# PARAMETERS:
+#   $1 - Parameter name (required)
+#
+# DESCRIPTION:
+#   Constructs the parameter ARN and copies it to the clipboard
+#
+_aws_param_copy_arn() {
+	local param="${1:-}"
+
+	if [ -z "$param" ]; then
+		gum log --level error "Parameter name is required"
+		exit 1
+	fi
+
+	local region account_id
+	region=$(_get_aws_region)
+	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+
+	# Remove leading slash if present for ARN construction
+	local param_path="${param#/}"
+	local arn="arn:aws:ssm:${region}:${account_id}:parameter/${param_path}"
+	_copy_to_clipboard "$arn" "parameter ARN"
+}
+
+# _aws_param_copy_name()
+#
+# Copy parameter name to clipboard
+#
+# PARAMETERS:
+#   $1 - Parameter name (required)
+#
+# DESCRIPTION:
+#   Copies the parameter name to the clipboard
+#
+_aws_param_copy_name() {
+	local param="${1:-}"
+
+	if [ -z "$param" ]; then
+		gum log --level error "Parameter name is required"
+		exit 1
+	fi
+
+	_copy_to_clipboard "$param" "parameter name"
+}
+
 # Command router
 case "${1:-}" in
 get-value)
@@ -101,6 +150,14 @@ view-parameter)
 	shift
 	_aws_params_view_parameter "$@"
 	;;
+copy-arn)
+	shift
+	_aws_param_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_param_copy_name "$@"
+	;;
 --help | -h | help | "")
 	cat <<'EOF'
 aws_param_cmd - Utility commands for Parameter Store operations
@@ -109,10 +166,16 @@ OPERATIONS:
     aws_param_cmd get-value <parameter-name>
     aws_param_cmd view-parameter <parameter-name>
 
+CLIPBOARD OPERATIONS:
+    aws_param_cmd copy-arn <parameter-name>
+    aws_param_cmd copy-name <parameter-name>
+
 DESCRIPTION:
     Utility commands for Parameter Store operations.
     get-value retrieves parameter values with security confirmation.
     view-parameter opens parameters in the AWS Console.
+    copy-arn copies the parameter ARN to clipboard.
+    copy-name copies the parameter name to clipboard.
 
 EXAMPLES:
     # Get parameter value
@@ -120,6 +183,10 @@ EXAMPLES:
 
     # Open in console
     aws_param_cmd view-parameter /app/database/password
+
+    # Clipboard operations
+    aws_param_cmd copy-arn /app/database/password
+    aws_param_cmd copy-name /app/database/password
 
 EOF
 	;;

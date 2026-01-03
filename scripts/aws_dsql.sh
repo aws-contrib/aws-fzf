@@ -50,7 +50,9 @@ _aws_dsql_cluster_list() {
 		--footer "$_fzf_icon DSQL Clusters" \
 		--bind "ctrl-o:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq .)+abort" \
-		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})"
+		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})" \
+		--bind "alt-a:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-name {1})"
 }
 
 # _aws_dsql_help()
@@ -74,12 +76,40 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open cluster in AWS Console
         enter       View cluster details (full JSON)
         alt-c       Connect to cluster with psql (IAM auth)
+        alt-a       Copy cluster ARN to clipboard
+        alt-n       Copy cluster identifier to clipboard
+
+SECURITY:
+    DSQL cluster connections (alt-c) require:
+    - IAM policy allowing dsql:DbConnect action on the cluster
+    - psql client installed (brew install postgresql)
+
+    DSQL always uses IAM authentication (no password required).
+    IAM auth tokens are valid for 1 hour and provide secure, temporary access.
+    Default username is 'admin' with full database permissions.
+    Use caution when connecting to production clusters.
+
+PERFORMANCE:
+    The list-clusters API paginates results automatically.
+    DSQL is optimized for serverless PostgreSQL workloads.
+    Clusters are always available - no instance management required.
 
 EXAMPLES:
-    # List DSQL clusters
+    # List all DSQL clusters
     aws fzf dsql cluster list
+
+    # List clusters in specific region
     aws fzf dsql cluster list --region us-west-2
+
+    # Use with specific profile
     aws fzf dsql cluster list --profile production
+
+    # Combine region and profile
+    aws fzf dsql cluster list --region us-east-1 --profile prod
+
+SEE ALSO:
+    AWS CLI DSQL: https://docs.aws.amazon.com/cli/latest/reference/dsql/
+    Amazon Aurora DSQL: https://docs.aws.amazon.com/aurora-dsql/
 EOF
 }
 

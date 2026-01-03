@@ -48,7 +48,10 @@ _aws_lambda_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Lambda Functions" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
-		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})"
+		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
+		--bind "alt-t:execute($_aws_lambda_source_dir/aws_lambda_cmd.sh tail-logs {1})+abort" \
+		--bind "alt-a:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-name {1})"
 }
 
 # _aws_lambda_help()
@@ -70,14 +73,42 @@ OPTIONS:
     --function-version <ALL|version>  Function version to list
 
 KEYBOARD SHORTCUTS:
-    enter       Show function details (configuration, code, etc.)
-    ctrl-o      Open function in AWS Console
+    All resources:
+        enter       Show function details (configuration, code, etc.)
+        ctrl-o      Open function in AWS Console
+        alt-t       Tail function logs from CloudWatch
+        alt-a       Copy function ARN to clipboard
+        alt-n       Copy function name to clipboard
+
+PERFORMANCE:
+    The list-functions API paginates results automatically.
+    Use --max-items to control the total number of functions returned.
+    Each page fetches up to 50 functions. For accounts with many functions,
+    consider using AWS CLI filters or querying specific regions.
+
+LOG TAILING:
+    Press alt-t to tail CloudWatch logs for the selected function.
+    Logs are streamed from /aws/lambda/<function-name> log group.
+    Set AWS_FZF_LOG_PAGER=lnav for interactive log viewing.
 
 EXAMPLES:
+    # List all Lambda functions
     aws fzf lambda list
+
+    # List functions in specific region
     aws fzf lambda list --region us-west-2
+
+    # Use with specific profile
     aws fzf lambda list --profile production
+
+    # Limit total functions returned
     aws fzf lambda list --max-items 100
+
+    # Combine region and profile
+    aws fzf lambda list --region eu-west-1 --profile prod
+
+SEE ALSO:
+    AWS CLI Lambda: https://docs.aws.amazon.com/cli/latest/reference/lambda/
 EOF
 }
 

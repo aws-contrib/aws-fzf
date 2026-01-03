@@ -49,7 +49,9 @@ _aws_log_group_list() {
 		--footer "$_fzf_icon CloudWatch Log Groups" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
-		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})"
+		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})" \
+		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
+		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})"
 }
 
 # _aws_log_stream_list()
@@ -114,7 +116,9 @@ _aws_log_stream_list() {
 		--footer "$_fzf_icon CloudWatch Log Streams in $log_group_name" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
-		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})"
+		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
+		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
+		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})"
 }
 
 # _aws_log_help()
@@ -143,18 +147,45 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open log group in AWS Console
         alt-t       Tail all streams in log group (terminal)
         alt-enter   List streams in log group
+        alt-a       Copy log group ARN to clipboard
+        alt-n       Copy log group name to clipboard
 
     Log Streams:
         enter       Show log stream metadata
         ctrl-o      Open log stream in AWS Console
         alt-t       Tail logs in terminal (follow new events)
+        alt-a       Copy log group ARN to clipboard
+        alt-n       Copy log stream name to clipboard
+
+PERFORMANCE:
+    Log group listing is paginated automatically (up to 50 per page).
+    Use --log-group-name-prefix to filter at the API level for faster results.
+    Log stream listing fetches up to 50 streams per page.
+    Use --order-by LastEventTime --descending to see most recent streams first.
+
+LOG TAILING:
+    Press alt-t on any log group or stream to tail logs in real-time.
+    Set AWS_FZF_LOG_PAGER=lnav for interactive log viewing with search/filter.
+    Without AWS_FZF_LOG_PAGER, logs are displayed directly in the terminal.
 
 EXAMPLES:
+    # List all log groups
     aws fzf logs group list
-    aws fzf logs group list --region us-west-2
+
+    # Filter log groups by prefix
     aws fzf logs group list --log-group-name-prefix /aws/lambda
+
+    # List log groups in specific region
+    aws fzf logs group list --region us-west-2
+
+    # List streams in a log group
     aws fzf logs stream list --log-group-name /aws/lambda/my-function
+
+    # List streams ordered by recent activity
     aws fzf logs stream list --log-group-name /aws/lambda/my-function --order-by LastEventTime --descending
+
+SEE ALSO:
+    AWS CLI CloudWatch Logs: https://docs.aws.amazon.com/cli/latest/reference/logs/
 EOF
 }
 
