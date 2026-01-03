@@ -100,30 +100,6 @@ _aws_lambda_copy_name() {
 	_copy_to_clipboard "$function" "function name"
 }
 
-# _aws_lambda_tail_logs()
-#
-# Tail Lambda function logs
-#
-# PARAMETERS:
-#   $1 - Function name (required)
-#
-# DESCRIPTION:
-#   Tails logs for the Lambda function from CloudWatch Logs.
-#   Lambda functions have log groups named /aws/lambda/<function-name>
-#
-_aws_lambda_tail_logs() {
-	local function="${1:-}"
-
-	if [ -z "$function" ]; then
-		gum log --level error "Function name is required"
-		exit 1
-	fi
-
-	local log_group="/aws/lambda/${function}"
-
-	aws logs tail "$log_group" --follow --format short
-}
-
 # Command router
 case "${1:-}" in
 view-function)
@@ -137,10 +113,6 @@ copy-arn)
 copy-name)
 	shift
 	_aws_lambda_copy_name "$@"
-	;;
-tail-logs)
-	shift
-	_aws_lambda_tail_logs "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'

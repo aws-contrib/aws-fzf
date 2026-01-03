@@ -114,6 +114,7 @@ _aws_dsql_connect_cluster() {
 			--hostname "$endpoint"
 	)
 
+	# shellcheck disable=SC2181
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to generate IAM auth token"
 		gum log --level info "Check your AWS credentials and IAM permissions"

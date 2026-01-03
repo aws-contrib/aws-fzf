@@ -52,7 +52,7 @@ _aws_log_group_list() {
 		--footer "$_fzf_icon CloudWatch Log Groups" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
-		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-history {1})" \
+		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-log {1})" \
 		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})"
@@ -121,7 +121,7 @@ _aws_log_stream_list() {
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
-		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-history '$log_group_name' {1})" \
+		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-log '$log_group_name' {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
 		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})"
 }

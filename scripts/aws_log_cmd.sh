@@ -106,7 +106,7 @@ _tail_log() {
 #   - If stream-name is omitted: searches all streams in the log group
 #   Displays logs through configured pager (lnav/less/direct output).
 #
-_view_history_log() {
+_view_log() {
 	local log_tail_cmd=()
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
@@ -278,9 +278,9 @@ tail-log)
 	shift
 	_tail_log "$@"
 	;;
-view-history)
+view-log)
 	shift
-	_view_history_log "$@"
+	_view_log "$@"
 	;;
 copy-group-arn)
 	shift
