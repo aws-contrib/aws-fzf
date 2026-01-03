@@ -1,5 +1,5 @@
-#!/bin/bash
-set -o pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
 _aws_secret_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh

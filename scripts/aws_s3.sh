@@ -1,4 +1,5 @@
-set -o pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
 _aws_s3_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
