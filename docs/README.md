@@ -16,6 +16,7 @@ Complete guide for using aws-fzf, an interactive fuzzy finder for AWS resources.
   - [CloudWatch Logs](#cloudwatch-logs)
   - [RDS](#rds)
   - [DSQL](#dsql)
+  - [DynamoDB](#dynamodb)
 
 ---
 
@@ -266,6 +267,15 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View cluster details (full JSON) |
 | `ctrl-o` | Open cluster in AWS Console |
 | `alt-c` | Connect with psql (IAM auth) |
+
+### DynamoDB
+
+#### Tables
+| Key | Action |
+|-----|--------|
+| `enter` | View table details (full JSON) |
+| `ctrl-o` | Open table in AWS Console (overview) |
+| `alt-enter` | Open items explorer in AWS Console |
 
 ---
 
@@ -693,3 +703,55 @@ Press `alt-c` to connect to a DSQL cluster using IAM authentication:
 - Default username is `admin`
 - Auth tokens are valid for 1 hour (vs 15 minutes for RDS)
 - No need to enable IAM auth - it's built-in
+
+---
+
+### DynamoDB
+
+Browse Amazon DynamoDB tables interactively.
+
+#### Usage
+
+**List Tables**
+
+```bash
+# List all DynamoDB tables
+aws fzf dynamodb table list
+
+# With specific region
+aws fzf dynamodb table list --region us-west-2
+
+# With specific profile
+aws fzf dynamodb table list --profile production
+```
+
+#### Keyboard Shortcuts
+
+- `enter` - Show table details (full JSON including schema, provisioned throughput, indexes)
+- `ctrl-o` - Open table overview in AWS Console (shows schema, indexes, metrics)
+- `alt-enter` - Open items explorer in AWS Console (browse and query table data)
+
+#### Table Information
+
+When viewing table details with `enter`, you'll see:
+- **Table name and ARN**
+- **Key schema** (partition key and sort key)
+- **Attribute definitions**
+- **Table status** (ACTIVE, CREATING, UPDATING, DELETING)
+- **Item count** and **table size**
+- **Provisioned throughput** (read/write capacity units)
+- **Global secondary indexes** (GSIs)
+- **Local secondary indexes** (LSIs)
+- **Stream settings** (if enabled)
+- **Encryption settings**
+- **Tags**
+
+#### Tips
+
+- Tables are listed by name only for fast performance
+- Press `enter` to see full table details on demand
+- Press `ctrl-o` to view table configuration (indexes, capacity, streams)
+- Press `alt-enter` to browse/query table items in AWS Console
+- Use `--region` to list tables in different AWS regions
+- DynamoDB tables are region-specific (unlike global services)
+- DynamoDB is a managed NoSQL service - no client connection like psql

@@ -13,6 +13,7 @@ source "$_aws_fzf_source_dir/scripts/aws_ecs.sh"
 source "$_aws_fzf_source_dir/scripts/aws_s3.sh"
 source "$_aws_fzf_source_dir/scripts/aws_rds.sh"
 source "$_aws_fzf_source_dir/scripts/aws_dsql.sh"
+source "$_aws_fzf_source_dir/scripts/aws_dynamodb.sh"
 
 # _show_root_help()
 #
@@ -73,6 +74,9 @@ COMMANDS:
 
     DSQL:
         aws fzf dsql cluster list                 Browse DSQL clusters
+
+    DynamoDB:
+        aws fzf dynamodb table list               Browse DynamoDB tables
 
 GLOBAL OPTIONS:
     All AWS CLI options are supported and passed through:
@@ -170,12 +174,15 @@ main() {
     dsql)
         _aws_dsql_main "$@"
         ;;
+    dynamodb)
+        _aws_dynamodb_main "$@"
+        ;;
     --help | -h | help | "")
         _show_root_help
         ;;
     *)
         gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql, dynamodb"
         gum log --level info "Run 'aws fzf --help' for detailed usage information"
         exit 1
         ;;
