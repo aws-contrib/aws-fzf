@@ -11,6 +11,7 @@ source "$_aws_fzf_source_dir/scripts/aws_lambda.sh"
 source "$_aws_fzf_source_dir/scripts/aws_log.sh"
 source "$_aws_fzf_source_dir/scripts/aws_ecs.sh"
 source "$_aws_fzf_source_dir/scripts/aws_s3.sh"
+source "$_aws_fzf_source_dir/scripts/aws_rds.sh"
 
 # _show_root_help()
 #
@@ -64,6 +65,10 @@ COMMANDS:
     CloudWatch Logs:
         aws fzf logs group list                   Browse log groups
         aws fzf logs stream list --log-group-name Browse log streams in group
+
+    RDS:
+        aws fzf rds instance list                 Browse RDS instances
+        aws fzf rds cluster list                  Browse RDS Aurora clusters
 
 GLOBAL OPTIONS:
     All AWS CLI options are supported and passed through:
@@ -155,12 +160,15 @@ main() {
     s3)
         _aws_s3_main "$@"
         ;;
+    rds)
+        _aws_rds_main "$@"
+        ;;
     --help | -h | help | "")
         _show_root_help
         ;;
     *)
         gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds"
         gum log --level info "Run 'aws fzf --help' for detailed usage information"
         exit 1
         ;;

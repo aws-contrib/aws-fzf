@@ -14,6 +14,7 @@ Complete guide for using aws-fzf, an interactive fuzzy finder for AWS resources.
   - [ECS](#ecs)
   - [Lambda](#lambda)
   - [CloudWatch Logs](#cloudwatch-logs)
+  - [RDS](#rds)
 
 ---
 
@@ -82,6 +83,12 @@ aws fzf lambda list
 
 # Browse CloudWatch log groups
 aws fzf logs group list
+
+# Browse RDS instances
+aws fzf rds instance list
+
+# Browse RDS Aurora clusters
+aws fzf rds cluster list
 ```
 
 ---
@@ -233,6 +240,20 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View stream metadata |
 | `ctrl-o` | Open log stream in AWS Console |
 | `alt-t` | Tail logs from this stream |
+
+### RDS
+
+#### DB Instances
+| Key | Action |
+|-----|--------|
+| `enter` | View instance details (full JSON) |
+| `ctrl-o` | Open instance in AWS Console |
+
+#### DB Clusters (Aurora)
+| Key | Action |
+|-----|--------|
+| `enter` | View cluster details (full JSON) |
+| `ctrl-o` | Open cluster in AWS Console |
 
 ---
 
@@ -504,3 +525,70 @@ If `AWS_FZF_LOG_PAGER` is set to `lnav`, logs will be piped through lnav for int
 - Press `alt-enter` on a log group to drill down into streams
 - Press `alt-t` to tail logs in real-time
 - Use `lnav` as a pager for better log viewing experience (install with `brew install lnav`)
+
+---
+
+### RDS
+
+Browse RDS database instances and Aurora clusters interactively.
+
+#### Usage
+
+**List DB Instances**
+
+```bash
+# List all RDS instances
+aws fzf rds instance list
+
+# With specific region
+aws fzf rds instance list --region us-west-2
+
+# With specific profile
+aws fzf rds instance list --profile production
+```
+
+**List DB Clusters (Aurora)**
+
+```bash
+# List all Aurora clusters
+aws fzf rds cluster list
+
+# With specific region
+aws fzf rds cluster list --region us-west-2
+
+# With specific profile
+aws fzf rds cluster list --profile production
+```
+
+#### Keyboard Shortcuts
+
+**DB Instances:**
+- `enter` - View instance details (full JSON)
+- `ctrl-o` - Open instance in AWS Console
+
+**DB Clusters:**
+- `enter` - View cluster details (full JSON)
+- `ctrl-o` - Open cluster in AWS Console
+
+#### Instance Information
+
+When listing instances, you'll see:
+- **ID** - Database instance identifier
+- **ENGINE** - Database engine (postgres, mysql, mariadb, oracle, sqlserver, aurora)
+- **STATUS** - Current status (available, creating, deleting, etc.)
+- **CLASS** - Instance class (db.t3.micro, db.m5.large, etc.)
+
+#### Cluster Information
+
+When listing clusters, you'll see:
+- **ID** - Database cluster identifier
+- **ENGINE** - Aurora engine (aurora, aurora-mysql, aurora-postgresql)
+- **STATUS** - Current status (available, creating, etc.)
+- **MEMBERS** - Number of instances in the cluster
+
+#### Tips
+
+- Press `enter` to view full database configuration including endpoints, ports, storage, and security settings
+- Use `ctrl-o` to open in AWS Console for detailed configuration or to view metrics
+- Use `--region` to list databases in different AWS regions
+- RDS instances and Aurora clusters are shown separately - use the appropriate command for your database type
