@@ -103,15 +103,14 @@ _aws_ecs_view_cluster() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
-		echo "Error: Cluster name is required" >&2
+		gum log --level error "Cluster name is required"
 		exit 1
 	fi
 
 	local region
 	region=$(_get_aws_region)
-	local url="https://console.aws.amazon.com/ecs/v2/clusters/${cluster}?region=${region}"
 
-	_open_url "$url"
+	_open_url "https://console.aws.amazon.com/ecs/v2/clusters/${cluster}?region=${region}"
 }
 
 # _aws_ecs_view_service()
@@ -131,15 +130,14 @@ _aws_ecs_view_service() {
 	local service="${2:-}"
 
 	if [ -z "$cluster" ] || [ -z "$service" ]; then
-		echo "Error: Cluster name and service name are required" >&2
+		gum log --level error "Cluster name and service name are required"
 		exit 1
 	fi
 
 	local region
 	region=$(_get_aws_region)
-	local url="https://console.aws.amazon.com/ecs/v2/clusters/${cluster}/services/${service}?region=${region}"
 
-	_open_url "$url"
+	_open_url "https://console.aws.amazon.com/ecs/v2/clusters/${cluster}/services/${service}?region=${region}"
 }
 
 # _aws_ecs_view_task()
@@ -160,7 +158,7 @@ _aws_ecs_view_task() {
 	local task="${2:-}"
 
 	if [ -z "$cluster" ] || [ -z "$task" ]; then
-		echo "Error: Cluster name and task identifier are required" >&2
+		gum log --level error "Cluster name and task identifier are required"
 		exit 1
 	fi
 
@@ -170,9 +168,8 @@ _aws_ecs_view_task() {
 
 	local region
 	region=$(_get_aws_region)
-	local url="https://console.aws.amazon.com/ecs/v2/clusters/${cluster}/tasks/${task_id}?region=${region}"
 
-	_open_url "$url"
+	_open_url "https://console.aws.amazon.com/ecs/v2/clusters/${cluster}/tasks/${task_id}?region=${region}"
 }
 
 # Command router
@@ -233,9 +230,9 @@ EXAMPLES:
 EOF
 	;;
 *)
-	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_ecs_cmd {batch-describe-*|view-*} [args]" >&2
-	echo "Run 'aws_ecs_cmd --help' for more information" >&2
+	gum log --level error "Unknown subcommand '${1:-}'"
+	gum log --level info "Usage: aws_ecs_cmd {batch-describe-*|view-*} [args]"
+	gum log --level info "Run 'aws_ecs_cmd --help' for more information"
 	exit 1
 	;;
 esac

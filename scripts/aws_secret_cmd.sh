@@ -35,7 +35,7 @@ _aws_secrets_get_value() {
 	local secret_name="${1:-}"
 
 	if [ -z "$secret_name" ]; then
-		echo "Error: Secret name is required" >&2
+		gum log --level error "Secret name is required"
 		exit 1
 	fi
 
@@ -64,20 +64,17 @@ _aws_secrets_view_secret() {
 	local secret_name="${1:-}"
 
 	if [ -z "$secret_name" ]; then
-		echo "Error: Secret name is required" >&2
+		gum log --level error "Secret name is required"
 		exit 1
 	fi
 
 	local region
 	region=$(_get_aws_region)
 
-	# URL encode the secret name
 	local encoded_name
 	encoded_name=$(printf '%s' "$secret_name" | jq -sRr @uri)
 
-	local url="https://console.aws.amazon.com/secretsmanager/secret?name=${encoded_name}&region=${region}"
-
-	_open_url "$url"
+	_open_url "https://console.aws.amazon.com/secretsmanager/secret?name=${encoded_name}&region=${region}"
 }
 
 # Command router
@@ -113,9 +110,9 @@ EXAMPLES:
 EOF
 	;;
 *)
-	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_secret_cmd {get-value|view-secret} [args]" >&2
-	echo "Run 'aws_secret_cmd --help' for more information" >&2
+	gum log --level error "Unknown subcommand '${1:-}'"
+	gum log --level info "Usage: aws_secret_cmd {get-value|view-secret} [args]"
+	gum log --level info "Run 'aws_secret_cmd --help' for more information"
 	exit 1
 	;;
 esac

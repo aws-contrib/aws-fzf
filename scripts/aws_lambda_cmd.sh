@@ -33,7 +33,7 @@ _aws_lambda_view_function() {
 	local function_name="${1:-}"
 
 	if [ -z "$function_name" ]; then
-		echo "Error: Function name is required" >&2
+		gum log --level error "Function name is required"
 		exit 1
 	fi
 
@@ -42,9 +42,7 @@ _aws_lambda_view_function() {
 
 	# Construct Lambda console URL
 	# Format: https://<region>.console.aws.amazon.com/lambda/home?region=<region>#/functions/<function-name>
-	local url="https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${function_name}"
-
-	_open_url "$url"
+	_open_url "https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${function_name}"
 }
 
 # Command router
@@ -71,9 +69,9 @@ EXAMPLES:
 EOF
 	;;
 *)
-	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_lambda_cmd {view-function} [args]" >&2
-	echo "Run 'aws_lambda_cmd --help' for more information" >&2
+	gum log --level error "Unknown subcommand '${1:-}'"
+	gum log --level info "Usage: aws_lambda_cmd {view-function} [args]"
+	gum log --level info "Run 'aws_lambda_cmd --help' for more information"
 	exit 1
 	;;
 esac

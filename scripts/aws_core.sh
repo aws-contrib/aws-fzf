@@ -68,8 +68,8 @@ _open_url() {
 		# Linux with xdg-utils
 		xdg-open "$url"
 	else
-		echo "Error: No suitable browser opener found" >&2
-		echo "Install xdg-utils or use macOS" >&2
+		gum log --level error "No suitable browser opener found"
+		gum log --level info "Install xdg-utils or use macOS"
 		return 1
 	fi
 }

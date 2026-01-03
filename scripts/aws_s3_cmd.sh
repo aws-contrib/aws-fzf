@@ -33,15 +33,14 @@ _view_bucket() {
 	local bucket="${1:-}"
 
 	if [ -z "$bucket" ]; then
-		echo "Error: Bucket name is required" >&2
+		gum log --level error "Bucket name is required"
 		exit 1
 	fi
 
 	local region
 	region=$(_get_aws_region)
-	local url="https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}"
 
-	_open_url "$url"
+	_open_url "https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}"
 }
 
 # _view_object()
@@ -62,18 +61,17 @@ _view_object() {
 	local key="${2:-}"
 
 	if [ -z "$bucket" ] || [ -z "$key" ]; then
-		echo "Error: Bucket name and object key are required" >&2
+		gum log --level error "Bucket name and object key are required"
 		exit 1
 	fi
 
-	# Extract object key and URL encode it
 	local region
 	region=$(_get_aws_region)
+
 	local encoded_key
 	encoded_key=$(echo "$key" | jq -sRr @uri)
-	local url="https://s3.console.aws.amazon.com/s3/object/${bucket}?region=${region}&prefix=${encoded_key}"
 
-	_open_url "$url"
+	_open_url "https://s3.console.aws.amazon.com/s3/object/${bucket}?region=${region}&prefix=${encoded_key}"
 }
 
 # Command router
@@ -104,9 +102,9 @@ EXAMPLES:
 EOF
 	;;
 *)
-	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_s3_cmd {view-bucket|view-object} [args]" >&2
-	echo "Run 'aws_s3_cmd --help' for more information" >&2
+	gum log --level error "Unknown subcommand '${1:-}'"
+	gum log --level info "Usage: aws_s3_cmd {view-bucket|view-object} [args]"
+	gum log --level info "Run 'aws_s3_cmd --help' for more information"
 	exit 1
 	;;
 esac

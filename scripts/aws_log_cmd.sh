@@ -35,7 +35,7 @@ _view_log_group() {
 	local log_group_name="${1:-}"
 
 	if [ -z "$log_group_name" ]; then
-		echo "Error: Log group name is required" >&2
+		gum log --level error "Log group name is required"
 		exit 1
 	fi
 
@@ -45,11 +45,10 @@ _view_log_group() {
 	# AWS Console requires double-encoded log group names with $ prefix
 	# First URL encode, then replace % with $25
 	local encoded_name
+	# shellcheck disable=SC2016
 	encoded_name=$(printf '%s' "$log_group_name" | jq -sRr @uri | sed 's/%/$25/g')
 
-	local url="https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_name}"
-
-	_open_url "$url"
+	_open_url "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_name}"
 }
 
 # _tail_log()
@@ -119,7 +118,7 @@ _view_log_stream() {
 	local stream_name="${2:-}"
 
 	if [ -z "$log_group_name" ] || [ -z "$stream_name" ]; then
-		echo "Error: Log group name and stream name are required" >&2
+		gum log --level error "Log group name and stream name are required"
 		exit 1
 	fi
 
@@ -129,13 +128,14 @@ _view_log_stream() {
 	# AWS Console requires double-encoded names with $ prefix
 	# First URL encode, then replace % with $25
 	local encoded_group
-	local encoded_stream
+	# shellcheck disable=SC2016
 	encoded_group=$(printf '%s' "$log_group_name" | jq -sRr @uri | sed 's/%/$25/g')
+
+	local encoded_stream
+	# shellcheck disable=SC2016
 	encoded_stream=$(printf '%s' "$stream_name" | jq -sRr @uri | sed 's/%/$25/g')
 
-	local url="https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_group}/log-events/${encoded_stream}"
-
-	_open_url "$url"
+	_open_url "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_group}/log-events/${encoded_stream}"
 }
 
 # Command router
@@ -187,9 +187,9 @@ EXAMPLES:
 EOF
 	;;
 *)
-	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_log_cmd {view-group|view-stream|tail} [args]" >&2
-	echo "Run 'aws_log_cmd --help' for more information" >&2
+	gum log --level error "Unknown subcommand '${1:-}'"
+	gum log --level info "Usage: aws_log_cmd {view-group|view-stream|tail} [args]"
+	gum log --level info "Run 'aws_log_cmd --help' for more information"
 	exit 1
 	;;
 esac

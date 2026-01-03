@@ -35,7 +35,7 @@ _aws_params_get_value() {
 	local param_name="${1:-}"
 
 	if [ -z "$param_name" ]; then
-		echo "Error: Parameter name is required" >&2
+		gum log --level error "Parameter name is required"
 		exit 1
 	fi
 
@@ -46,7 +46,7 @@ _aws_params_get_value() {
 		--query 'Parameters[0].Type' --output text 2>/dev/null)
 
 	if [ -z "$param_type" ] || [ "$param_type" = "None" ]; then
-		echo "Error: Parameter not found: $param_name" >&2
+		gum log --level error "Parameter not found: $param_name"
 		exit 1
 	fi
 
@@ -77,7 +77,7 @@ _aws_params_view_parameter() {
 	local param_name="${1:-}"
 
 	if [ -z "$param_name" ]; then
-		echo "Error: Parameter name is required" >&2
+		gum log --level error "Parameter name is required"
 		exit 1
 	fi
 
@@ -88,9 +88,7 @@ _aws_params_view_parameter() {
 	local encoded_name
 	encoded_name=$(printf '%s' "$param_name" | jq -sRr @uri)
 
-	local url="https://console.aws.amazon.com/systems-manager/parameters/${encoded_name}/description?region=${region}"
-
-	_open_url "$url"
+	_open_url "https://console.aws.amazon.com/systems-manager/parameters/${encoded_name}/description?region=${region}"
 }
 
 # Command router
@@ -126,9 +124,9 @@ EXAMPLES:
 EOF
 	;;
 *)
-	echo "Error: Unknown subcommand '${1:-}'" >&2
-	echo "Usage: aws_param_cmd {get-value|view-parameter} [args]" >&2
-	echo "Run 'aws_param_cmd --help' for more information" >&2
+	gum log --level error "Unknown subcommand '${1:-}'"
+	gum log --level info "Usage: aws_param_cmd {get-value|view-parameter} [args]"
+	gum log --level info "Run 'aws_param_cmd --help' for more information"
 	exit 1
 	;;
 esac
