@@ -2,6 +2,8 @@
 set -o pipefail
 
 _aws_lambda_source_dir=$(dirname "${BASH_SOURCE[0]}")
+# shellcheck source=aws_core.sh
+source "$_aws_lambda_source_dir/aws_core.sh"
 
 # _aws_lambda_list()
 #
@@ -42,17 +44,9 @@ _aws_lambda_list() {
 	fi
 
 	# Display in fzf with keybindings
-	echo "$function_list" | fzf --ansi \
-		--with-nth 1.. \
-		--accept-nth 1 \
-		--header-lines 1 \
-		--header-border sharp \
-		--color header:yellow \
-		--color footer:yellow \
+	echo "$function_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "  Lambda Functions" \
-		--footer-border sharp \
-		--input-border sharp \
-		--layout 'reverse-list' \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})"
 }

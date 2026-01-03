@@ -2,6 +2,8 @@
 set -o pipefail
 
 _aws_param_source_dir=$(dirname "${BASH_SOURCE[0]}")
+# shellcheck source=aws_core.sh
+source "$_aws_param_source_dir/aws_core.sh"
 
 # _aws_param_list()
 #
@@ -42,17 +44,9 @@ _aws_param_list() {
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$param_list" | fzf --ansi \
-		--with-nth 1.. \
-		--accept-nth 1 \
-		--header-lines 1 \
-		--header-border sharp \
-		--color header:yellow \
-		--color footer:yellow \
+	echo "$param_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "  Parameters" \
-		--footer-border sharp \
-		--input-border sharp \
-		--layout 'reverse-list' \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "ctrl-v:execute($_aws_param_source_dir/aws_param_cmd.sh get-value {1})+abort"

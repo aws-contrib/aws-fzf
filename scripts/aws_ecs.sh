@@ -2,6 +2,8 @@
 set -o pipefail
 
 _aws_ecs_source_dir=$(dirname "${BASH_SOURCE[0]}")
+# shellcheck source=aws_core.sh
+source "$_aws_ecs_source_dir/aws_core.sh"
 
 # _aws_ecs_cluster_list()
 #
@@ -43,17 +45,9 @@ _aws_ecs_cluster_list() {
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$cluster_list" | fzf --ansi \
-		--with-nth 1.. \
-		--accept-nth 1 \
-		--header-lines 1 \
-		--header-border sharp \
-		--color header:yellow \
-		--color footer:yellow \
+	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "  ECS Clusters" \
-		--footer-border sharp \
-		--input-border sharp \
-		--layout 'reverse-list' \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})"
 }
@@ -115,17 +109,9 @@ _aws_ecs_service_list() {
 	fi
 
 	# Display service list with keybindings
-	echo "$service_list" | fzf --ansi \
-		--with-nth 1.. \
-		--accept-nth 1 \
-		--header-lines 1 \
-		--header-border sharp \
-		--color header:yellow \
-		--color footer:yellow \
+	echo "$service_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "  ECS Services in $cluster" \
-		--footer-border sharp \
-		--input-border sharp \
-		--layout 'reverse-list' \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})"
 }
@@ -187,17 +173,9 @@ _aws_ecs_task_list() {
 	fi
 
 	# Display task IDs with on-demand preview
-	echo "$task_list" | fzf --ansi \
-		--with-nth 1.. \
-		--accept-nth 1 \
-		--header-lines 1 \
-		--header-border sharp \
-		--color header:yellow \
-		--color footer:yellow \
+	echo "$task_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "  ECS Tasks in $cluster" \
-		--footer-border sharp \
-		--input-border sharp \
-		--layout 'reverse-list' \
 		--bind "enter:execute(aws ecs describe-tasks --cluster $cluster --tasks {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})"
 }

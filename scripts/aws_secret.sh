@@ -2,6 +2,8 @@
 set -o pipefail
 
 _aws_secret_source_dir=$(dirname "${BASH_SOURCE[0]}")
+# shellcheck source=aws_core.sh
+source "$_aws_secret_source_dir/aws_core.sh"
 
 # _aws_secret_list()
 #
@@ -42,17 +44,9 @@ _aws_secret_list() {
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$secrets_list" | fzf --ansi \
-		--with-nth 1.. \
-		--accept-nth 1 \
-		--header-lines 1 \
-		--header-border sharp \
-		--color header:yellow \
-		--color footer:yellow \
+	echo "$secrets_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "  Secrets" \
-		--footer-border sharp \
-		--input-border sharp \
-		--layout 'reverse-list' \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "ctrl-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh get-value {1})+abort"
