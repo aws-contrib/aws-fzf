@@ -4,42 +4,6 @@
 
 _aws_fzf_source_dir=$(dirname "${BASH_SOURCE[0]}")
 
-# _check_dependencies()
-#
-# Check for required dependencies
-#
-# DESCRIPTION:
-#   Verifies that all required tools are installed and available in PATH.
-#   Exits with error if any required dependency is missing.
-#
-# REQUIRED DEPENDENCIES:
-#   - aws   : AWS CLI for API calls
-#   - fzf   : Fuzzy finder for interactive selection
-#   - jq    : JSON processor for data formatting
-#   - gum   : Terminal UI for spinners, logging, and prompts
-#
-# RETURNS:
-#   0 - All dependencies present
-#   1 - One or more dependencies missing (exits script)
-#
-_check_dependencies() {
-    local missing_required=()
-
-    command -v aws >/dev/null 2>&1 || missing_required+=("aws")
-    command -v fzf >/dev/null 2>&1 || missing_required+=("fzf")
-    command -v jq >/dev/null 2>&1 || missing_required+=("jq")
-    command -v gum >/dev/null 2>&1 || missing_required+=("gum")
-
-    if [ ${#missing_required[@]} -gt 0 ]; then
-        echo "Error: Missing required dependencies: ${missing_required[*]}" >&2
-        echo "" >&2
-        echo "Install with:" >&2
-        echo "  macOS:  brew install ${missing_required[*]}" >&2
-        echo "  Linux:  See installation instructions for each tool" >&2
-        return 1
-    fi
-}
-
 # Source command implementations
 source "$_aws_fzf_source_dir/scripts/aws_secret.sh"
 source "$_aws_fzf_source_dir/scripts/aws_param.sh"
@@ -165,12 +129,10 @@ EOF
 #
 # RETURNS:
 #   0   - Success (command executed successfully)
-#   1   - Error (unknown command or dependency check failed)
+#   1   - Error (unknown command)
 #   Exit code from sub-command if applicable
 #
 main() {
-    _check_dependencies || exit 1
-
     local service="$1"
     shift
 
