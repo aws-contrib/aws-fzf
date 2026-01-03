@@ -101,6 +101,7 @@ _aws_rds_connect_instance() {
 			--output json 2>&1
 	)
 
+	# shellcheck disable=SC2181
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe instance: $instance"
 		gum log --level info "Check that the instance exists and you have permissions"
@@ -168,6 +169,7 @@ _aws_rds_connect_instance() {
 			--region "$region" 2>&1
 	)
 
+	# shellcheck disable=SC2181
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to generate IAM auth token"
 		gum log --level info "Check your AWS credentials and IAM permissions"
@@ -219,6 +221,7 @@ _aws_rds_connect_cluster() {
 			--output json 2>&1
 	)
 
+	# shellcheck disable=SC2181
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe cluster: $cluster"
 		gum log --level info "Check that the cluster exists and you have permissions"
@@ -285,6 +288,7 @@ _aws_rds_connect_cluster() {
 			--region "$region" 2>&1
 	)
 
+	# shellcheck disable=SC2181
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to generate IAM auth token"
 		gum log --level info "Check your AWS credentials and IAM permissions"

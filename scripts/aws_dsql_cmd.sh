@@ -74,6 +74,7 @@ _aws_dsql_connect_cluster() {
 			--output json
 	)"
 
+	# shellcheck disable=SC2181
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe cluster: $cluster"
 		gum log --level info "Check that the cluster exists and you have permissions"
