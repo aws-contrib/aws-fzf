@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_dsql_cmd - Utility helper for DSQL operations
 #
 # This executable handles DSQL console viewing and connections.
@@ -11,8 +15,6 @@
 #
 # DESCRIPTION:
 #   Provides console viewing and psql connection functionality for DSQL clusters.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_dsql_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
@@ -66,7 +68,7 @@ _aws_dsql_connect_cluster() {
 	local cluster_info
 	# Get cluster details
 	cluster_info="$(
-		gum spin --title "Fetching AWS DSQL Cluster details..." -- \
+		gum spin --title "Getting AWS DSQL Cluster Details..." -- \
 			aws dsql get-cluster \
 			--identifier "$cluster" \
 			--output json
@@ -104,7 +106,7 @@ _aws_dsql_connect_cluster() {
 
 	local token
 	token=$(
-		gum spin --title "Generating IAM auth token..." -- \
+		gum spin --title "Generating IAM Auth Token..." -- \
 			aws dsql generate-db-connect-admin-auth-token \
 			--region "$region" \
 			--expires-in 3600 \
@@ -150,7 +152,10 @@ _copy_cluster_arn() {
 	fi
 
 	local arn
-	arn=$(aws dsql get-cluster --identifier "$cluster" --query 'arn' --output text 2>/dev/null)
+	arn=$(
+		gum spin --title "Getting AWS DSQL Cluster ARN..." -- \
+			aws dsql get-cluster --identifier "$cluster" --query 'arn' --output text 2>/dev/null
+	)
 
 	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
 		gum log --level error "Failed to fetch cluster ARN"

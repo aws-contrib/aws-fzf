@@ -1,5 +1,8 @@
-#!/bin/bash
-set -o pipefail
+#!/usr/bin/env bash
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_lambda_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -33,7 +36,7 @@ _aws_lambda_list() {
 	# shellcheck disable=SC2128
 	function_list="$(
 		gum spin --title "Loading AWS Lambda Functions..." -- \
-			aws lambda list-functions $list_functions_args --output json |
+			aws lambda list-functions "${list_functions_args[@]}" --output json |
 			jq -r "$function_list_jq" | column -t -s $'\t'
 	)"
 

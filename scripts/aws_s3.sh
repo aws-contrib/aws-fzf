@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_s3_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -48,8 +51,8 @@ _aws_s3_bucket_list() {
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	bucket_list="$(
-		gum spin --title "Loading S3 Buckets..." -- \
-			aws s3api list-buckets $list_buckets_args --output json |
+		gum spin --title "Loading AWS S3 Buckets..." -- \
+			aws s3api list-buckets "${list_buckets_args[@]}" --output json |
 			jq -r "$bucket_list_jq" | column -t -s $'\t'
 	)"
 
@@ -114,7 +117,7 @@ _aws_s3_object_list() {
 
 	# Get first page of objects (up to 1000)
 	object_list="$(
-		gum spin --title "Loading S3 Objects from $bucket..." -- \
+		gum spin --title "Loading AWS S3 Objects..." -- \
 			aws s3api list-objects-v2 --bucket "$bucket" --max-items 1000 "${list_objects_args[@]}" --output json |
 			jq -r "$object_list_jq" | column -t -s $'\t'
 	)"

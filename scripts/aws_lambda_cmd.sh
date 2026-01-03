@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_lambda_cmd - Utility helper for Lambda operations
 #
 # This executable handles Lambda operations.
@@ -10,8 +14,6 @@
 #
 # DESCRIPTION:
 #   Performs Lambda operations including opening functions in the AWS Console.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_lambda_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
@@ -119,12 +121,7 @@ _aws_lambda_tail_logs() {
 
 	local log_group="/aws/lambda/${function}"
 
-	# Check if AWS_FZF_LOG_PAGER is set (e.g., lnav)
-	if [ -n "${AWS_FZF_LOG_PAGER:-}" ]; then
-		aws logs tail "$log_group" --follow --format short | "$AWS_FZF_LOG_PAGER"
-	else
-		aws logs tail "$log_group" --follow --format short
-	fi
+	aws logs tail "$log_group" --follow --format short
 }
 
 # Command router

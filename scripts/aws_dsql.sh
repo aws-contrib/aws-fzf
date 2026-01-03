@@ -1,5 +1,8 @@
-#!/bin/bash
-set -o pipefail
+#!/usr/bin/env bash
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_dsql_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -34,7 +37,7 @@ _aws_dsql_cluster_list() {
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS DSQL Clusters..." -- \
-			aws dsql list-clusters $list_clusters_args --output json |
+			aws dsql list-clusters "${list_clusters_args[@]}" --output json |
 			jq -r "$cluster_list_jq" | column -t -s $'\t'
 	)"
 

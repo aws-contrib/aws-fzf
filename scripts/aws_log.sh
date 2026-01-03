@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_log_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -33,7 +36,7 @@ _aws_log_group_list() {
 	# shellcheck disable=SC2128
 	group_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Groups..." -- \
-			aws logs describe-log-groups $list_groups_args --output json |
+			aws logs describe-log-groups "${list_groups_args[@]}" --output json |
 			jq -r "$group_list_jq" | column -t -s $'\t'
 	)"
 
@@ -48,7 +51,8 @@ _aws_log_group_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Groups" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
-		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
+		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
+		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-history {1})" \
 		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})"
@@ -116,7 +120,8 @@ _aws_log_stream_list() {
 		--footer "$_fzf_icon CloudWatch Log Streams in $log_group_name" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
-		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
+		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
+		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-history '$log_group_name' {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
 		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})"
 }
@@ -146,6 +151,7 @@ KEYBOARD SHORTCUTS:
     Log Groups:
         ctrl-o      Open log group in AWS Console
         alt-t       Tail all streams in log group (terminal)
+        alt-h       View historical logs (last N hours)
         alt-enter   List streams in log group
         alt-a       Copy log group ARN to clipboard
         alt-n       Copy log group name to clipboard
@@ -154,6 +160,7 @@ KEYBOARD SHORTCUTS:
         enter       Show log stream metadata
         ctrl-o      Open log stream in AWS Console
         alt-t       Tail logs in terminal (follow new events)
+        alt-h       View historical logs from this stream
         alt-a       Copy log group ARN to clipboard
         alt-n       Copy log stream name to clipboard
 
@@ -163,10 +170,14 @@ PERFORMANCE:
     Log stream listing fetches up to 50 streams per page.
     Use --order-by LastEventTime --descending to see most recent streams first.
 
-LOG TAILING:
-    Press alt-t on any log group or stream to tail logs in real-time.
+LOG VIEWING:
+    Press alt-t to tail logs in real-time (follows new events).
+    Press alt-h to view historical logs (time-range query).
+
     Set AWS_FZF_LOG_PAGER=lnav for interactive log viewing with search/filter.
-    Without AWS_FZF_LOG_PAGER, logs are displayed directly in the terminal.
+    Set AWS_FZF_LOG_HISTORY_HOURS=24 to view last 24 hours (default: 1 hour).
+
+    Without AWS_FZF_LOG_PAGER, logs are displayed in less by default.
 
 EXAMPLES:
     # List all log groups

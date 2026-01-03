@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_ecs_cmd - Batch processing helper for ECS operations
 #
 # This executable handles batch processing of ECS resources.
@@ -14,8 +18,6 @@
 #   Performs batch processing of AWS ECS API calls to handle API limits.
 #   Uses jq's _nwise(10) to batch resources in groups of 10.
 #   Outputs JSON array that can be processed with jq -rs.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_ecs_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")

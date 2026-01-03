@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_dynamodb_cmd - Utility helper for DynamoDB operations
 #
 # This executable handles DynamoDB console viewing.
@@ -10,8 +14,6 @@
 #
 # DESCRIPTION:
 #   Provides console viewing functionality for DynamoDB tables.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_dynamodb_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")

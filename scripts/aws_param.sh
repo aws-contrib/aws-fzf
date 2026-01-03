@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_param_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -33,7 +36,7 @@ _aws_param_list() {
 	# shellcheck disable=SC2128
 	param_list="$(
 		gum spin --title "Loading AWS Parameters..." -- \
-			aws ssm describe-parameters $describe_params_args --output json |
+			aws ssm describe-parameters "${describe_params_args[@]}" --output json |
 			jq -r "$param_list_jq" | column -t -s $'\t'
 	)"
 

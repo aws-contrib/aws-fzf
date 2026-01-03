@@ -5,7 +5,6 @@ _fzf_icon=" "
 _fzf_options=(
 	--ansi
 	--border='none'
-	--tmux='100%,100%'
 	--header-lines='1'
 	--header-border='sharp'
 	--footer-border='sharp'

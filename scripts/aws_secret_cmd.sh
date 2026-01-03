@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_secret_cmd - Utility helper for Secrets Manager operations
 #
 # This executable handles Secrets Manager operations.
@@ -12,8 +16,6 @@
 # DESCRIPTION:
 #   Performs Secrets Manager operations including getting values
 #   and opening secrets in the AWS Console.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_secret_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_rds_cmd - Utility helper for RDS operations
 #
 # This executable handles RDS console viewing and connections.
@@ -13,8 +17,6 @@
 #
 # DESCRIPTION:
 #   Provides console viewing and psql connection functionality for RDS databases.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_rds_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
@@ -91,11 +93,13 @@ _aws_rds_connect_instance() {
 	fi
 
 	# Get instance details
-	gum log --level info "Fetching instance details..."
 	local instance_info
-	instance_info=$(aws rds describe-db-instances \
-		--db-instance-identifier "$instance" \
-		--output json 2>&1)
+	instance_info=$(
+		gum spin --title "Getting AWS RDS Instance Details..." -- \
+			aws rds describe-db-instances \
+			--db-instance-identifier "$instance" \
+			--output json 2>&1
+	)
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe instance: $instance"
@@ -155,11 +159,14 @@ _aws_rds_connect_instance() {
 	region=$(_get_aws_region)
 
 	local token
-	token=$(aws rds generate-db-auth-token \
-		--hostname "$endpoint" \
-		--port "$port" \
-		--username "$username" \
-		--region "$region" 2>&1)
+	token=$(
+		gum spin --title "Generating IAM Auth Token..." -- \
+			aws rds generate-db-auth-token \
+			--hostname "$endpoint" \
+			--port "$port" \
+			--username "$username" \
+			--region "$region" 2>&1
+	)
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to generate IAM auth token"
@@ -171,7 +178,7 @@ _aws_rds_connect_instance() {
 	fi
 
 	# Connect to database
-	gum log --level info "Connecting to $instance ($endpoint:$port) as $username..."
+	gum log --level info "Connecting to AWS RDS Instance $instance ($endpoint:$port) as $username..."
 
 	export PGHOST="$endpoint"
 	export PGPORT="$port"
@@ -204,11 +211,13 @@ _aws_rds_connect_cluster() {
 	fi
 
 	# Get cluster details
-	gum log --level info "Fetching cluster details..."
 	local cluster_info
-	cluster_info=$(aws rds describe-db-clusters \
-		--db-cluster-identifier "$cluster" \
-		--output json 2>&1)
+	cluster_info=$(
+		gum spin --title "Getting AWS RDS Cluster Details..." -- \
+			aws rds describe-db-clusters \
+			--db-cluster-identifier "$cluster" \
+			--output json 2>&1
+	)
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to describe cluster: $cluster"
@@ -263,16 +272,18 @@ _aws_rds_connect_cluster() {
 	fi
 
 	# Generate IAM auth token
-	gum log --level info "Generating IAM auth token..."
 	local region
 	region=$(_get_aws_region)
 
 	local token
-	token=$(aws rds generate-db-auth-token \
-		--hostname "$endpoint" \
-		--port "$port" \
-		--username "$username" \
-		--region "$region" 2>&1)
+	token=$(
+		gum spin --title "Generating IAM Auth Token..." -- \
+			aws rds generate-db-auth-token \
+			--hostname "$endpoint" \
+			--port "$port" \
+			--username "$username" \
+			--region "$region" 2>&1
+	)
 
 	if [ $? -ne 0 ]; then
 		gum log --level error "Failed to generate IAM auth token"

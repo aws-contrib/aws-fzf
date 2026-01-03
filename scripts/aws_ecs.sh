@@ -1,5 +1,8 @@
-#!/bin/bash
-set -o pipefail
+#!/usr/bin/env bash
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_ecs_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -34,7 +37,7 @@ _aws_ecs_cluster_list() {
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS ECS Clusters..." -- \
-			$_aws_ecs_source_dir/aws_ecs_cmd.sh batch-describe-clusters $list_clusters_args |
+			$_aws_ecs_source_dir/aws_ecs_cmd.sh batch-describe-clusters "${list_clusters_args[@]}" |
 			jq -r "$cluster_list_jq" | column -t -s $'\t'
 	)"
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_dynamodb_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -34,7 +37,7 @@ _aws_dynamodb_table_list() {
 	# shellcheck disable=SC2128
 	table_list="$(
 		gum spin --title "Loading AWS DynamoDB Tables..." -- \
-			aws dynamodb list-tables $list_tables_args --output json |
+			aws dynamodb list-tables "${list_tables_args[@]}" --output json |
 			jq -r "$table_list_jq" | column -t -s $'\t'
 	)"
 

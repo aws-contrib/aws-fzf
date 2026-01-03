@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_param_cmd - Utility helper for Parameter Store operations
 #
 # This executable handles Parameter Store operations.
@@ -12,8 +16,6 @@
 # DESCRIPTION:
 #   Performs Parameter Store operations including getting values
 #   and opening parameters in the AWS Console.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_param_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")

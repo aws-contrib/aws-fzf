@@ -1,5 +1,8 @@
-#!/bin/bash
-set -o pipefail
+#!/usr/bin/env bash
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_rds_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -33,7 +36,7 @@ _aws_rds_instance_list() {
 	# shellcheck disable=SC2128
 	instance_list="$(
 		gum spin --title "Loading AWS RDS Instances..." -- \
-			aws rds describe-db-instances $list_instances_args --output json |
+			aws rds describe-db-instances "${list_instances_args[@]}" --output json |
 			jq -r "$instance_list_jq" | column -t -s $'\t'
 	)"
 
@@ -82,7 +85,7 @@ _aws_rds_cluster_list() {
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS RDS Clusters..." -- \
-			aws rds describe-db-clusters $list_clusters_args --output json |
+			aws rds describe-db-clusters "${list_clusters_args[@]}" --output json |
 			jq -r "$cluster_list_jq" | column -t -s $'\t'
 	)"
 

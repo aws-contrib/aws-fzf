@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 [ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
 
 _aws_fzf_source_dir=$(dirname "${BASH_SOURCE[0]}")
 

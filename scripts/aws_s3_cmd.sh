@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+[ -z "$DEBUG" ] || set -x
+
+set -eo pipefail
+
 # aws_s3_cmd - Utility helper for S3 operations
 #
 # This executable handles S3 utility operations.
@@ -10,8 +15,6 @@
 #
 # DESCRIPTION:
 #   Opens S3 resources in the AWS Console via the default browser.
-
-set -euo pipefail
 
 # Source shared core utilities
 _aws_s3_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
