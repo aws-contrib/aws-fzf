@@ -208,7 +208,7 @@ KEYBOARD SHORTCUTS:
 
     Services:
         ctrl-o      Open service in AWS Console
-        ctrl-t      List tasks for service
+        alt-enter   List tasks for service
 
     Tasks:
         enter       Show task details

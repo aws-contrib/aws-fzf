@@ -74,10 +74,6 @@ KEYBOARD SHORTCUTS:
     enter       Show secret metadata (without value)
     ctrl-o      Open secret in AWS Console
     ctrl-v      Get secret value (requires confirmation)
-    alt-c       Copy secret name to clipboard
-    alt-a       Copy secret ARN to clipboard
-    alt-h       Show secret version history
-    alt-r       Show rotation configuration
 
 SECURITY:
     Secret values require confirmation before retrieval

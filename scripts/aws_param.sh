@@ -74,9 +74,6 @@ KEYBOARD SHORTCUTS:
     enter       Show parameter metadata (without value)
     ctrl-o      Open parameter in AWS Console
     ctrl-v      Get parameter value (prompts for SecureString)
-    alt-h       Show parameter history
-    alt-c       Copy parameter name to clipboard
-    alt-t       Show parameter tags
 
 SECURITY:
     SecureString parameters require confirmation before decryption
