@@ -64,7 +64,10 @@ _aws_lambda_copy_arn() {
 	fi
 
 	local arn
-	arn=$(aws lambda get-function --function-name "$function" --query 'Configuration.FunctionArn' --output text 2>/dev/null)
+	arn=$(
+		gum spin --title "Getting AWS Lambda Function ARN..." -- \
+			aws lambda get-function --function-name "$function" --query 'Configuration.FunctionArn' --output text 2>/dev/null
+	)
 
 	if [ -z "$arn" ]; then
 		gum log --level error "Failed to fetch function ARN"

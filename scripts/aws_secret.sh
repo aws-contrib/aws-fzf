@@ -49,9 +49,9 @@ _aws_secret_list() {
 		--footer "$_fzf_icon Secrets" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
-		--bind "ctrl-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh get-value {1})+abort" \
 		--bind "alt-a:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})"
+		--bind "alt-n:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})" \
+		--bind "alt-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh copy-value {1})"
 }
 
 # _aws_secret_help()
@@ -76,14 +76,9 @@ KEYBOARD SHORTCUTS:
     All resources:
         enter       Show secret metadata (without value)
         ctrl-o      Open secret in AWS Console
-        ctrl-v      Get secret value (requires confirmation)
+        alt-v       Copy secret value to clipboard
         alt-a       Copy secret ARN to clipboard
         alt-n       Copy secret name to clipboard
-
-SECURITY:
-    Secret values require explicit confirmation before retrieval.
-    This prevents accidental exposure of sensitive information.
-    Press ctrl-v only when you need to view the actual secret value.
 
 PERFORMANCE:
     The list-secrets API paginates results automatically.

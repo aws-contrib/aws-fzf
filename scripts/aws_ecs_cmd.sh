@@ -218,7 +218,10 @@ _copy_cluster_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+	account_id=$(
+		gum spin --title "Getting AWS Caller Identity..." -- \
+			aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
+	)
 
 	local arn="arn:aws:ecs:${region}:${account_id}:cluster/${cluster}"
 	_copy_to_clipboard "$arn" "cluster ARN"
@@ -267,7 +270,10 @@ _copy_service_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+	account_id=$(
+		gum spin --title "Getting AWS Caller Identity..." -- \
+			aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
+	)
 
 	local arn="arn:aws:ecs:${region}:${account_id}:service/${cluster}/${service}"
 	_copy_to_clipboard "$arn" "service ARN"

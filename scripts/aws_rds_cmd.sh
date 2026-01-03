@@ -315,7 +315,10 @@ _copy_instance_arn() {
 	fi
 
 	local arn
-	arn=$(aws rds describe-db-instances --db-instance-identifier "$instance" --query 'DBInstances[0].DBInstanceArn' --output text 2>/dev/null)
+	arn=$(
+		gum spin --title "Getting AWS RDS Instance ARN..." -- \
+			aws rds describe-db-instances --db-instance-identifier "$instance" --query 'DBInstances[0].DBInstanceArn' --output text 2>/dev/null
+	)
 
 	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
 		gum log --level error "Failed to fetch instance ARN"
@@ -365,7 +368,10 @@ _copy_cluster_arn() {
 	fi
 
 	local arn
-	arn=$(aws rds describe-db-clusters --db-cluster-identifier "$cluster" --query 'DBClusters[0].DBClusterArn' --output text 2>/dev/null)
+	arn=$(
+		gum spin --title "Getting AWS RDS Cluster ARN..." -- \
+			aws rds describe-db-clusters --db-cluster-identifier "$cluster" --query 'DBClusters[0].DBClusterArn' --output text 2>/dev/null
+	)
 
 	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
 		gum log --level error "Failed to fetch cluster ARN"

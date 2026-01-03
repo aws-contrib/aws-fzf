@@ -49,9 +49,9 @@ _aws_param_list() {
 		--footer "$_fzf_icon Parameters" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
-		--bind "ctrl-v:execute($_aws_param_source_dir/aws_param_cmd.sh get-value {1})+abort" \
 		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})"
+		--bind "alt-n:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})" \
+		--bind "alt-v:execute($_aws_param_source_dir/aws_param_cmd.sh copy-value {1})"
 }
 
 # _aws_param_help()
@@ -76,14 +76,14 @@ KEYBOARD SHORTCUTS:
     All resources:
         enter       Show parameter metadata (without value)
         ctrl-o      Open parameter in AWS Console
-        ctrl-v      Get parameter value (prompts for SecureString)
+        alt-v       Copy parameter value to clipboard (prompts for SecureString)
         alt-a       Copy parameter ARN to clipboard
         alt-n       Copy parameter name to clipboard
 
 SECURITY:
     SecureString parameters require explicit confirmation before decryption.
     This prevents accidental exposure of encrypted sensitive values.
-    Press ctrl-v only when you need to view the actual decrypted value.
+    Press alt-v only when you need to copy the actual decrypted value.
 
 PERFORMANCE:
     The describe-parameters API paginates results automatically.

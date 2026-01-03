@@ -207,7 +207,7 @@ Additional service-specific keybindings are documented below.
 |-----|--------|
 | `enter` | Show parameter metadata (without value) |
 | `ctrl-o` | Open parameter in AWS Console |
-| `ctrl-v` | Get parameter value (prompts confirmation for SecureString) |
+| `alt-v` | Copy parameter value to clipboard (prompts confirmation for SecureString) |
 | `alt-a` | Copy parameter ARN to clipboard |
 | `alt-n` | Copy parameter name to clipboard |
 
@@ -217,7 +217,7 @@ Additional service-specific keybindings are documented below.
 |-----|--------|
 | `enter` | Show secret metadata (without value) |
 | `ctrl-o` | Open secret in AWS Console |
-| `ctrl-v` | Get secret value (requires confirmation) |
+| `alt-v` | Copy secret value to clipboard (requires confirmation) |
 | `alt-a` | Copy secret ARN to clipboard |
 | `alt-n` | Copy secret name to clipboard |
 
@@ -397,18 +397,18 @@ aws fzf param list --profile production
 
 - `enter` - Show parameter metadata (without value)
 - `ctrl-o` - Open parameter in AWS Console
-- `ctrl-v` - Get parameter value (prompts confirmation for SecureString)
+- `alt-v` - Copy parameter value to clipboard (prompts confirmation for SecureString)
 - `alt-a` - Copy parameter ARN to clipboard
 - `alt-n` - Copy parameter name to clipboard
 
 #### Security
 
-`SecureString` parameters require confirmation before decryption. This prevents accidental exposure of sensitive values.
+`SecureString` parameters require confirmation before decryption. The value is copied to clipboard, not displayed in terminal, preventing terminal history exposure.
 
 #### Tips
 
 - Use `--max-results` to control pagination for large parameter sets
-- Press `ctrl-v` only when you need to see the actual value
+- Press `alt-v` only when you need to copy the actual value to clipboard
 - Use `--profile` to switch between different AWS accounts
 
 ---
@@ -437,18 +437,18 @@ aws fzf secret list --filters Key=name,Values=prod*
 
 - `enter` - Show secret metadata (without value)
 - `ctrl-o` - Open secret in AWS Console
-- `ctrl-v` - Get secret value (requires confirmation)
+- `alt-v` - Copy secret value to clipboard (requires confirmation)
 - `alt-a` - Copy secret ARN to clipboard
 - `alt-n` - Copy secret name to clipboard
 
 #### Security
 
-All secret values require confirmation before retrieval. This prevents accidental exposure of sensitive information.
+All secret values require confirmation before retrieval. The value is copied to clipboard, not displayed in terminal, preventing terminal history exposure.
 
 #### Tips
 
 - Use `--filters` to narrow down secrets by name or other attributes
-- Press `ctrl-v` only when you need to see the actual secret value
+- Press `alt-v` only when you need to copy the actual secret value to clipboard
 - Use `--profile` to switch between different AWS accounts
 
 ---
@@ -1095,11 +1095,11 @@ Logs will be displayed directly in terminal using `aws logs tail` command.
 **Secrets Manager:**
 - `secretsmanager:ListSecrets`
 - `secretsmanager:DescribeSecret`
-- `secretsmanager:GetSecretValue` (for ctrl-v)
+- `secretsmanager:GetSecretValue` (for alt-v)
 
 **Parameter Store:**
 - `ssm:DescribeParameters`
-- `ssm:GetParameter` (for ctrl-v)
+- `ssm:GetParameter` (for alt-v)
 - `kms:Decrypt` (for SecureString)
 
 **Lambda:**
