@@ -248,12 +248,14 @@ Complete reference of keyboard shortcuts across all services.
 |-----|--------|
 | `enter` | View instance details (full JSON) |
 | `ctrl-o` | Open instance in AWS Console |
+| `alt-c` | Connect with psql (PostgreSQL only, IAM auth required) |
 
 #### DB Clusters (Aurora)
 | Key | Action |
 |-----|--------|
 | `enter` | View cluster details (full JSON) |
 | `ctrl-o` | Open cluster in AWS Console |
+| `alt-c` | Connect with psql (PostgreSQL only, IAM auth required) |
 
 ---
 
@@ -592,3 +594,34 @@ When listing clusters, you'll see:
 - Use `ctrl-o` to open in AWS Console for detailed configuration or to view metrics
 - Use `--region` to list databases in different AWS regions
 - RDS instances and Aurora clusters are shown separately - use the appropriate command for your database type
+
+#### Connecting to Databases
+
+Press `alt-c` to connect to a PostgreSQL database using IAM authentication:
+
+**Requirements:**
+- PostgreSQL database engine (postgres or aurora-postgresql)
+- IAM database authentication enabled on the instance/cluster
+- `psql` client installed (`brew install postgresql`)
+- Proper IAM permissions to generate auth tokens
+
+**IAM Permissions Required:**
+```json
+{
+  "Effect": "Allow",
+  "Action": "rds-db:connect",
+  "Resource": "arn:aws:rds-db:region:account:dbuser:resource-id/username"
+}
+```
+
+**Enable IAM Authentication:**
+- For existing instances: Modify instance and enable IAM authentication
+- For new instances: Enable during creation
+- Creates temporary 15-minute auth tokens
+
+**Connection Flow:**
+1. Press `alt-c` on a database
+2. Tool fetches instance details
+3. Generates IAM auth token (valid for 15 minutes)
+4. Launches psql with connection parameters
+5. Connected to postgres database as master user

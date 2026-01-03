@@ -48,7 +48,8 @@ _aws_rds_instance_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Instances" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
-		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq .)+abort"
+		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq .)+abort" \
+		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})"
 }
 
 # _aws_rds_cluster_list()
@@ -94,7 +95,8 @@ _aws_rds_cluster_list() {
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Clusters" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
-		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq .)+abort"
+		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq .)+abort" \
+		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})"
 }
 
 # _aws_rds_help()
@@ -119,6 +121,7 @@ KEYBOARD SHORTCUTS:
     All resources:
         ctrl-o      Open resource in AWS Console
         enter       View resource details (full JSON)
+        alt-c       Connect to database with psql (PostgreSQL only, requires IAM auth)
 
 EXAMPLES:
     # List RDS instances
