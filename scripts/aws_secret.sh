@@ -46,7 +46,7 @@ _aws_secret_list() {
 	# Display in fzf with full keybindings
 	echo "$secrets_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  Secrets" \
+		--footer "$_fzf_icon Secrets" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "ctrl-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh get-value {1})+abort"

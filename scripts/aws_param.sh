@@ -46,7 +46,7 @@ _aws_param_list() {
 	# Display in fzf with full keybindings
 	echo "$param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  Parameters" \
+		--footer "$_fzf_icon Parameters" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "ctrl-v:execute($_aws_param_source_dir/aws_param_cmd.sh get-value {1})+abort"

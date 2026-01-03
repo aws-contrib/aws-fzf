@@ -60,7 +60,7 @@ _aws_s3_bucket_list() {
 	# Display in fzf with bindings
 	echo "$bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  S3 Buckets" \
+		--footer "$_fzf_icon S3 Buckets" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
 		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})"
 }
@@ -124,7 +124,7 @@ _aws_s3_object_list() {
 	# Display object list with keybindings
 	echo "$object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  S3 Objects in $bucket" \
+		--footer "$_fzf_icon  S3 Objects in $bucket" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})"
 }

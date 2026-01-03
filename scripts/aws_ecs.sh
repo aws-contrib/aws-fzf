@@ -47,7 +47,7 @@ _aws_ecs_cluster_list() {
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  ECS Clusters" \
+		--footer "$_fzf_icon ECS Clusters" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})"
 }
@@ -111,7 +111,7 @@ _aws_ecs_service_list() {
 	# Display service list with keybindings
 	echo "$service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  ECS Services in $cluster" \
+		--footer "$_fzf_icon ECS Services in $cluster" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})"
 }

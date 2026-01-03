@@ -46,7 +46,7 @@ _aws_lambda_list() {
 	# Display in fzf with keybindings
 	echo "$function_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  Lambda Functions" \
+		--footer "$_fzf_icon Lambda Functions" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})"
 }

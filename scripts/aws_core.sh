@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+_fzf_icon=" "
+
 _fzf_options=(
 	--ansi
 	--border='none'

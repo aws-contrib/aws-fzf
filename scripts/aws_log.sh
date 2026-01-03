@@ -46,7 +46,7 @@ _aws_log_group_list() {
 	# Display in fzf with full keybindings
 	echo "$group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  CloudWatch Log Groups" \
+		--footer "$_fzf_icon CloudWatch Log Groups" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
 		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})"
@@ -111,7 +111,7 @@ _aws_log_stream_list() {
 	# Display stream list with keybindings
 	echo "$stream_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  CloudWatch Log Streams in $log_group_name" \
+		--footer "$_fzf_icon CloudWatch Log Streams in $log_group_name" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:become($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})"
