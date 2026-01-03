@@ -41,6 +41,7 @@ aws fzf s3 bucket list           # Browse S3 buckets
 aws fzf ecs cluster list         # Browse ECS clusters
 aws fzf rds cluster list         # Browse RDS clusters
 aws fzf rds instance list        # Browse RDS instances
+aws fzf dsql cluster list        # Browse DSQL clusters
 aws fzf logs group list          # Browse CloudWatch logs
 ```
 
@@ -49,7 +50,7 @@ aws fzf logs group list          # Browse CloudWatch logs
 See [docs/README.md](docs/README.md) for complete documentation including:
 
 - Configuration (profiles, regions, environment variables), shortcuts
-- Service Guides (`S3`, `SSM`, `Secrets Manager`, `ECS`, `Lambda`, `CloudWatch Logs`, `RDS`)
+- Service Guides (`S3`, `SSM`, `Secrets Manager`, `ECS`, `Lambda`, `CloudWatch Logs`, `RDS`, `DSQL`)
 
 ## Contributing
 

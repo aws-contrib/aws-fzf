@@ -15,6 +15,7 @@ Complete guide for using aws-fzf, an interactive fuzzy finder for AWS resources.
   - [Lambda](#lambda)
   - [CloudWatch Logs](#cloudwatch-logs)
   - [RDS](#rds)
+  - [DSQL](#dsql)
 
 ---
 
@@ -256,6 +257,15 @@ Complete reference of keyboard shortcuts across all services.
 | `enter` | View cluster details (full JSON) |
 | `ctrl-o` | Open cluster in AWS Console |
 | `alt-c` | Connect with psql (PostgreSQL only, IAM auth required) |
+
+### DSQL
+
+#### Clusters
+| Key | Action |
+|-----|--------|
+| `enter` | View cluster details (full JSON) |
+| `ctrl-o` | Open cluster in AWS Console |
+| `alt-c` | Connect with psql (IAM auth) |
 
 ---
 
@@ -625,3 +635,61 @@ Press `alt-c` to connect to a PostgreSQL database using IAM authentication:
 3. Generates IAM auth token (valid for 15 minutes)
 4. Launches psql with connection parameters
 5. Connected to postgres database as master user
+
+---
+
+### DSQL
+
+Browse Amazon Aurora DSQL clusters interactively.
+
+#### Usage
+
+**List Clusters**
+
+```bash
+# List all DSQL clusters
+aws fzf dsql cluster list
+
+# With specific region
+aws fzf dsql cluster list --region us-west-2
+
+# With specific profile
+aws fzf dsql cluster list --profile production
+```
+
+#### Keyboard Shortcuts
+
+- `enter` - Show cluster details (full JSON)
+- `ctrl-o` - Open cluster in AWS Console
+- `alt-c` - Connect to cluster with psql
+
+#### Connecting to Clusters
+
+Press `alt-c` to connect to a DSQL cluster using IAM authentication:
+
+**Requirements:**
+- `psql` client installed (`brew install postgresql`)
+- Proper IAM permissions to generate DSQL auth tokens
+
+**IAM Permissions Required:**
+```json
+{
+  "Effect": "Allow",
+  "Action": "dsql:DbConnect",
+  "Resource": "arn:aws:dsql:region:account:cluster/cluster-id"
+}
+```
+
+**Connection Flow:**
+1. Press `alt-c` on a cluster
+2. Tool fetches cluster endpoint
+3. Generates IAM auth token (valid for 1 hour)
+4. Launches psql with connection parameters
+5. Connected as `admin` user to `postgres` database
+
+**Tips:**
+- DSQL is always PostgreSQL-compatible
+- IAM authentication is always enabled
+- Default username is `admin`
+- Auth tokens are valid for 1 hour (vs 15 minutes for RDS)
+- No need to enable IAM auth - it's built-in

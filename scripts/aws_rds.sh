@@ -33,7 +33,7 @@ _aws_rds_instance_list() {
 	# shellcheck disable=SC2128
 	instance_list="$(
 		gum spin --title "Loading AWS RDS Instances..." -- \
-			$_aws_rds_source_dir/aws_rds_cmd.sh batch-describe-db-instances $list_instances_args |
+			aws rds describe-db-instances $list_instances_args --output json |
 			jq -r "$instance_list_jq" | column -t -s $'\t'
 	)"
 
@@ -80,7 +80,7 @@ _aws_rds_cluster_list() {
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS RDS Clusters..." -- \
-			$_aws_rds_source_dir/aws_rds_cmd.sh batch-describe-db-clusters $list_clusters_args |
+			aws rds describe-db-clusters $list_clusters_args --output json |
 			jq -r "$cluster_list_jq" | column -t -s $'\t'
 	)"
 

@@ -12,6 +12,7 @@ source "$_aws_fzf_source_dir/scripts/aws_log.sh"
 source "$_aws_fzf_source_dir/scripts/aws_ecs.sh"
 source "$_aws_fzf_source_dir/scripts/aws_s3.sh"
 source "$_aws_fzf_source_dir/scripts/aws_rds.sh"
+source "$_aws_fzf_source_dir/scripts/aws_dsql.sh"
 
 # _show_root_help()
 #
@@ -69,6 +70,9 @@ COMMANDS:
     RDS:
         aws fzf rds instance list                 Browse RDS instances
         aws fzf rds cluster list                  Browse RDS Aurora clusters
+
+    DSQL:
+        aws fzf dsql cluster list                 Browse DSQL clusters
 
 GLOBAL OPTIONS:
     All AWS CLI options are supported and passed through:
@@ -163,12 +167,15 @@ main() {
     rds)
         _aws_rds_main "$@"
         ;;
+    dsql)
+        _aws_dsql_main "$@"
+        ;;
     --help | -h | help | "")
         _show_root_help
         ;;
     *)
         gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql"
         gum log --level info "Run 'aws fzf --help' for detailed usage information"
         exit 1
         ;;
