@@ -53,7 +53,7 @@ _aws_lambda_list() {
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})+abort" \
-		--bind "alt-h:execute($_aws_lambda_source_dir/aws_log_cmd.sh view-log /aws/lambda/{1})+abort" \
+		--bind "alt-h:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})+abort" \
 		--bind "alt-a:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-name {1})"
 }
@@ -93,7 +93,7 @@ PERFORMANCE:
 LOG TAILING:
     Press alt-t to tail CloudWatch logs for the selected function.
     Logs are streamed from /aws/lambda/<function-name> log group.
-    Set AWS_FZF_LOG_PAGER=lnav for interactive log viewing.
+    Set AWS_FZF_LOG_VIEWER=lnav for interactive log viewing.
 
 EXAMPLES:
     # List all Lambda functions

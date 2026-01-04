@@ -160,7 +160,7 @@ Control how tail logs are displayed:
 
 ```bash
 # Use lnav for interactive log viewing
-export AWS_FZF_LOG_PAGER=lnav
+export AWS_FZF_LOG_VIEWER=lnav
 aws fzf logs group list  # alt-t will pipe through lnav
 ```
 
@@ -595,12 +595,12 @@ Tail logs in real-time using `alt-t`:
 
 ```bash
 # Set lnav as your log pager (optional)
-export AWS_FZF_LOG_PAGER=lnav
+export AWS_FZF_LOG_VIEWER=lnav
 
 # Then press alt-t on any log group or stream to tail logs
 ```
 
-If `AWS_FZF_LOG_PAGER` is set to `lnav`, logs will be piped through lnav for interactive viewing. Otherwise, logs are displayed directly in the terminal.
+If `AWS_FZF_LOG_VIEWER` is set to `lnav`, logs will be piped through lnav for interactive viewing. Otherwise, logs are displayed directly in the terminal.
 
 #### Tips
 
@@ -1070,7 +1070,7 @@ sudo apt-get install lnav
 **Set log pager:**
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
-export AWS_FZF_LOG_PAGER=lnav
+export AWS_FZF_LOG_VIEWER=lnav
 
 # Reload shell
 source ~/.bashrc  # or source ~/.zshrc

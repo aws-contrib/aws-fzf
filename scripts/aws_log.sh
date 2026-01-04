@@ -52,7 +52,7 @@ _aws_log_group_list() {
 		--footer "$_fzf_icon CloudWatch Log Groups" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
-		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-log {1})" \
+		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh read-log {1})" \
 		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})"
@@ -121,7 +121,7 @@ _aws_log_stream_list() {
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
-		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh view-log '$log_group_name' {1})" \
+		--bind "alt-h:execute($_aws_log_source_dir/aws_log_cmd.sh read-log '$log_group_name' {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
 		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})"
 }
@@ -174,10 +174,10 @@ LOG VIEWING:
     Press alt-t to tail logs in real-time (follows new events).
     Press alt-h to view historical logs (time-range query).
 
-    Set AWS_FZF_LOG_PAGER=lnav for interactive log viewing with search/filter.
+    Set AWS_FZF_LOG_VIEWER=lnav for interactive log viewing with search/filter.
     Set AWS_FZF_LOG_HISTORY_HOURS=24 to view last 24 hours (default: 1 hour).
 
-    Without AWS_FZF_LOG_PAGER, logs are displayed in less by default.
+    Without AWS_FZF_LOG_VIEWER, logs are displayed in less by default.
 
 EXAMPLES:
     # List all log groups

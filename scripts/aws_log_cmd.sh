@@ -72,32 +72,26 @@ _tail_log() {
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
 
-	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed)
+	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed --no-cli-pager)
 	# Add log stream name if provided
 	if [ -n "$log_stream_name" ]; then
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	# Check if running interactively (stdout is a terminal)
-	if [ -t 1 ]; then
-		# Interactive: pipe through user's preferred pager
-		"${log_tail_cmd[@]}" |& ${AWS_FZF_LOG_PAGER:-${PAGER:-less}}
-	else
-		# Non-interactive (piped/redirected): output directly
-		"${log_tail_cmd[@]}"
-	fi
+	# Open in pager
+	_view_log "${log_tail_cmd[@]}"
 }
 
-# _view_history_log()
+# _read_log()
 #
-# View historical CloudWatch logs for a log group or specific stream
+# List historical CloudWatch log events for a log group or specific stream
 #
 # PARAMETERS:
 #   <log-group-name> - Log group name (required, positional)
 #   [stream-name]    - Optional stream name (positional). If omitted, searches all streams.
 #
 # ENVIRONMENT VARIABLES:
-#   AWS_FZF_LOG_PAGER         - Default pager command (e.g., lnav, less, cat)
+#   AWS_FZF_LOG_VIEWER         - Default pager command (e.g., lnav, less, cat)
 #   AWS_FZF_LOG_HISTORY_HOURS - Number of hours to look back (default: 1)
 #
 # DESCRIPTION:
@@ -106,7 +100,7 @@ _tail_log() {
 #   - If stream-name is omitted: searches all streams in the log group
 #   Displays logs through configured pager (lnav/less/direct output).
 #
-_view_log() {
+_read_log() {
 	local log_tail_cmd=()
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
@@ -126,6 +120,7 @@ _view_log() {
 		--end-time "$log_end_time"
 		--limit 10000
 		--output json
+		--no-cli-pager
 	)
 
 	# Add log stream name if provided
@@ -133,26 +128,29 @@ _view_log() {
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	# Check if running interactively (stdout is a terminal)
-	if [ -t 1 ]; then
+	# Open in pager
+	_view_log "${log_tail_cmd[@]}"
+}
+
+_view_log() {
+	local log_tail_cmd
+	# Construct command to string
+	log_tail_cmd="$(printf '%q ' "${@}")"
+
+	if [[ $log_tail_cmd == *filter-log-events* ]]; then
+		log_tail_cmd="$log_tail_cmd | jq -r -f $_aws_log_cmd_source_dir/aws_log.jq"
+	fi
+
+	if [[ "$AWS_FZF_LOG_VIEWER" == "lnav" ]]; then
+		lnav -e "$log_tail_cmd"
+	else
 		# Interactive: save to temp file and open in pager
 		local log_file
 		log_file=$(mktemp -t "aws-log-XXXXXX.log")
-
-		# Fetch logs and save to temp file in tail log format
-		gum spin --title "Getting AWS CloudWatch Log Stream to $log_file..." -- \
-			"${log_tail_cmd[@]}" | jq -r '.events[] | "\(.timestamp / 1000 | todateiso8601) \(.logStreamName) \(.message)"' >"$log_file"
-
-		# Open in pager
-		${AWS_FZF_LOG_PAGER:-${PAGER:-less}} "$log_file"
-
+		# Write logs to temp file and open in less
+		bash -c "$log_tail_cmd | tail -a $log_file | less +F"
 		# Inform user about the file location
 		gum log --level info "Logs saved to: $log_file"
-
-	else
-		# Non-interactive (piped/redirected): output raw JSON
-		gum spin --title "Getting AWS CloudWatch Log Stream to $log_file..." -- \
-			"${log_tail_cmd[@]}"
 	fi
 }
 
@@ -278,9 +276,9 @@ tail-log)
 	shift
 	_tail_log "$@"
 	;;
-view-log)
+read-log)
 	shift
-	_view_log "$@"
+	_read_log "$@"
 	;;
 copy-group-arn)
 	shift
@@ -304,7 +302,7 @@ CONSOLE VIEWS:
 
 LOG OPERATIONS:
     aws_log_cmd tail-log <log-group-name> [stream-name]
-    aws_log_cmd view-history <log-group-name> [stream-name]
+    aws_log_cmd read-log <log-group-name> [stream-name]
 
 CLIPBOARD OPERATIONS:
     aws_log_cmd copy-group-arn <log-group-name>
@@ -318,15 +316,15 @@ DESCRIPTION:
     - tail-log: Streams logs in real-time (exit with Ctrl+C)
                 If stream-name omitted: tails all streams in group
                 If stream-name provided: tails specific stream
-    - view-history: View historical logs within a time range
-                    If stream-name omitted: searches all streams in group
-                    If stream-name provided: filters to specific stream
+    - read-log: Read historical logs within a time range
+                If stream-name omitted: searches all streams in group
+                If stream-name provided: filters to specific stream
     - copy-group-arn: Copies log group ARN to clipboard
     - copy-group-name: Copies log group name to clipboard
     - copy-stream-name: Copies stream name to clipboard
 
 ENVIRONMENT VARIABLES:
-    AWS_FZF_LOG_PAGER          Default pager for log viewing (e.g., lnav, less).
+    AWS_FZF_LOG_VIEWER          Default pager for log viewing (e.g., lnav, less).
                                Currently only lnav is specially handled.
     AWS_FZF_LOG_HISTORY_HOURS  Number of hours to look back for historical logs (default: 1)
 
@@ -338,15 +336,15 @@ EXAMPLES:
     aws_log_cmd tail-log /aws/lambda/my-function 2025/01/01/[$LATEST]abc123
 
     # View last hour of logs (default)
-    aws_log_cmd view-history /aws/lambda/my-function
+    aws_log_cmd read-log /aws/lambda/my-function
 
     # View last 24 hours of logs
     export AWS_FZF_LOG_HISTORY_HOURS=24
-    aws_log_cmd view-history /aws/lambda/my-function
+    aws_log_cmd read-log /aws/lambda/my-function
 
     # Use lnav for interactive viewing
-    export AWS_FZF_LOG_PAGER=lnav
-    aws_log_cmd view-history /aws/lambda/my-function
+    export AWS_FZF_LOG_VIEWER=lnav
+    aws_log_cmd read-log /aws/lambda/my-function
 
 EOF
 	;;
