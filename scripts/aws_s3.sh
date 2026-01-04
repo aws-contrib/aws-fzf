@@ -117,7 +117,7 @@ _aws_s3_object_list() {
 
 	# Get first page of objects (up to 1000)
 	object_list="$(
-		gum spin --title "Loading AWS S3 Objects..." -- \
+		gum spin --title "Loading AWS S3 Objects from $bucket..." -- \
 			aws s3api list-objects-v2 --bucket "$bucket" --max-items 1000 "${list_objects_args[@]}" --output json |
 			jq -r "$object_list_jq" | column -t -s $'\t'
 	)"

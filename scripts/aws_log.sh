@@ -104,7 +104,7 @@ _aws_log_stream_list() {
 
 	# Get and describe streams
 	stream_list="$(
-		gum spin --title "Loading AWS CloudWatch Log Streams..." -- \
+		gum spin --title "Loading AWS CloudWatch Log Streams from $log_group_name..." -- \
 			aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items 1000 "${list_streams_args[@]}" --output json |
 			jq -r "$stream_list_jq" | column -t -s $'\t'
 	)"

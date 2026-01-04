@@ -103,7 +103,7 @@ _aws_ecs_service_list() {
 
 	# Get and describe services in batches
 	service_list="$(
-		gum spin --title "Loading AWS ECS Services..." -- \
+		gum spin --title "Loading AWS ECS Services from $cluster..." -- \
 			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" batch-describe-services "$cluster" "${list_services_args[@]}" |
 			jq -rs "$service_list_jq" | column -t -s $'\t'
 	)"
@@ -169,7 +169,7 @@ _aws_ecs_task_list() {
 
 	# Get the AWS ECS Task IDs - batch process to handle API limits
 	task_list="$(
-		gum spin --title "Loading AWS ECS Tasks..." -- \
+		gum spin --title "Loading AWS ECS Tasks from $cluster..." -- \
 			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" batch-describe-tasks "$cluster" "${list_tasks_args[@]}" |
 			jq -rs "$task_list_jq" | column -t -s $'\t'
 	)"
