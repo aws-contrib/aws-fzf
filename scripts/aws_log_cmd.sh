@@ -91,8 +91,9 @@ _tail_log() {
 #   [stream-name]    - Optional stream name (positional). If omitted, searches all streams.
 #
 # ENVIRONMENT VARIABLES:
-#   AWS_FZF_LOG_VIEWER         - Default pager command (e.g., lnav, less, cat)
-#   AWS_FZF_LOG_HISTORY_HOURS - Number of hours to look back (default: 1)
+#   AWS_FZF_LOG_VIEWER      - Default pager command (e.g., lnav, less, cat)
+#   AWS_FZF_LOG_HISTORY     - Duration to look back (default: 1h).
+#                             Formats: 15m (minutes), 2h (hours), 1d (days)
 #
 # DESCRIPTION:
 #   Retrieves historical CloudWatch logs within a time range.
@@ -108,10 +109,17 @@ _read_log() {
 	local log_end_time
 
 	# Get time range
-	local hours="${AWS_FZF_LOG_HISTORY_HOURS:-1}"
+	local history="${AWS_FZF_LOG_HISTORY:-1h}"
+	local seconds
+	seconds=$(_parse_duration "$history")
+	if [[ -z "$seconds" ]]; then
+		gum log --level error "Invalid format for AWS_FZF_LOG_HISTORY: '$history'"
+		gum log --level info "Use format like: 15m (minutes), 2h (hours), 1d (days)"
+		exit 1
+	fi
 
 	log_end_time=$(date +%s)000
-	log_start_time=$((($(date +%s) - (hours * 3600)) * 1000))
+	log_start_time=$((($(date +%s) - seconds) * 1000))
 
 	log_tail_cmd=(
 		aws logs filter-log-events
@@ -326,7 +334,8 @@ DESCRIPTION:
 ENVIRONMENT VARIABLES:
     AWS_FZF_LOG_VIEWER          Default pager for log viewing (e.g., lnav, less).
                                Currently only lnav is specially handled.
-    AWS_FZF_LOG_HISTORY_HOURS  Number of hours to look back for historical logs (default: 1)
+    AWS_FZF_LOG_HISTORY         Duration to look back for historical logs (default: 1h).
+                               Formats: 15m (minutes), 2h (hours), 1d (days).
 
 EXAMPLES:
     # Tail all streams in a log group (real-time)
@@ -339,7 +348,11 @@ EXAMPLES:
     aws_log_cmd read-log /aws/lambda/my-function
 
     # View last 24 hours of logs
-    export AWS_FZF_LOG_HISTORY_HOURS=24
+    export AWS_FZF_LOG_HISTORY=1d
+    aws_log_cmd read-log /aws/lambda/my-function
+
+    # View last 15 minutes of logs
+    export AWS_FZF_LOG_HISTORY=15m
     aws_log_cmd read-log /aws/lambda/my-function
 
     # Use lnav for interactive viewing

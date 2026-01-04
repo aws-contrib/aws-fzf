@@ -26,6 +26,7 @@ _fzf_options=(
 #   _get_aws_region()           - Get the current AWS region
 #   _open_url()                 - Open URL in default browser (cross-platform)
 #   _copy_to_clipboard()        - Copy text to clipboard (cross-platform)
+#   _parse_duration()           - Parse duration string into seconds
 
 # _get_aws_region()
 #
@@ -124,4 +125,42 @@ _copy_to_clipboard() {
 		gum log --level info "Install: pbcopy (macOS), xclip/xsel (X11), or wl-copy (Wayland)"
 		return 1
 	fi
+}
+
+# _parse_duration()
+#
+# Parse a duration string into seconds
+#
+# PARAMETERS:
+#   $1 - Duration string (e.g., "15s", "2m", "1h", "1d")
+#
+# DESCRIPTION:
+#   Parses a duration string (e.g., "15s" for 15 seconds, "2m" for 2 minutes,
+#   "1h" for 1 hour, "1d" for 1 day) and returns the total duration in seconds.
+#   Supports seconds (s), minutes (m), hours (h), and days (d).
+#
+# RETURNS:
+#   The duration in seconds if successful.
+#   Returns 1 (and no output) if the format is invalid.
+#
+# EXAMPLES:
+#   _parse_duration "30s"  # Returns 30
+#   _parse_duration "5m"   # Returns 300
+#   _parse_duration "2h"   # Returns 7200
+#   _parse_duration "1d"   # Returns 86400
+#
+_parse_duration() {
+	local value=$1
+	local num unit
+
+	[[ $value =~ ^([0-9]+)([smhd])$ ]] || return 1
+	num=${BASH_REMATCH[1]}
+	unit=${BASH_REMATCH[2]}
+
+	case "$unit" in
+	s) echo $((num)) ;;
+	m) echo $((num * 60)) ;;
+	h) echo $((num * 3600)) ;;
+	d) echo $((num * 86400)) ;;
+	esac
 }
