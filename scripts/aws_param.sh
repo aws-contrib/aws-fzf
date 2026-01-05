@@ -35,7 +35,7 @@ _aws_param_list() {
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	param_list="$(
-		gum spin --title "Loading AWS Parameters..." -- \
+		gum spin --title "Loading AWS System Manager Parameters..." -- \
 			aws ssm describe-parameters "${describe_params_args[@]}" --output json |
 			jq -r "$param_list_jq" | column -t -s $'\t'
 	)"
@@ -49,7 +49,7 @@ _aws_param_list() {
 	# Display in fzf with full keybindings
 	echo "$param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon Parameters" \
+		--footer "$_fzf_icon System Manager Parameters" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \

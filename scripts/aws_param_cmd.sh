@@ -45,7 +45,7 @@ _aws_params_copy_value() {
 	# Get parameter type first
 	local param_type
 	param_type=$(
-		gum spin --title "Getting AWS Parameter Type..." -- \
+		gum spin --title "Getting AWS System Manager $param_name Parameter Type..." -- \
 			aws ssm describe-parameters \
 			--filters "Key=Name,Values=$param_name" \
 			--query 'Parameters[0].Type' --output text
@@ -67,7 +67,7 @@ _aws_params_copy_value() {
 	# Get the value
 	local param_value
 	param_value=$(
-		gum spin --title "Getting AWS Parameter Value..." -- \
+		gum spin --title "Getting AWS System Manager $param_name Parameter Value..." -- \
 			aws ssm get-parameter --name "$param_name" --with-decryption --query Parameter.Value --output text
 	)
 
@@ -119,9 +119,9 @@ _aws_params_view_parameter() {
 #   Constructs the parameter ARN and copies it to the clipboard
 #
 _aws_param_copy_arn() {
-	local param="${1:-}"
+	local param_name="${1:-}"
 
-	if [ -z "$param" ]; then
+	if [ -z "$param_name" ]; then
 		gum log --level error "Parameter name is required"
 		exit 1
 	fi
@@ -134,9 +134,9 @@ _aws_param_copy_arn() {
 	)
 
 	# Remove leading slash if present for ARN construction
-	local param_path="${param#/}"
-	local arn="arn:aws:ssm:${region}:${account_id}:parameter/${param_path}"
-	_copy_to_clipboard "$arn" "parameter ARN"
+	local param_path="${param_name#/}"
+	local param_arn="arn:aws:ssm:${region}:${account_id}:parameter/${param_path}"
+	_copy_to_clipboard "$param_arn" "parameter ARN"
 }
 
 # _aws_param_copy_name()
