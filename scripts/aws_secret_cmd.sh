@@ -44,7 +44,7 @@ _aws_secrets_copy_value() {
 	# Get the secret value
 	local secret_value
 	secret_value=$(
-		gum spin --title "Getting AWS Secret Value..." -- \
+		gum spin --title "Getting AWS Secret Manager $secret_name Secret Value..." -- \
 			aws secretsmanager get-secret-value --secret-id "$secret_name" --query SecretString --output text
 	)
 
@@ -95,25 +95,25 @@ _aws_secrets_view_secret() {
 #   Fetches the secret ARN and copies it to the clipboard
 #
 _aws_secret_copy_arn() {
-	local secret="${1:-}"
+	local secret_name="${1:-}"
 
-	if [ -z "$secret" ]; then
+	if [ -z "$secret_name" ]; then
 		gum log --level error "Secret name is required"
 		exit 1
 	fi
 
-	local arn
-	arn=$(
-		gum spin --title "Getting AWS Secret ARN..." -- \
-			aws secretsmanager describe-secret --secret-id "$secret" --query ARN --output text
+	local secret_arn
+	secret_arn=$(
+		gum spin --title "Getting AWS Secret Manager $secret_name Secret ARN..." -- \
+			aws secretsmanager describe-secret --secret-id "$secret_name" --query ARN --output text
 	)
 
-	if [ -z "$arn" ]; then
+	if [ -z "$secret_arn" ]; then
 		gum log --level error "Failed to fetch secret ARN"
 		exit 1
 	fi
 
-	_copy_to_clipboard "$arn" "secret ARN"
+	_copy_to_clipboard "$secret_arn" "secret ARN"
 }
 
 # _aws_secret_copy_name()
@@ -127,14 +127,14 @@ _aws_secret_copy_arn() {
 #   Copies the secret name to the clipboard
 #
 _aws_secret_copy_name() {
-	local secret="${1:-}"
+	local secret_name="${1:-}"
 
-	if [ -z "$secret" ]; then
+	if [ -z "$secret_name" ]; then
 		gum log --level error "Secret name is required"
 		exit 1
 	fi
 
-	_copy_to_clipboard "$secret" "secret name"
+	_copy_to_clipboard "$secret_name" "secret name"
 }
 
 # Command router

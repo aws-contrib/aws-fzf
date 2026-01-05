@@ -35,7 +35,7 @@ _aws_secret_list() {
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	secrets_list="$(
-		gum spin --title "Loading AWS Secrets..." -- \
+		gum spin --title "Loading AWS Secret Manager Secrets..." -- \
 			aws secretsmanager list-secrets "${list_secrets_args[@]}" --output json |
 			jq -r "$secrets_list_jq" | column -t -s $'\t'
 	)"
@@ -49,7 +49,7 @@ _aws_secret_list() {
 	# Display in fzf with full keybindings
 	echo "$secrets_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon Secrets" \
+		--footer "$_fzf_icon Secret Manager Secrets" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "alt-a:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
