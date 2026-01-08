@@ -52,8 +52,8 @@ _aws_dynamodb_table_list() {
 		--with-nth=1.. --accept-nth 1 \
 		--footer "$_fzf_icon DynamoDB Tables" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
+		--bind "ctrl-O:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
 		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq .)+abort" \
-		--bind "alt-enter:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
 		--bind "alt-a:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-name {1})"
 }
@@ -78,7 +78,7 @@ KEYBOARD SHORTCUTS:
     All resources:
         enter       View table details (full JSON)
         ctrl-o      Open table in AWS Console (overview)
-        alt-enter   Open items explorer in AWS Console
+        ctrl-O      Open items explorer in AWS Console
         alt-a       Copy table ARN to clipboard
         alt-n       Copy table name to clipboard
 
