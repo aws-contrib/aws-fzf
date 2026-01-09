@@ -100,8 +100,38 @@ _aws_lambda_copy_name() {
 	_copy_to_clipboard "$function" "function name"
 }
 
+# _aws_lambda_list_cmd()
+#
+# Fetch and format Lambda functions for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, --max-items, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list Lambda functions and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_lambda_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local function_list_jq='(["NAME", "RUNTIME", "MODIFIED"] | @tsv),
+	                        (.Functions[] | [.FunctionName, (.Runtime // "none"), (.LastModified[0:19] | gsub("T"; " "))] | @tsv)'
+
+	# Fetch and format Lambda functions (without gum spin - caller handles that)
+	aws lambda list-functions "${list_args[@]}" --output json |
+		jq -r "$function_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list)
+	shift
+	_aws_lambda_list_cmd "$@"
+	;;
 view-function)
 	shift
 	_aws_lambda_view_function "$@"
@@ -118,6 +148,9 @@ copy-name)
 	cat <<'EOF'
 aws_lambda_cmd - Utility commands for Lambda operations
 
+LISTING:
+    aws_lambda_cmd list [aws-cli-args]
+
 CONSOLE VIEWS:
     aws_lambda_cmd view-function <function-name>
 
@@ -130,12 +163,16 @@ LOG OPERATIONS:
 
 DESCRIPTION:
     Utility commands for Lambda operations.
+    list fetches and formats Lambda functions for fzf display.
     view-function opens Lambda functions in the AWS Console.
     copy-arn copies the function ARN to clipboard.
     copy-name copies the function name to clipboard.
     tail-logs tails the function's CloudWatch Logs.
 
 EXAMPLES:
+    # List functions (for fzf reload)
+    aws_lambda_cmd list --region us-east-1
+
     # Console view
     aws_lambda_cmd view-function my-function
 
@@ -150,7 +187,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_lambda_cmd {view-function} [args]"
+	gum log --level info "Usage: aws_lambda_cmd {list|view-function|copy-arn|copy-name} [args]"
 	gum log --level info "Run 'aws_lambda_cmd --help' for more information"
 	exit 1
 	;;

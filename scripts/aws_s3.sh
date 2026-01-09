@@ -42,18 +42,12 @@ _aws_s3_bucket_list() {
 	local list_buckets_args=("$@")
 
 	local bucket_list
-	local bucket_list_jq
-	# Define jq formatting
-	bucket_list_jq='(["NAME", "CREATED"] | @tsv),
-	                (.Buckets[] | [.Name, (.CreationDate[0:19] | gsub("T"; " "))] | @tsv)'
-
-	# Fetch bucket list
+	# Call the _cmd script to fetch and format buckets
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	bucket_list="$(
 		gum spin --title "Loading AWS S3 Buckets..." -- \
-			aws s3api list-buckets "${list_buckets_args[@]}" --output json |
-			jq -r "$bucket_list_jq" | column -t -s $'\t'
+			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-buckets "${list_buckets_args[@]}"
 	)"
 
 	if [ -z "$bucket_list" ]; then
@@ -68,6 +62,7 @@ _aws_s3_bucket_list() {
 	echo "$bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Buckets $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-buckets ${list_buckets_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
 		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
@@ -114,15 +109,10 @@ _aws_s3_object_list() {
 	fi
 
 	local object_list
-	# Define jq formatting for object list (single page response)
-	local object_list_jq='[["KEY", "SIZE", "STORAGE CLASS", "MODIFIED"]] +
-	                      ([.Contents[]? // []] | map([.Key, .Size, .StorageClass, (.LastModified[0:19] | gsub("T"; " "))])) | .[] | @tsv'
-
-	# Get first page of objects (up to 1000)
+	# Call the _cmd script to fetch and format objects
 	object_list="$(
 		gum spin --title "Loading AWS S3 Objects from $bucket..." -- \
-			aws s3api list-objects-v2 --bucket "$bucket" --max-items 1000 "${list_objects_args[@]}" --output json |
-			jq -r "$object_list_jq" | column -t -s $'\t'
+			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-objects "$bucket" "${list_objects_args[@]}"
 	)"
 
 	if [ -z "$object_list" ]; then
@@ -137,6 +127,7 @@ _aws_s3_object_list() {
 	echo "$object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket" \
+		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-objects '$bucket' ${list_objects_args[*]})" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn $bucket {1})" \
@@ -175,12 +166,14 @@ PERFORMANCE:
 
 KEYBOARD SHORTCUTS:
     Buckets:
+        ctrl-r      Reload the list
         ctrl-o      Open bucket in AWS Console
         alt-enter   List objects in bucket
         alt-a       Copy bucket ARN to clipboard
         alt-n       Copy bucket name to clipboard
 
     Objects:
+        ctrl-r      Reload the list
         enter       View object metadata
         ctrl-o      Open object in AWS Console
         alt-a       Copy object ARN to clipboard

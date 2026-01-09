@@ -137,8 +137,38 @@ _aws_secret_copy_name() {
 	_copy_to_clipboard "$secret_name" "secret name"
 }
 
+# _aws_secret_list_cmd()
+#
+# Fetch and format secrets for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, --filters, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list secrets and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_secret_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local secrets_list_jq='(["NAME", "DESCRIPTION", "MODIFIED"] | @tsv),
+	                       (.SecretList[] | [.Name, ((.Description // "N/A") | if length > 50 then .[0:47] + "..." else . end), (.LastChangedDate[0:19] | gsub("T"; " "))] | @tsv)'
+
+	# Fetch and format secrets (without gum spin - caller handles that)
+	aws secretsmanager list-secrets "${list_args[@]}" --output json |
+		jq -r "$secrets_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list)
+	shift
+	_aws_secret_list_cmd "$@"
+	;;
 copy-value)
 	shift
 	_aws_secrets_copy_value "$@"
@@ -159,6 +189,9 @@ copy-name)
 	cat <<'EOF'
 aws_secret_cmd - Utility commands for Secrets Manager operations
 
+LISTING:
+    aws_secret_cmd list [aws-cli-args]
+
 CONSOLE OPERATIONS:
     aws_secret_cmd view-secret <secret-name>
 
@@ -169,12 +202,16 @@ CLIPBOARD OPERATIONS:
 
 DESCRIPTION:
     Utility commands for Secrets Manager operations.
-    copy-value copies secret value to clipboard
+    list fetches and formats secrets for fzf display.
+    copy-value copies secret value to clipboard.
     view-secret opens secrets in the AWS Console.
     copy-arn copies the secret ARN to clipboard.
     copy-name copies the secret name to clipboard.
 
 EXAMPLES:
+    # List secrets (for fzf reload)
+    aws_secret_cmd list --region us-east-1
+
     # Copy secret value to clipboard
     aws_secret_cmd copy-value my-database-password
 
@@ -189,7 +226,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_secret_cmd {copy-value|view-secret|copy-arn|copy-name} [args]"
+	gum log --level info "Usage: aws_secret_cmd {list|copy-value|view-secret|copy-arn|copy-name} [args]"
 	gum log --level info "Run 'aws_secret_cmd --help' for more information"
 	exit 1
 	;;

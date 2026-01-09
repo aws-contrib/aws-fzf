@@ -27,17 +27,12 @@ _aws_rds_instance_list() {
 	local list_instances_args=("$@")
 
 	local instance_list
-	# Define jq formatting
-	local instance_list_jq='(["ID", "ENGINE", "STATUS", "CLASS"] | @tsv),
-	                        (.DBInstances[] | [.DBInstanceIdentifier, .Engine, .DBInstanceStatus, .DBInstanceClass] | @tsv)'
-
-	# Fetch DB instances
+	# Call the _cmd script to fetch and format instances
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	instance_list="$(
 		gum spin --title "Loading AWS RDS Instances..." -- \
-			aws rds describe-db-instances "${list_instances_args[@]}" --output json |
-			jq -r "$instance_list_jq" | column -t -s $'\t'
+			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-instances "${list_instances_args[@]}"
 	)"
 
 	# Check if any instances were found
@@ -53,6 +48,7 @@ _aws_rds_instance_list() {
 	echo "$instance_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Instances $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_rds_source_dir/aws_rds_cmd.sh list-instances ${list_instances_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq .)+abort" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})" \
@@ -79,17 +75,12 @@ _aws_rds_cluster_list() {
 	local list_clusters_args=("$@")
 
 	local cluster_list
-	# Define jq formatting
-	local cluster_list_jq='(["ID", "ENGINE", "STATUS", "MEMBERS"] | @tsv),
-	                       (.DBClusters[] | [.DBClusterIdentifier, .Engine, .Status, (.DBClusterMembers | length)] | @tsv)'
-
-	# Fetch DB clusters
+	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS RDS Clusters..." -- \
-			aws rds describe-db-clusters "${list_clusters_args[@]}" --output json |
-			jq -r "$cluster_list_jq" | column -t -s $'\t'
+			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-clusters "${list_clusters_args[@]}"
 	)"
 
 	# Check if any clusters were found
@@ -105,6 +96,7 @@ _aws_rds_cluster_list() {
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Clusters $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_rds_source_dir/aws_rds_cmd.sh list-clusters ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq .)+abort" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})" \
@@ -132,6 +124,7 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     All resources:
+        ctrl-r      Reload the list
         ctrl-o      Open resource in AWS Console
         enter       View resource details (full JSON)
         alt-c       Connect to database with psql (PostgreSQL only, requires IAM auth)

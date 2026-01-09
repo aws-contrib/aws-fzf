@@ -27,18 +27,12 @@ _aws_dynamodb_table_list() {
 	local list_tables_args=("$@")
 
 	local table_list
-	# Define jq formatting
-	# list-tables returns simple array of table names
-	local table_list_jq='(["TABLE NAME"] | @tsv),
-	                     (.TableNames[] | [.] | @tsv)'
-
-	# Fetch DynamoDB tables
+	# Call the _cmd script to fetch and format tables
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	table_list="$(
 		gum spin --title "Loading AWS DynamoDB Tables..." -- \
-			aws dynamodb list-tables "${list_tables_args[@]}" --output json |
-			jq -r "$table_list_jq" | column -t -s $'\t'
+			"$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh" list "${list_tables_args[@]}"
 	)"
 
 	# Check if any tables were found
@@ -54,6 +48,7 @@ _aws_dynamodb_table_list() {
 	echo "$table_list" | fzf "${_fzf_options[@]}" \
 		--with-nth=1.. --accept-nth 1 \
 		--footer "$_fzf_icon DynamoDB Tables $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh list ${list_tables_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "ctrl-O:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
 		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq .)+abort" \
@@ -79,6 +74,7 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     All resources:
+        ctrl-r      Reload the list
         enter       View table details (full JSON)
         ctrl-o      Open table in AWS Console (overview)
         ctrl-O      Open items explorer in AWS Console

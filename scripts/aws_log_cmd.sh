@@ -270,8 +270,77 @@ _copy_stream_name() {
 	_copy_to_clipboard "$stream" "log stream name"
 }
 
+# _aws_log_group_list_cmd()
+#
+# Fetch and format CloudWatch log groups for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, --log-group-name-prefix, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list CloudWatch log groups and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_log_group_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local group_list_jq='(["NAME", "RETENTION", "STORED BYTES", "CREATED"] | @tsv),
+	                     (.logGroups[] | [.logGroupName, (.retentionInDays // "Never expire" | tostring), .storedBytes, (.creationTime / 1000 | strftime("%Y-%m-%d"))] | @tsv)'
+
+	# Fetch and format CloudWatch log groups (without gum spin - caller handles that)
+	aws logs describe-log-groups "${list_args[@]}" --output json |
+		jq -r "$group_list_jq" | column -t -s $'\t'
+}
+
+# _aws_log_stream_list_cmd()
+#
+# Fetch and format CloudWatch log streams for fzf display
+#
+# PARAMETERS:
+#   $1 - Log group name (required)
+#   $@ - Additional AWS CLI arguments (--order-by, --descending, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list CloudWatch log streams and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_log_stream_list_cmd() {
+	local log_group_name="${1:-}"
+
+	if [ -z "$log_group_name" ]; then
+		gum log --level error "Log group name is required"
+		exit 1
+	fi
+
+	shift
+	local list_args=("$@")
+
+	# Define jq formatting for stream list
+	local stream_list_jq='(["NAME", "LAST EVENT", "INGESTED"] | @tsv),
+	                      (.logStreams[] | [.logStreamName, (.lastEventTimestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), (.lastIngestionTime / 1000 | strftime("%Y-%m-%d %H:%M:%S"))] | @tsv)'
+
+	# Fetch and format CloudWatch log streams (without gum spin - caller handles that)
+	aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items 1000 "${list_args[@]}" --output json |
+		jq -r "$stream_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list-groups)
+	shift
+	_aws_log_group_list_cmd "$@"
+	;;
+list-streams)
+	shift
+	_aws_log_stream_list_cmd "$@"
+	;;
 view-group)
 	shift
 	_view_log_group "$@"
@@ -304,6 +373,10 @@ copy-stream-name)
 	cat <<'EOF'
 aws_log_cmd - CloudWatch Logs operations
 
+LISTING:
+    aws_log_cmd list-groups [aws-cli-args]
+    aws_log_cmd list-streams <log-group-name> [aws-cli-args]
+
 CONSOLE VIEWS:
     aws_log_cmd view-group <log-group-name>
     aws_log_cmd view-stream <log-group-name> <stream-name>
@@ -318,7 +391,10 @@ CLIPBOARD OPERATIONS:
     aws_log_cmd copy-stream-name <stream-name>
 
 DESCRIPTION:
+    List commands fetch and format CloudWatch Logs resources for fzf display.
     View and tail CloudWatch Logs resources.
+    - list-groups: Fetches and formats log groups for fzf display
+    - list-streams: Fetches and formats log streams for fzf display
     - view-group: Opens log group in AWS Console
     - view-stream: Opens log stream in AWS Console
     - tail-log: Streams logs in real-time (exit with Ctrl+C)

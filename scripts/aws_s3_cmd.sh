@@ -165,8 +165,77 @@ _copy_object_key() {
 	_copy_to_clipboard "$key" "object key"
 }
 
+# _aws_s3_bucket_list_cmd()
+#
+# Fetch and format S3 buckets for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list S3 buckets and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_s3_bucket_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local bucket_list_jq='(["NAME", "CREATED"] | @tsv),
+	                (.Buckets[] | [.Name, (.CreationDate[0:19] | gsub("T"; " "))] | @tsv)'
+
+	# Fetch and format S3 buckets (without gum spin - caller handles that)
+	aws s3api list-buckets "${list_args[@]}" --output json |
+		jq -r "$bucket_list_jq" | column -t -s $'\t'
+}
+
+# _aws_s3_object_list_cmd()
+#
+# Fetch and format S3 objects for fzf display
+#
+# PARAMETERS:
+#   $1 - Bucket name (required)
+#   $@ - Additional AWS CLI arguments (--prefix, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list S3 objects in a bucket and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_s3_object_list_cmd() {
+	local bucket="${1:-}"
+
+	if [ -z "$bucket" ]; then
+		gum log --level error "Bucket name is required"
+		exit 1
+	fi
+
+	shift
+	local list_args=("$@")
+
+	# Define jq formatting for object list
+	local object_list_jq='[["KEY", "SIZE", "STORAGE CLASS", "MODIFIED"]] +
+	                      ([.Contents[]? // []] | map([.Key, .Size, .StorageClass, (.LastModified[0:19] | gsub("T"; " "))])) | .[] | @tsv'
+
+	# Fetch and format S3 objects (without gum spin - caller handles that)
+	aws s3api list-objects-v2 --bucket "$bucket" --max-items 1000 "${list_args[@]}" --output json |
+		jq -r "$object_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list-buckets)
+	shift
+	_aws_s3_bucket_list_cmd "$@"
+	;;
+list-objects)
+	shift
+	_aws_s3_object_list_cmd "$@"
+	;;
 view-bucket)
 	shift
 	_view_bucket "$@"
@@ -195,6 +264,10 @@ copy-object-key)
 	cat <<'EOF'
 aws_s3_cmd - Utility commands for S3 operations
 
+LISTING:
+    aws_s3_cmd list-buckets [aws-cli-args]
+    aws_s3_cmd list-objects <bucket-name> [aws-cli-args]
+
 CONSOLE VIEWS:
     aws_s3_cmd view-bucket <bucket-name>
     aws_s3_cmd view-object <bucket-name> <object-key>
@@ -206,10 +279,15 @@ CLIPBOARD OPERATIONS:
     aws_s3_cmd copy-object-key <object-key>
 
 DESCRIPTION:
+    list-buckets/list-objects: Fetches and formats S3 resources for fzf display.
     Opens S3 resources in the AWS Console via the default browser.
     Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
+    # List resources (for fzf reload)
+    aws_s3_cmd list-buckets
+    aws_s3_cmd list-objects my-bucket --prefix logs/
+
     # Console views
     aws_s3_cmd view-bucket my-bucket
     aws_s3_cmd view-object my-bucket path/to/file.txt
@@ -224,7 +302,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_s3_cmd {view-bucket|view-object} [args]"
+	gum log --level info "Usage: aws_s3_cmd {list-*|view-*|copy-*} [args]"
 	gum log --level info "Run 'aws_s3_cmd --help' for more information"
 	exit 1
 	;;

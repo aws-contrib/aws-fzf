@@ -27,17 +27,12 @@ _aws_param_list() {
 	local describe_params_args=("$@")
 
 	local param_list
-	# Define jq formatting
-	local param_list_jq='(["NAME", "TYPE", "VERSION", "MODIFIED"] | @tsv),
-	                     (.Parameters[] | [.Name, .Type, .Version, (.LastModifiedDate[0:19] | gsub("T"; " "))] | @tsv)'
-
-	# Fetch parameters
+	# Call the _cmd script to fetch and format parameters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	param_list="$(
 		gum spin --title "Loading AWS System Manager Parameters..." -- \
-			aws ssm describe-parameters "${describe_params_args[@]}" --output json |
-			jq -r "$param_list_jq" | column -t -s $'\t'
+			"$_aws_param_source_dir/aws_param_cmd.sh" list "${describe_params_args[@]}"
 	)"
 
 	# Check if any parameters were found
@@ -53,6 +48,7 @@ _aws_param_list() {
 	echo "$param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_param_source_dir/aws_param_cmd.sh list ${describe_params_args[*]})" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
@@ -80,6 +76,7 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     All resources:
+        ctrl-r      Reload the list
         enter       Show parameter metadata (without value)
         ctrl-o      Open parameter in AWS Console
         alt-v       Copy parameter value to clipboard (prompts for SecureString)

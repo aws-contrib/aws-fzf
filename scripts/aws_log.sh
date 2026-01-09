@@ -27,17 +27,12 @@ _aws_log_group_list() {
 	local list_groups_args=("$@")
 
 	local group_list
-	# Define jq formatting
-	local group_list_jq='(["NAME", "RETENTION", "STORED BYTES", "CREATED"] | @tsv),
-	                     (.logGroups[] | [.logGroupName, (.retentionInDays // "Never expire" | tostring), .storedBytes, (.creationTime / 1000 | strftime("%Y-%m-%d"))] | @tsv)'
-
-	# Get and describe log groups
+	# Call the _cmd script to fetch and format log groups
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	group_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Groups..." -- \
-			aws logs describe-log-groups "${list_groups_args[@]}" --output json |
-			jq -r "$group_list_jq" | column -t -s $'\t'
+			"$_aws_log_source_dir/aws_log_cmd.sh" list-groups "${list_groups_args[@]}"
 	)"
 
 	# Check if any groups were found
@@ -53,6 +48,7 @@ _aws_log_group_list() {
 	echo "$group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-groups ${list_groups_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log {1})" \
@@ -101,15 +97,10 @@ _aws_log_stream_list() {
 	fi
 
 	local stream_list
-	# Define jq formatting for stream list
-	local stream_list_jq='(["NAME", "LAST EVENT", "INGESTED"] | @tsv),
-	                      (.logStreams[] | [.logStreamName, (.lastEventTimestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), (.lastIngestionTime / 1000 | strftime("%Y-%m-%d %H:%M:%S"))] | @tsv)'
-
-	# Get and describe streams
+	# Call the _cmd script to fetch and format log streams
 	stream_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Streams from $log_group_name..." -- \
-			aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items 1000 "${list_streams_args[@]}" --output json |
-			jq -r "$stream_list_jq" | column -t -s $'\t'
+			"$_aws_log_source_dir/aws_log_cmd.sh" list-streams "$log_group_name" "${list_streams_args[@]}"
 	)"
 
 	if [ -z "$stream_list" ]; then
@@ -124,6 +115,7 @@ _aws_log_stream_list() {
 	echo "$stream_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
+		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-streams '$log_group_name' ${list_streams_args[*]})" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
@@ -155,6 +147,7 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     Log Groups:
+        ctrl-r      Reload the list
         ctrl-o      Open log group in AWS Console
         alt-t       Tail all streams in log group (terminal)
         alt-l       View historical logs (last N hours)
@@ -163,6 +156,7 @@ KEYBOARD SHORTCUTS:
         alt-n       Copy log group name to clipboard
 
     Log Streams:
+        ctrl-r      Reload the list
         enter       Show log stream metadata
         ctrl-o      Open log stream in AWS Console
         alt-t       Tail logs in terminal (follow new events)

@@ -120,8 +120,38 @@ _aws_dynamodb_copy_name() {
 	_copy_to_clipboard "$table" "table name"
 }
 
+# _aws_dynamodb_table_list_cmd()
+#
+# Fetch and format DynamoDB tables for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list DynamoDB tables and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_dynamodb_table_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local table_list_jq='(["TABLE NAME"] | @tsv),
+	                     (.TableNames[] | [.] | @tsv)'
+
+	# Fetch and format DynamoDB tables (without gum spin - caller handles that)
+	aws dynamodb list-tables "${list_args[@]}" --output json |
+		jq -r "$table_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list)
+	shift
+	_aws_dynamodb_table_list_cmd "$@"
+	;;
 view-table)
 	shift
 	_aws_dynamodb_view_table "$@"
@@ -142,6 +172,9 @@ copy-name)
 	cat <<'EOF'
 aws_dynamodb_cmd - Utility commands for DynamoDB operations
 
+LISTING:
+    aws_dynamodb_cmd list [aws-cli-args]
+
 CONSOLE VIEWS:
     aws_dynamodb_cmd view-table <table-name>
     aws_dynamodb_cmd view-items <table-name>
@@ -151,6 +184,7 @@ CLIPBOARD OPERATIONS:
     aws_dynamodb_cmd copy-name <table-name>
 
 DESCRIPTION:
+    list: Fetches and formats DynamoDB tables for fzf display.
     View commands open DynamoDB resources in the AWS Console via the default browser.
     Clipboard commands copy resource identifiers to the system clipboard.
 
@@ -160,6 +194,9 @@ DESCRIPTION:
     copy-name:  Copies the table name to clipboard
 
 EXAMPLES:
+    # List tables (for fzf reload)
+    aws_dynamodb_cmd list --region us-east-1
+
     # Console views
     aws_dynamodb_cmd view-table my-table
     aws_dynamodb_cmd view-items my-table
@@ -172,7 +209,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_dynamodb_cmd {view-table|view-items|copy-arn|copy-name} [args]"
+	gum log --level info "Usage: aws_dynamodb_cmd {list|view-table|view-items|copy-arn|copy-name} [args]"
 	gum log --level info "Run 'aws_dynamodb_cmd --help' for more information"
 	exit 1
 	;;

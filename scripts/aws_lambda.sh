@@ -27,17 +27,12 @@ _aws_lambda_list() {
 	local list_functions_args=("$@")
 
 	local function_list
-	# Define jq formatting
-	local function_list_jq='(["NAME", "RUNTIME", "MODIFIED"] | @tsv),
-	                        (.Functions[] | [.FunctionName, (.Runtime // "none"), (.LastModified[0:19] | gsub("T"; " "))] | @tsv)'
-
-	# Fetch functions
+	# Call the _cmd script to fetch and format functions
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	function_list="$(
 		gum spin --title "Loading AWS Lambda Functions..." -- \
-			aws lambda list-functions "${list_functions_args[@]}" --output json |
-			jq -r "$function_list_jq" | column -t -s $'\t'
+			"$_aws_lambda_source_dir/aws_lambda_cmd.sh" list "${list_functions_args[@]}"
 	)"
 
 	# Check if any functions were found
@@ -53,6 +48,7 @@ _aws_lambda_list() {
 	echo "$function_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_lambda_source_dir/aws_lambda_cmd.sh list ${list_functions_args[*]})" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})+abort" \
@@ -81,6 +77,7 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     All resources:
+        ctrl-r      Reload the list
         enter       Show function details (configuration, code, etc.)
         ctrl-o      Open function in AWS Console
         alt-t       Tail function logs from CloudWatch

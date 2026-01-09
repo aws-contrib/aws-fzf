@@ -417,8 +417,68 @@ _copy_cluster_name() {
 	_copy_to_clipboard "$cluster" "cluster identifier"
 }
 
+# _aws_rds_instance_list_cmd()
+#
+# Fetch and format RDS instances for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list RDS instances and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_rds_instance_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local instance_list_jq='(["ID", "ENGINE", "STATUS", "CLASS"] | @tsv),
+	                        (.DBInstances[] | [.DBInstanceIdentifier, .Engine, .DBInstanceStatus, .DBInstanceClass] | @tsv)'
+
+	# Fetch and format RDS instances (without gum spin - caller handles that)
+	aws rds describe-db-instances "${list_args[@]}" --output json |
+		jq -r "$instance_list_jq" | column -t -s $'\t'
+}
+
+# _aws_rds_cluster_list_cmd()
+#
+# Fetch and format RDS clusters for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list RDS clusters and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_rds_cluster_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local cluster_list_jq='(["ID", "ENGINE", "STATUS", "MEMBERS"] | @tsv),
+	                       (.DBClusters[] | [.DBClusterIdentifier, .Engine, .Status, (.DBClusterMembers | length)] | @tsv)'
+
+	# Fetch and format RDS clusters (without gum spin - caller handles that)
+	aws rds describe-db-clusters "${list_args[@]}" --output json |
+		jq -r "$cluster_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list-instances)
+	shift
+	_aws_rds_instance_list_cmd "$@"
+	;;
+list-clusters)
+	shift
+	_aws_rds_cluster_list_cmd "$@"
+	;;
 view-instance)
 	shift
 	_aws_rds_view_instance "$@"
@@ -455,6 +515,10 @@ copy-cluster-name)
 	cat <<'EOF'
 aws_rds_cmd - Utility commands for RDS operations
 
+LISTING:
+    aws_rds_cmd list-instances [aws-cli-args]
+    aws_rds_cmd list-clusters [aws-cli-args]
+
 CONSOLE VIEWS:
     aws_rds_cmd view-instance <db-instance-identifier>
     aws_rds_cmd view-cluster <db-cluster-identifier>
@@ -470,11 +534,16 @@ CLIPBOARD OPERATIONS:
     aws_rds_cmd copy-cluster-name <db-cluster-identifier>
 
 DESCRIPTION:
+    list-instances/list-clusters: Fetches and formats RDS resources for fzf display.
     View commands open RDS resources in the AWS Console via the default browser.
     Connection commands use psql with IAM authentication (PostgreSQL only).
     Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
+    # List resources (for fzf reload)
+    aws_rds_cmd list-instances --region us-east-1
+    aws_rds_cmd list-clusters
+
     # Console views
     aws_rds_cmd view-instance my-database
     aws_rds_cmd view-cluster my-aurora-cluster
@@ -487,7 +556,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_rds_cmd {view-*|connect-*} [args]"
+	gum log --level info "Usage: aws_rds_cmd {list-*|view-*|connect-*|copy-*} [args]"
 	gum log --level info "Run 'aws_rds_cmd --help' for more information"
 	exit 1
 	;;

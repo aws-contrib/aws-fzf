@@ -28,17 +28,12 @@ _aws_ecs_cluster_list() {
 	local list_clusters_args=("$@")
 
 	local cluster_list
-	# Define jq formatting
-	local cluster_list_jq='(["NAME", "STATUS", "TASKS", "SERVICES"] | @tsv),
-	                       (.clusters[] | [.clusterName, .status, .runningTasksCount, .activeServicesCount] | @tsv)'
-
-	# Get and describe clusters in batches
+	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS ECS Clusters..." -- \
-			$_aws_ecs_source_dir/aws_ecs_cmd.sh batch-describe-clusters "${list_clusters_args[@]}" |
-			jq -r "$cluster_list_jq" | column -t -s $'\t'
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-clusters "${list_clusters_args[@]}"
 	)"
 
 	# Check if any clusters were found
@@ -54,6 +49,7 @@ _aws_ecs_cluster_list() {
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Clusters $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-arn {1})" \
@@ -100,15 +96,10 @@ _aws_ecs_service_list() {
 	fi
 
 	local service_list
-	# Define jq formatting for service list
-	local service_list_jq='[["NAME", "STATUS", "DESIRED", "RUNNING", "PENDING"]] +
-	                       ([.[].services[]] | map([.serviceName, .status, .desiredCount, .runningCount, .pendingCount])) | .[] | @tsv'
-
-	# Get and describe services in batches
+	# Call the _cmd script to fetch and format services
 	service_list="$(
 		gum spin --title "Loading AWS ECS Services from $cluster..." -- \
-			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" batch-describe-services "$cluster" "${list_services_args[@]}" |
-			jq -rs "$service_list_jq" | column -t -s $'\t'
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-services "$cluster" "${list_services_args[@]}"
 	)"
 
 	if [ -z "$service_list" ]; then
@@ -123,6 +114,7 @@ _aws_ecs_service_list() {
 	echo "$service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
+		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-services '$cluster' ${list_services_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn $cluster {1})" \
@@ -169,15 +161,10 @@ _aws_ecs_task_list() {
 	fi
 
 	local task_list
-	# Task list jq formatting
-	local task_list_jq='[["ARN", "DEFINITION", "DESIRED STATUS", "ACTUAL STATUS"]] +
-											([.[].tasks[]] | map([.taskArn, .taskDefinitionArn, .desiredStatus, .healthStatus])) | .[] | @tsv'
-
-	# Get the AWS ECS Task IDs - batch process to handle API limits
+	# Call the _cmd script to fetch and format tasks
 	task_list="$(
 		gum spin --title "Loading AWS ECS Tasks from $cluster..." -- \
-			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" batch-describe-tasks "$cluster" "${list_tasks_args[@]}" |
-			jq -rs "$task_list_jq" | column -t -s $'\t'
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-tasks "$cluster" "${list_tasks_args[@]}"
 	)"
 
 	if [ -z "$task_list" ]; then
@@ -185,10 +172,14 @@ _aws_ecs_task_list() {
 		return 1
 	fi
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display task IDs with on-demand preview
 	echo "$task_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "  ECS Tasks in $cluster" \
+		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
+		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks '$cluster' ${list_tasks_args[*]})" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster $cluster --tasks {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})"
@@ -217,18 +208,21 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     Clusters:
+        ctrl-r      Reload the list
         ctrl-o      Open cluster in AWS Console
         alt-enter   List services in cluster
         alt-a       Copy cluster ARN to clipboard
         alt-n       Copy cluster name to clipboard
 
     Services:
+        ctrl-r      Reload the list
         ctrl-o      Open service in AWS Console
         alt-enter   List tasks for service
         alt-a       Copy service ARN to clipboard
         alt-n       Copy service name to clipboard
 
     Tasks:
+        ctrl-r      Reload the list
         enter       Show task details
         ctrl-o      Open task in AWS Console
         alt-a       Copy task ARN to clipboard

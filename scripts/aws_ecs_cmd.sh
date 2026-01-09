@@ -323,8 +323,116 @@ _copy_task_arn() {
 	_copy_to_clipboard "$task" "task ARN"
 }
 
+# _aws_ecs_cluster_list_cmd()
+#
+# Fetch and format ECS clusters for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list and describe ECS clusters and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_ecs_cluster_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local cluster_list_jq='(["NAME", "STATUS", "TASKS", "SERVICES"] | @tsv),
+	                       (.clusters[] | [.clusterName, .status, .runningTasksCount, .activeServicesCount] | @tsv)'
+
+	# Fetch and format ECS clusters (without gum spin - caller handles that)
+	_batch_describe_clusters "${list_args[@]}" |
+		jq -r "$cluster_list_jq" | column -t -s $'\t'
+}
+
+# _aws_ecs_service_list_cmd()
+#
+# Fetch and format ECS services for fzf display
+#
+# PARAMETERS:
+#   $1 - Cluster name (required)
+#   $@ - Additional AWS CLI arguments
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list and describe ECS services and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_ecs_service_list_cmd() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Cluster name is required"
+		exit 1
+	fi
+
+	shift
+	local list_args=("$@")
+
+	# Define jq formatting for service list
+	local service_list_jq='[["NAME", "STATUS", "DESIRED", "RUNNING", "PENDING"]] +
+	                       ([.[].services[]] | map([.serviceName, .status, .desiredCount, .runningCount, .pendingCount])) | .[] | @tsv'
+
+	# Fetch and format ECS services (without gum spin - caller handles that)
+	_batch_describe_services "$cluster" "${list_args[@]}" |
+		jq -rs "$service_list_jq" | column -t -s $'\t'
+}
+
+# _aws_ecs_task_list_cmd()
+#
+# Fetch and format ECS tasks for fzf display
+#
+# PARAMETERS:
+#   $1 - Cluster name (required)
+#   $@ - Additional AWS CLI arguments (--desired-status, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list and describe ECS tasks and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_ecs_task_list_cmd() {
+	local cluster="${1:-}"
+
+	if [ -z "$cluster" ]; then
+		gum log --level error "Cluster name is required"
+		exit 1
+	fi
+
+	shift
+	local list_args=("$@")
+
+	# Task list jq formatting
+	local task_list_jq='[["ARN", "DEFINITION", "DESIRED STATUS", "ACTUAL STATUS"]] +
+											([.[].tasks[]] | map([.taskArn, .taskDefinitionArn, .desiredStatus, .healthStatus])) | .[] | @tsv'
+
+	# Fetch and format ECS tasks (without gum spin - caller handles that)
+	_batch_describe_tasks "$cluster" "${list_args[@]}" |
+		jq -rs "$task_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list-clusters)
+	shift
+	_aws_ecs_cluster_list_cmd "$@"
+	;;
+list-services)
+	shift
+	_aws_ecs_service_list_cmd "$@"
+	;;
+list-tasks)
+	shift
+	_aws_ecs_task_list_cmd "$@"
+	;;
 batch-describe-clusters)
 	shift
 	_batch_describe_clusters "$@"
@@ -373,6 +481,11 @@ copy-task-arn)
 	cat <<'EOF'
 aws_ecs_cmd - Batch processing and utility commands for ECS operations
 
+LISTING:
+    aws_ecs_cmd list-clusters [aws-cli-args]
+    aws_ecs_cmd list-services <cluster> [aws-cli-args]
+    aws_ecs_cmd list-tasks <cluster> [aws-cli-args]
+
 BATCH PROCESSING:
     aws_ecs_cmd batch-describe-clusters [aws-cli-args]
     aws_ecs_cmd batch-describe-services <cluster> [aws-cli-args]
@@ -391,11 +504,17 @@ CLIPBOARD OPERATIONS:
     aws_ecs_cmd copy-task-arn <task-arn>
 
 DESCRIPTION:
+    List commands fetch and format ECS resources for fzf display.
     Batch processing commands perform AWS ECS API calls in batches to handle API limits.
     View commands open ECS resources in the AWS Console via the default browser.
     Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
+    # List resources (for fzf reload)
+    aws_ecs_cmd list-clusters --region us-east-1
+    aws_ecs_cmd list-services my-cluster
+    aws_ecs_cmd list-tasks my-cluster --desired-status RUNNING
+
     # Batch processing
     aws_ecs_cmd batch-describe-clusters --region us-east-1
     aws_ecs_cmd batch-describe-services my-cluster

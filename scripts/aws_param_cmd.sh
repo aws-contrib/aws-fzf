@@ -160,8 +160,38 @@ _aws_param_copy_name() {
 	_copy_to_clipboard "$param" "parameter name"
 }
 
+# _aws_param_list_cmd()
+#
+# Fetch and format parameters for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list parameters and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_param_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local param_list_jq='(["NAME", "TYPE", "VERSION", "MODIFIED"] | @tsv),
+	                     (.Parameters[] | [.Name, .Type, .Version, (.LastModifiedDate[0:19] | gsub("T"; " "))] | @tsv)'
+
+	# Fetch and format parameters (without gum spin - caller handles that)
+	aws ssm describe-parameters "${list_args[@]}" --output json |
+		jq -r "$param_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list)
+	shift
+	_aws_param_list_cmd "$@"
+	;;
 copy-value)
 	shift
 	_aws_params_copy_value "$@"
@@ -182,6 +212,9 @@ copy-name)
 	cat <<'EOF'
 aws_param_cmd - Utility commands for Parameter Store operations
 
+LISTING:
+    aws_param_cmd list [aws-cli-args]
+
 CONSOLE OPERATIONS:
     aws_param_cmd view-parameter <parameter-name>
 
@@ -192,12 +225,16 @@ CLIPBOARD OPERATIONS:
 
 DESCRIPTION:
     Utility commands for Parameter Store operations.
+    list fetches and formats parameters for fzf display.
     copy-value copies parameter value to clipboard (confirms for SecureString).
     view-parameter opens parameters in the AWS Console.
     copy-arn copies the parameter ARN to clipboard.
     copy-name copies the parameter name to clipboard.
 
 EXAMPLES:
+    # List parameters (for fzf reload)
+    aws_param_cmd list --region us-east-1
+
     # Copy parameter value to clipboard
     aws_param_cmd copy-value /app/database/password
 
@@ -212,7 +249,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_param_cmd {copy-value|view-parameter|copy-arn|copy-name} [args]"
+	gum log --level info "Usage: aws_param_cmd {list|copy-value|view-parameter|copy-arn|copy-name} [args]"
 	gum log --level info "Run 'aws_param_cmd --help' for more information"
 	exit 1
 	;;

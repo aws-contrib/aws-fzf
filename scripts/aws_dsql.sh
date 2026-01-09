@@ -27,18 +27,12 @@ _aws_dsql_cluster_list() {
 	local list_clusters_args=("$@")
 
 	local cluster_list
-	# Define jq formatting based on actual JSON structure
-	# list-clusters only returns identifier and arn (no status/endpoint)
-	local cluster_list_jq='(["IDENTIFIER", "ARN"] | @tsv),
-	                       (.clusters[] | [.identifier, .arn] | @tsv)'
-
-	# Fetch DSQL clusters
+	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS DSQL Clusters..." -- \
-			aws dsql list-clusters "${list_clusters_args[@]}" --output json |
-			jq -r "$cluster_list_jq" | column -t -s $'\t'
+			"$_aws_dsql_source_dir/aws_dsql_cmd.sh" list "${list_clusters_args[@]}"
 	)"
 
 	# Check if any clusters were found
@@ -54,6 +48,7 @@ _aws_dsql_cluster_list() {
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth=1.. --accept-nth 1 \
 		--footer "$_fzf_icon DSQL Clusters $_fzf_split $aws_context" \
+		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq .)+abort" \
 		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})" \
@@ -79,6 +74,7 @@ OPTIONS:
 
 KEYBOARD SHORTCUTS:
     All resources:
+        ctrl-r      Reload the list
         ctrl-o      Open cluster in AWS Console
         enter       View cluster details (full JSON)
         alt-c       Connect to cluster with psql (IAM auth)

@@ -188,8 +188,38 @@ _copy_cluster_name() {
 	_copy_to_clipboard "$cluster" "cluster identifier"
 }
 
+# _aws_dsql_cluster_list_cmd()
+#
+# Fetch and format DSQL clusters for fzf display
+#
+# PARAMETERS:
+#   $@ - AWS CLI arguments (--region, --profile, etc.)
+#
+# OUTPUT:
+#   Tab-separated formatted list with header
+#
+# DESCRIPTION:
+#   Performs AWS API call to list DSQL clusters and formats output
+#   for fzf consumption. Can be called as standalone script.
+#
+_aws_dsql_cluster_list_cmd() {
+	local list_args=("$@")
+
+	# Define jq formatting
+	local cluster_list_jq='(["IDENTIFIER", "ARN"] | @tsv),
+	                       (.clusters[] | [.identifier, .arn] | @tsv)'
+
+	# Fetch and format DSQL clusters (without gum spin - caller handles that)
+	aws dsql list-clusters "${list_args[@]}" --output json |
+		jq -r "$cluster_list_jq" | column -t -s $'\t'
+}
+
 # Command router
 case "${1:-}" in
+list)
+	shift
+	_aws_dsql_cluster_list_cmd "$@"
+	;;
 view-cluster)
 	shift
 	_aws_dsql_view_cluster "$@"
@@ -210,6 +240,9 @@ copy-cluster-name)
 	cat <<'EOF'
 aws_dsql_cmd - Utility commands for DSQL operations
 
+LISTING:
+    aws_dsql_cmd list [aws-cli-args]
+
 CONSOLE VIEWS:
     aws_dsql_cmd view-cluster <cluster-identifier>
 
@@ -221,11 +254,15 @@ CLIPBOARD OPERATIONS:
     aws_dsql_cmd copy-cluster-name <cluster-identifier>
 
 DESCRIPTION:
+    list: Fetches and formats DSQL clusters for fzf display.
     View commands open DSQL resources in the AWS Console via the default browser.
     Connection commands use psql with IAM authentication.
     Clipboard operations copy resource identifiers to the system clipboard.
 
 EXAMPLES:
+    # List clusters (for fzf reload)
+    aws_dsql_cmd list --region us-east-1
+
     # Console views
     aws_dsql_cmd view-cluster my-dsql-cluster
 
@@ -236,7 +273,7 @@ EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_dsql_cmd {view-*|connect-*} [args]"
+	gum log --level info "Usage: aws_dsql_cmd {list|view-*|connect-*|copy-*} [args]"
 	gum log --level info "Run 'aws_dsql_cmd --help' for more information"
 	exit 1
 	;;
