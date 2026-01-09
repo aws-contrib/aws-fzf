@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+# Fzf icon for AWS services
 _fzf_icon=" "
-
+# Fzf field separator
+_fzf_split="·"
+# Default fzf options for aws-fzf scripts
 _fzf_options=(
 	--ansi
 	--border='none'

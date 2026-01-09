@@ -130,7 +130,7 @@ _aws_s3_object_list() {
 	# Display object list with keybindings
 	echo "$object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon  S3 Objects in $bucket" \
+		--footer "$_fzf_icon S3 Objects $_fzf_split $bucket" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn $bucket {1})" \
