@@ -53,7 +53,7 @@ _aws_lambda_list() {
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})+abort" \
-		--bind "alt-h:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})+abort" \
+		--bind "alt-l:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})+abort" \
 		--bind "alt-a:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-name {1})"
 }
