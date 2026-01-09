@@ -46,10 +46,13 @@ _aws_rds_instance_list() {
 		return 1
 	fi
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display in fzf with full keybindings
 	echo "$instance_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon RDS Instances" \
+		--footer "$_fzf_icon RDS Instances $_fzf_split $aws_context" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq .)+abort" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})" \
@@ -95,10 +98,13 @@ _aws_rds_cluster_list() {
 		return 1
 	fi
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon RDS Clusters" \
+		--footer "$_fzf_icon RDS Clusters $_fzf_split $aws_context" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq .)+abort" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})" \

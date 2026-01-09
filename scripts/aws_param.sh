@@ -46,10 +46,13 @@ _aws_param_list() {
 		return 1
 	fi
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display in fzf with full keybindings
 	echo "$param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon System Manager Parameters" \
+		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \

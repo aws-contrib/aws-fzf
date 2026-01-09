@@ -47,10 +47,13 @@ _aws_dynamodb_table_list() {
 		return 1
 	fi
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display in fzf with keybindings
 	echo "$table_list" | fzf "${_fzf_options[@]}" \
 		--with-nth=1.. --accept-nth 1 \
-		--footer "$_fzf_icon DynamoDB Tables" \
+		--footer "$_fzf_icon DynamoDB Tables $_fzf_split $aws_context" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "ctrl-O:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
 		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq .)+abort" \

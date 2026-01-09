@@ -46,10 +46,13 @@ _aws_lambda_list() {
 		return 1
 	fi
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display in fzf with keybindings
 	echo "$function_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon Lambda Functions" \
+		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})+abort" \

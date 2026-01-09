@@ -27,6 +27,7 @@ _fzf_options=(
 #
 # FUNCTIONS:
 #   _get_aws_region()           - Get the current AWS region
+#   _get_aws_context()          - Get AWS account ID and region (account_id-region_id)
 #   _open_url()                 - Open URL in default browser (cross-platform)
 #   _copy_to_clipboard()        - Copy text to clipboard (cross-platform)
 #   _parse_duration()           - Parse duration string into seconds
@@ -47,6 +48,26 @@ _fzf_options=(
 #
 _get_aws_region() {
 	echo "${AWS_REGION:-${AWS_DEFAULT_REGION:-$(aws configure get region 2>/dev/null || echo 'us-east-1')}}"
+}
+
+# _get_aws_context()
+#
+# Get the AWS account and region context identifier
+#
+# DESCRIPTION:
+#   Returns the AWS account ID and region in the format: account_id-region_id
+#   This provides a concrete identifier for displaying where AWS content comes from.
+#   Uses STS to get the account ID and _get_aws_region() for the region.
+#
+# OUTPUT:
+#   String in format "account_id-region_id" (e.g., "123456789012-us-east-1")
+#   Returns "unknown-region" if STS call fails
+#
+_get_aws_context() {
+	local account_id region
+	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+	region=$(_get_aws_region)
+	echo "${account_id}-${region}"
 }
 
 # _open_url()
