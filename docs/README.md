@@ -154,6 +154,17 @@ aws fzf s3 object list \
 
 ### Environment Variables
 
+#### S3 Bucket Viewer
+
+Configure external viewer for S3 buckets:
+
+```bash
+export AWS_FZF_S3_BUCKET_VIEWER="vifm"
+aws fzf s3 bucket list  # alt-enter will open in external viewer
+```
+
+The command receives the bucket name as an argument. Create wrapper scripts if needed to format the input (e.g., add `s3://` prefix).
+
 #### CloudWatch Logs Paging
 
 Control how tail logs are displayed:
@@ -189,7 +200,7 @@ Additional service-specific keybindings are documented below.
 | Key | Action |
 |-----|--------|
 | `ctrl-o` | Open bucket in AWS Console |
-| `alt-enter` | List objects in bucket |
+| `alt-enter` | Explore bucket (external viewer if AWS_FZF_S3_BUCKET_VIEWER set, otherwise list objects) |
 | `alt-a` | Copy bucket ARN to clipboard |
 | `alt-n` | Copy bucket name to clipboard |
 

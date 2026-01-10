@@ -67,7 +67,7 @@ _aws_s3_bucket_list() {
 		--footer "$_fzf_icon S3 Buckets $_fzf_split $aws_context" \
 		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-buckets ${list_buckets_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
-		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
+		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3_cmd.sh explore-bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-name {1})"
 }
@@ -174,7 +174,7 @@ KEYBOARD SHORTCUTS:
     Buckets:
         ctrl-r      Reload the list
         ctrl-o      Open bucket in AWS Console
-        alt-enter   List objects in bucket
+        alt-enter   Explore bucket (external viewer if AWS_FZF_S3_BUCKET_VIEWER set, otherwise list objects)
         alt-a       Copy bucket ARN to clipboard
         alt-n       Copy bucket name to clipboard
 
@@ -184,6 +184,10 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open object in AWS Console
         alt-a       Copy object ARN to clipboard
         alt-n       Copy object key to clipboard
+
+ENVIRONMENT VARIABLES:
+    AWS_FZF_S3_BUCKET_VIEWER    Command to open S3 buckets (receives bucket name as arg)
+                                 Example: export AWS_FZF_S3_BUCKET_VIEWER="vifm"
 
 EXAMPLES:
     # Bucket listing
