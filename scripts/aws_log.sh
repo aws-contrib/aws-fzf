@@ -44,6 +44,9 @@ _aws_log_group_list() {
 	local aws_context
 	aws_context=$(_get_aws_context)
 
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
+
 	# Display in fzf with full keybindings
 	echo "$group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
@@ -110,6 +113,9 @@ _aws_log_stream_list() {
 
 	local aws_context
 	aws_context=$(_get_aws_context)
+
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
 
 	# Display stream list with keybindings
 	echo "$stream_list" | fzf "${_fzf_options[@]}" \

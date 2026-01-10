@@ -45,6 +45,9 @@ _aws_ecs_cluster_list() {
 	local aws_context
 	aws_context=$(_get_aws_context)
 
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
+
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
@@ -110,6 +113,9 @@ _aws_ecs_service_list() {
 	local aws_context
 	aws_context=$(_get_aws_context)
 
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
+
 	# Display service list with keybindings
 	echo "$service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
@@ -174,6 +180,9 @@ _aws_ecs_task_list() {
 
 	local aws_context
 	aws_context=$(_get_aws_context)
+
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
 
 	# Display task IDs with on-demand preview
 	echo "$task_list" | fzf "${_fzf_options[@]}" \

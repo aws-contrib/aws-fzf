@@ -58,6 +58,9 @@ _aws_s3_bucket_list() {
 	local aws_context
 	aws_context=$(_get_aws_context)
 
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
+
 	# Display in fzf with bindings
 	echo "$bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
@@ -122,6 +125,9 @@ _aws_s3_object_list() {
 
 	local aws_context
 	aws_context=$(_get_aws_context)
+
+	# Build fzf options with user-provided flags
+	_aws_fzf_options
 
 	# Display object list with keybindings
 	echo "$object_list" | fzf "${_fzf_options[@]}" \

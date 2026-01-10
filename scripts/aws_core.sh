@@ -4,18 +4,53 @@
 _fzf_icon=" "
 # Fzf field separator
 _fzf_split="·"
-# Default fzf options for aws-fzf scripts
-_fzf_options=(
-	--ansi
-	--border='none'
-	--header-lines='1'
-	--header-border='sharp'
-	--footer-border='sharp'
-	--input-border='sharp'
-	--color='header:yellow'
-	--color='footer:yellow'
-	--layout='reverse-list'
-)
+# _aws_fzf_options()
+#
+# Build fzf options array with user-provided flags
+#
+# DESCRIPTION:
+#   Constructs the fzf options array by combining default options with
+#   user-provided flags from AWS_FZF_FLAGS environment variable. This function
+#   must be called at runtime (not at source time) to pick up flags set by main().
+#
+#   Default options are always applied first, then user flags are appended.
+#   If user flags conflict with defaults (e.g., both specify --height), fzf's
+#   last-wins behavior means user flags take precedence.
+#
+# PARAMETERS:
+#   None
+#
+# RETURNS:
+#   Sets _fzf_options array with merged options
+#
+# ENVIRONMENT:
+#   AWS_FZF_FLAGS - Space-separated string of user fzf flags (set by main entry point)
+#
+# EXAMPLE:
+#   # Call this before using fzf in any service function
+#   _aws_fzf_options
+#   echo "$data" | fzf "${_fzf_options[@]}" ...
+#
+_aws_fzf_options() {
+	# Default fzf options for aws-fzf
+	_fzf_options=(
+		--ansi
+		--header-lines='1'
+		--header-border='sharp'
+		--footer-border='sharp'
+		--input-border='sharp'
+		--color='header:yellow'
+		--color='footer:yellow'
+		--layout='reverse-list'
+	)
+
+	# Add user-provided fzf flags
+	if [[ -n "$AWS_FZF_FLAGS" ]]; then
+		# Convert space-separated string back to array and append
+		read -ra user_flags <<<"$AWS_FZF_FLAGS"
+		_fzf_options+=("${user_flags[@]}")
+	fi
+}
 
 # aws_core.sh - Shared core utilities for aws-fzf
 #

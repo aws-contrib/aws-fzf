@@ -44,8 +44,22 @@ DESCRIPTION:
     using fzf (fuzzy finder). Inspired by GitHub CLI.
 
 USAGE:
-    aws fzf <command> [options]
-    aws fzf <service> <resource> <action> [options]
+    aws fzf [fzf-flags] <service> <resource> <action> [aws-options]
+
+FZF FLAGS (specify before service):
+    Any fzf flags can be passed before the service name. These are passed
+    directly to fzf and extend the default options. Common examples:
+
+    --tmux [position]         Open in tmux popup (default: center,50%,50%)
+                              Position format: [position][,width[,height]]
+                              Examples: "80%,80%", "center,50%,50%", "bottom"
+    --height <n>              Set height (e.g., --height 50%)
+    --multi                   Enable multi-select mode
+    --border <style>          Set border style (e.g., --border rounded)
+    --preview-window <opts>   Configure preview window
+    --reverse                 Reverse layout
+
+    See 'man fzf' for all available fzf options.
 
 COMMANDS:
     Secrets Manager:
@@ -80,7 +94,7 @@ COMMANDS:
     DynamoDB:
         aws fzf dynamodb table list               Browse DynamoDB tables
 
-GLOBAL OPTIONS:
+AWS OPTIONS (specify after action):
     All AWS CLI options are supported and passed through:
     --region <region>       AWS region (overrides default)
     --profile <profile>     AWS profile (overrides default)
@@ -96,25 +110,25 @@ KEYBOARD SHORTCUTS:
     alt-a       Copy resource ARN
 
 EXAMPLES:
-    # Browse secrets
+    # Basic usage (backward compatible)
     aws fzf secret list
-
-    # Browse parameters in specific region
     aws fzf param list --region us-west-2
-
-    # Browse S3 buckets
     aws fzf s3 bucket list
-
-    # Browse objects in a bucket
     aws fzf s3 object list --bucket my-bucket
 
-    # Browse ECS clusters
+    # With fzf flags (new feature)
+    aws fzf --tmux secret list                           # Open in tmux popup
+    aws fzf --tmux center,80%,80% param list            # Custom popup size
+    aws fzf --height 50% --border rounded secret list   # Custom height and border
+    aws fzf --multi s3 bucket list                      # Multi-select mode
+
+    # Combining fzf and AWS flags
+    aws fzf --tmux --height 80% secret list --region us-west-2
+    aws fzf --multi lambda list --profile prod
+    aws fzf --height 90% ecs service list --cluster my-cluster
+
+    # More examples
     aws fzf ecs cluster list
-
-    # Browse services in a cluster
-    aws fzf ecs service list --cluster my-cluster
-
-    # Browse running tasks
     aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
 
 DEPENDENCIES:
@@ -148,43 +162,76 @@ EOF
 #   Exit code from sub-command if applicable
 #
 main() {
-    local service="$1"
-    shift
+    local fzf_flags=()
+    local service=""
+    local service_args=()
 
+    # Parse arguments: everything before service = fzf flags, everything after = service args
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        --help | -h | help)
+            _show_root_help
+            exit 0
+            ;;
+        lambda | param | secret | ecs | log | s3 | rds | dsql | dynamodb)
+            # Found the service, everything after this is service args
+            service="$1"
+            shift
+            service_args=("$@")
+            break
+            ;;
+        "")
+            _show_root_help
+            exit 0
+            ;;
+        *)
+            # Before service, collect as fzf flags
+            fzf_flags+=("$1")
+            shift
+            ;;
+        esac
+    done
+
+    # Export fzf flags for aws_core.sh to use
+    if [[ ${#fzf_flags[@]} -gt 0 ]]; then
+        export AWS_FZF_FLAGS="${fzf_flags[*]}"
+    fi
+
+    # Dispatch to service with remaining args
     case $service in
     lambda)
-        _aws_lambda_main "$@"
+        _aws_lambda_main "${service_args[@]}"
         ;;
     param)
-        _aws_param_main "$@"
+        _aws_param_main "${service_args[@]}"
         ;;
     secret)
-        _aws_secret_main "$@"
+        _aws_secret_main "${service_args[@]}"
         ;;
     ecs)
-        _aws_ecs_main "$@"
+        _aws_ecs_main "${service_args[@]}"
         ;;
     log)
-        _aws_log_main "$@"
+        _aws_log_main "${service_args[@]}"
         ;;
     s3)
-        _aws_s3_main "$@"
+        _aws_s3_main "${service_args[@]}"
         ;;
     rds)
-        _aws_rds_main "$@"
+        _aws_rds_main "${service_args[@]}"
         ;;
     dsql)
-        _aws_dsql_main "$@"
+        _aws_dsql_main "${service_args[@]}"
         ;;
     dynamodb)
-        _aws_dynamodb_main "$@"
+        _aws_dynamodb_main "${service_args[@]}"
         ;;
-    --help | -h | help | "")
+    "")
         _show_root_help
         ;;
     *)
         gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql, dynamodb"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, log, rds, dsql, dynamodb"
         gum log --level info "Run 'aws fzf --help' for detailed usage information"
         exit 1
         ;;
