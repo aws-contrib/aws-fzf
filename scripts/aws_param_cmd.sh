@@ -24,14 +24,13 @@ source "$_aws_param_cmd_source_dir/aws_core.sh"
 
 # _aws_params_copy_value()
 #
-# Copy parameter value to clipboard with security confirmation
+# Copy parameter value to clipboard
 #
 # PARAMETERS:
 #   $1 - Parameter name (required)
 #
 # DESCRIPTION:
 #   Retrieves a parameter value from Parameter Store and copies to clipboard.
-#   For SecureString parameters, prompts the user for confirmation before decrypting.
 #   More secure than displaying - value goes to clipboard, not terminal.
 #
 _aws_params_copy_value() {
@@ -54,14 +53,6 @@ _aws_params_copy_value() {
 	if [ -z "$param_type" ] || [ "$param_type" = "None" ]; then
 		gum log --level error "Parameter not found: $param_name"
 		exit 1
-	fi
-
-	# Confirm for SecureString
-	if [[ "$param_type" == "SecureString" ]]; then
-		if ! gum confirm "Copy SecureString parameter '$param_name' to clipboard? Value will be decrypted."; then
-			gum log --level info "Cancelled"
-			exit 1
-		fi
 	fi
 
 	# Get the value
@@ -226,7 +217,7 @@ CLIPBOARD OPERATIONS:
 DESCRIPTION:
     Utility commands for Parameter Store operations.
     list fetches and formats parameters for fzf display.
-    copy-value copies parameter value to clipboard (confirms for SecureString).
+    copy-value copies parameter value to clipboard.
     view-parameter opens parameters in the AWS Console.
     copy-arn copies the parameter ARN to clipboard.
     copy-name copies the parameter name to clipboard.
