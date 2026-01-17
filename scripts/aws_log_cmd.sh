@@ -91,7 +91,7 @@ _tail_log() {
 #   [stream-name]    - Optional stream name (positional). If omitted, searches all streams.
 #
 # ENVIRONMENT VARIABLES:
-#   AWS_FZF_LOG_HISTORY     - Duration to look back (default: 1h).
+#   FZF_AWS_LOG_HISTORY     - Duration to look back (default: 1h).
 #                             Formats: 15m (minutes), 2h (hours), 1d (days)
 ##
 # DESCRIPTION:
@@ -108,11 +108,11 @@ _read_log() {
 	local log_end_time
 
 	# Get time range
-	local history="${AWS_FZF_LOG_HISTORY:-1h}"
+	local history="${FZF_AWS_LOG_HISTORY:-1h}"
 	local seconds
 	seconds=$(_parse_duration "$history")
 	if [[ -z "$seconds" ]]; then
-		gum log --level error "Invalid format for AWS_FZF_LOG_HISTORY: '$history'"
+		gum log --level error "Invalid format for FZF_AWS_LOG_HISTORY: '$history'"
 		gum log --level info "Use format like: 15m (minutes), 2h (hours), 1d (days)"
 		exit 1
 	fi

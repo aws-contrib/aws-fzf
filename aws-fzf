@@ -100,7 +100,7 @@ AWS OPTIONS (specify after action):
     --profile <profile>     AWS profile (overrides default)
 
 ENVIRONMENT VARIABLES:
-    AWS_FZF_LOG_VIEWER          Log viewer (lnav or less)
+    FZF_AWS_LOG_VIEWER          Log viewer (lnav or less)
 
 KEYBOARD SHORTCUTS:
     Common shortcuts (most commands):
@@ -200,7 +200,7 @@ main() {
 
     # Export fzf flags for aws_core.sh to use
     if [[ ${#fzf_flags[@]} -gt 0 ]]; then
-        export AWS_FZF_FLAGS="${fzf_flags[*]}"
+        export FZF_AWS_FLAGS="${fzf_flags[*]}"
     fi
 
     # Dispatch to service with remaining args

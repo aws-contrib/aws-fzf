@@ -14,5 +14,5 @@ install: check
 	mkdir -p $(HOME)/.aws/cli
 
 	@echo "Installing AWS CLI alias file..."
-	sed "s|\$${AWS_FZF_DIR}|$$PWD|g" "$(CURDIR)/templates/alias.tmpl" > $(HOME)/.aws/cli/alias
+	sed "s|\$${FZF_AWS_DIR}|$$PWD|g" "$(CURDIR)/templates/alias.tmpl" > $(HOME)/.aws/cli/alias
 

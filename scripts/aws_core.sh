@@ -10,7 +10,7 @@ _fzf_split="·"
 #
 # DESCRIPTION:
 #   Constructs the fzf options array by combining default options with
-#   user-provided flags from AWS_FZF_FLAGS environment variable. This function
+#   user-provided flags from FZF_AWS_FLAGS environment variable. This function
 #   must be called at runtime (not at source time) to pick up flags set by main().
 #
 #   Default options are always applied first, then user flags are appended.
@@ -24,7 +24,7 @@ _fzf_split="·"
 #   Sets _fzf_options array with merged options
 #
 # ENVIRONMENT:
-#   AWS_FZF_FLAGS - Space-separated string of user fzf flags (set by main entry point)
+#   FZF_AWS_FLAGS - Space-separated string of user fzf flags (set by main entry point)
 #
 # EXAMPLE:
 #   # Call this before using fzf in any service function
@@ -45,9 +45,9 @@ _aws_fzf_options() {
 	)
 
 	# Add user-provided fzf flags
-	if [[ -n "$AWS_FZF_FLAGS" ]]; then
+	if [[ -n "$FZF_AWS_FLAGS" ]]; then
 		# Convert space-separated string back to array and append
-		read -ra user_flags <<<"$AWS_FZF_FLAGS"
+		read -ra user_flags <<<"$FZF_AWS_FLAGS"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 }
