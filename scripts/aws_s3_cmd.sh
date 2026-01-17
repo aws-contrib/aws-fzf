@@ -226,59 +226,6 @@ _aws_s3_object_list_cmd() {
 		jq -r "$object_list_jq" | column -t -s $'\t'
 }
 
-# _explore_bucket()
-#
-# Explore bucket with external viewer or default object listing
-#
-# DESCRIPTION:
-#   If AWS_FZF_S3_BUCKET_VIEWER is set, opens bucket with external viewer.
-#   Otherwise, falls back to default behavior (list objects).
-#   The viewer command receives the bucket name as first argument.
-#
-# PARAMETERS:
-#   $1 - Bucket name
-#
-# ENVIRONMENT:
-#   AWS_FZF_S3_BUCKET_VIEWER - Command to execute with bucket name as argument
-#     Examples:
-#       "vifm"      → Executes: vifm <bucket-name>
-#       "ranger"    → Executes: ranger <bucket-name>
-#       "mc"        → Executes: mc <bucket-name>
-#
-# RETURNS:
-#   0 - Success
-#   1 - Error (command failed)
-#
-# EXAMPLE:
-#   # User creates wrapper script:
-#   # ~/bin/vifm-s3:
-#   #   #!/bin/bash
-#   #   vifm "s3://$1"
-#
-#   export AWS_FZF_S3_BUCKET_VIEWER="vifm-s3"
-#   # When user selects "my-bucket" and presses alt-enter:
-#   # Executes: vifm-s3 my-bucket
-#   # Which runs: vifm s3://my-bucket
-#
-_explore_bucket() {
-	local bucket="${1:-}"
-
-	if [ -z "$bucket" ]; then
-		gum log --level error "Bucket name is required"
-		exit 1
-	fi
-
-	# Check if external viewer is configured
-	if [ -n "$AWS_FZF_S3_BUCKET_VIEWER" ]; then
-		# Use external viewer - pass bucket name as argument
-		gum log --level info "Opening bucket '$bucket' with: $AWS_FZF_S3_BUCKET_VIEWER"
-		$AWS_FZF_S3_BUCKET_VIEWER "$bucket"
-	else
-		# Fall back to default behavior: list objects
-		"$_aws_s3_cmd_source_dir/aws_s3.sh" object list --bucket "$bucket"
-	fi
-}
-
 # Command router
 case "${1:-}" in
 list-buckets)
@@ -312,10 +259,6 @@ copy-object-arn)
 copy-object-key)
 	shift
 	_copy_object_key "$@"
-	;;
-explore-bucket)
-	shift
-	_explore_bucket "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'

@@ -198,12 +198,12 @@ Additional service-specific keybindings are documented below.
 
 #### Buckets
 
-| Key         | Action                                                                                   |
-| ----------- | ---------------------------------------------------------------------------------------- |
-| `ctrl-o`    | Open bucket in AWS Console                                                               |
-| `alt-enter` | Explore bucket (external viewer if AWS_FZF_S3_BUCKET_VIEWER set, otherwise list objects) |
-| `alt-a`     | Copy bucket ARN to clipboard                                                             |
-| `alt-n`     | Copy bucket name to clipboard                                                            |
+| Key         | Action                        |
+| ----------- | ----------------------------- |
+| `ctrl-o`    | Open bucket in AWS Console    |
+| `alt-enter` | List objects                  |
+| `alt-a`     | Copy bucket ARN to clipboard  |
+| `alt-n`     | Copy bucket name to clipboard |
 
 #### Objects
 
