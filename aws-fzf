@@ -99,9 +99,6 @@ AWS OPTIONS (specify after action):
     --region <region>       AWS region (overrides default)
     --profile <profile>     AWS profile (overrides default)
 
-ENVIRONMENT VARIABLES:
-    FZF_AWS_LOG_VIEWER          Log viewer (lnav or less)
-
 KEYBOARD SHORTCUTS:
     Common shortcuts (most commands):
     enter       View resource details
