@@ -46,8 +46,9 @@ _aws_fzf_options() {
 
 	# Add user-provided fzf flags
 	if [[ -n "$FZF_AWS_FLAGS" ]]; then
-		# Convert space-separated string back to array and append
-		read -ra user_flags <<<"$FZF_AWS_FLAGS"
+		# Safely parse quoted string back to array
+		local user_flags=()
+		eval "user_flags=($FZF_AWS_FLAGS)"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 }
