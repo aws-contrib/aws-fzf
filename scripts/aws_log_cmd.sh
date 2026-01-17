@@ -72,13 +72,12 @@ _tail_log() {
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
 
-	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed)
+	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed --no-cli-pager)
 	# Add log stream name if provided
 	if [ -n "$log_stream_name" ]; then
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	# Open in pager
 	"${log_tail_cmd[@]}"
 }
 
@@ -98,7 +97,7 @@ _tail_log() {
 #   Retrieves historical CloudWatch logs within a time range.
 #   - If stream-name is provided: filters to that specific stream
 #   - If stream-name is omitted: searches all streams in the log group
-#   Displays logs through configured pager (lnav/less/direct output).
+#   Output is piped through jq for formatting and paged using AWS_PAGER.
 #
 _read_log() {
 	local log_tail_cmd=()
@@ -134,25 +133,8 @@ _read_log() {
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	# Open in pager
-	_view_log "${log_tail_cmd[@]}"
-}
-
-_view_log() {
-	local log_tail_cmd
-	# Construct command to string
-	log_tail_cmd="$(printf '%q ' "${@}")"
-
-	if [[ $log_tail_cmd == *filter-log-events* ]]; then
-		log_tail_cmd="$log_tail_cmd | jq -r -f $_aws_log_cmd_source_dir/aws_log.jq"
-	fi
-
-	local log_file
-	log_file=$(mktemp -t "aws-log-XXXXXX.log")
-	# Write logs to temp file and open in less
-	bash -c "$log_tail_cmd | tee $log_file | less +F"
-	# Inform user about the file location
-	gum log --level info "Logs saved to: $log_file"
+	# Execute command and pipe through jq
+	"${log_tail_cmd[@]}" | jq -r -f "$_aws_log_cmd_source_dir/aws_log.jq"
 }
 
 # _view_log_stream()
