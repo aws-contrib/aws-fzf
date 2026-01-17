@@ -79,7 +79,7 @@ _tail_log() {
 	fi
 
 	# Open in pager
-	_view_log "${log_tail_cmd[@]}"
+	"${log_tail_cmd[@]}"
 }
 
 # _read_log()
