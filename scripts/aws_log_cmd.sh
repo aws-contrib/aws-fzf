@@ -72,7 +72,7 @@ _tail_log() {
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
 
-	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed --no-cli-pager)
+	log_tail_cmd=(aws logs tail "$log_group_name" --follow --format detailed)
 	# Add log stream name if provided
 	if [ -n "$log_stream_name" ]; then
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
@@ -127,7 +127,6 @@ _read_log() {
 		--end-time "$log_end_time"
 		--limit 10000
 		--output json
-		--no-cli-pager
 	)
 
 	# Add log stream name if provided
