@@ -176,14 +176,7 @@ PERFORMANCE:
     Log stream listing fetches up to 50 streams per page.
     Use --order-by LastEventTime --descending to see most recent streams first.
 
-LOG VIEWING:
-    Press alt-t to tail logs in real-time (follows new events).
-    Press alt-l to view historical logs (time-range query).
 
-    Set AWS_FZF_LOG_VIEWER=lnav for interactive log viewing with search/filter.
-    Set AWS_FZF_LOG_HISTORY_HOURS=24 to view last 24 hours (default: 1 hour).
-
-    Without AWS_FZF_LOG_VIEWER, logs are displayed in less by default.
 
 EXAMPLES:
     # List all log groups

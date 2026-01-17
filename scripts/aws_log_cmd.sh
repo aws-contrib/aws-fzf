@@ -91,10 +91,9 @@ _tail_log() {
 #   [stream-name]    - Optional stream name (positional). If omitted, searches all streams.
 #
 # ENVIRONMENT VARIABLES:
-#   AWS_FZF_LOG_VIEWER      - Default pager command (e.g., lnav, less, cat)
 #   AWS_FZF_LOG_HISTORY     - Duration to look back (default: 1h).
 #                             Formats: 15m (minutes), 2h (hours), 1d (days)
-#
+##
 # DESCRIPTION:
 #   Retrieves historical CloudWatch logs within a time range.
 #   - If stream-name is provided: filters to that specific stream
@@ -149,17 +148,12 @@ _view_log() {
 		log_tail_cmd="$log_tail_cmd | jq -r -f $_aws_log_cmd_source_dir/aws_log.jq"
 	fi
 
-	if [[ "$AWS_FZF_LOG_VIEWER" == "lnav" ]]; then
-		lnav -e "$log_tail_cmd"
-	else
-		# Interactive: save to temp file and open in pager
-		local log_file
-		log_file=$(mktemp -t "aws-log-XXXXXX.log")
-		# Write logs to temp file and open in less
-		bash -c "$log_tail_cmd | tail -a $log_file | less +F"
-		# Inform user about the file location
-		gum log --level info "Logs saved to: $log_file"
-	fi
+	local log_file
+	log_file=$(mktemp -t "aws-log-XXXXXX.log")
+	# Write logs to temp file and open in less
+	bash -c "$log_tail_cmd | tee $log_file | less +F"
+	# Inform user about the file location
+	gum log --level info "Logs saved to: $log_file"
 }
 
 # _view_log_stream()
@@ -407,33 +401,7 @@ DESCRIPTION:
     - copy-group-name: Copies log group name to clipboard
     - copy-stream-name: Copies stream name to clipboard
 
-ENVIRONMENT VARIABLES:
-    AWS_FZF_LOG_VIEWER          Default pager for log viewing (e.g., lnav, less).
-                               Currently only lnav is specially handled.
-    AWS_FZF_LOG_HISTORY         Duration to look back for historical logs (default: 1h).
-                               Formats: 15m (minutes), 2h (hours), 1d (days).
 
-EXAMPLES:
-    # Tail all streams in a log group (real-time)
-    aws_log_cmd tail-log /aws/lambda/my-function
-
-    # Tail specific stream (real-time)
-    aws_log_cmd tail-log /aws/lambda/my-function 2025/01/01/[$LATEST]abc123
-
-    # View last hour of logs (default)
-    aws_log_cmd read-log /aws/lambda/my-function
-
-    # View last 24 hours of logs
-    export AWS_FZF_LOG_HISTORY=1d
-    aws_log_cmd read-log /aws/lambda/my-function
-
-    # View last 15 minutes of logs
-    export AWS_FZF_LOG_HISTORY=15m
-    aws_log_cmd read-log /aws/lambda/my-function
-
-    # Use lnav for interactive viewing
-    export AWS_FZF_LOG_VIEWER=lnav
-    aws_log_cmd read-log /aws/lambda/my-function
 
 EOF
 	;;

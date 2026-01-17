@@ -154,27 +154,6 @@ aws fzf s3 object list \
 
 ### Environment Variables
 
-#### S3 Bucket Viewer
-
-Configure external viewer for S3 buckets:
-
-```bash
-export AWS_FZF_S3_BUCKET_VIEWER="vifm"
-aws fzf s3 bucket list  # alt-enter will open in external viewer
-```
-
-The command receives the bucket name as an argument. Create wrapper scripts if needed to format the input (e.g., add `s3://` prefix).
-
-#### CloudWatch Logs Paging
-
-Control how tail logs are displayed:
-
-```bash
-# Use lnav for interactive log viewing
-export AWS_FZF_LOG_VIEWER=lnav
-aws fzf logs group list  # alt-t will pipe through lnav
-```
-
 ---
 
 ## Keyboard Shortcuts
@@ -610,25 +589,17 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 - `alt-a` - Copy log stream ARN to clipboard
 - `alt-n` - Copy log stream name to clipboard
 
-#### Log Tailing
 
-Tail logs in real-time using `alt-t`:
 
-```bash
-# Set lnav as your log pager (optional)
-export AWS_FZF_LOG_VIEWER=lnav
 
-# Then press alt-t on any log group or stream to tail logs
-```
 
-If `AWS_FZF_LOG_VIEWER` is set to `lnav`, logs will be piped through lnav for interactive viewing. Otherwise, logs are displayed directly in the terminal.
 
 #### Tips
 
 - Use `--log-group-name-prefix` to filter log groups (e.g., `/aws/lambda` for all Lambda function logs)
 - Press `alt-enter` on a log group to drill down into streams
 - Press `alt-t` to tail logs in real-time
-- Use `lnav` as a pager for better log viewing experience (install with `brew install lnav`)
+
 
 ---
 
@@ -1122,18 +1093,9 @@ brew install lnav
 sudo apt-get install lnav
 ```
 
-**Set log pager:**
 
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-export AWS_FZF_LOG_VIEWER=lnav
 
-# Reload shell
-source ~/.bashrc  # or source ~/.zshrc
-```
 
-**Without lnav:**
-Logs will be displayed directly in terminal using `aws logs tail` command.
 
 ---
 

@@ -96,7 +96,7 @@ PERFORMANCE:
 LOG TAILING:
     Press alt-t to tail CloudWatch logs for the selected function.
     Logs are streamed from /aws/lambda/<function-name> log group.
-    Set AWS_FZF_LOG_VIEWER=lnav for interactive log viewing.
+
 
 EXAMPLES:
     # List all Lambda functions

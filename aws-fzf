@@ -100,8 +100,6 @@ AWS OPTIONS (specify after action):
     --profile <profile>     AWS profile (overrides default)
 
 ENVIRONMENT VARIABLES:
-    AWS_FZF_S3_BUCKET_VIEWER    Command to open S3 buckets (receives bucket name as arg)
-                                 Example: export AWS_FZF_S3_BUCKET_VIEWER="vifm"
     AWS_FZF_LOG_VIEWER          Log viewer (lnav or less)
 
 KEYBOARD SHORTCUTS:
@@ -110,7 +108,7 @@ KEYBOARD SHORTCUTS:
     ctrl-o      Open in AWS Console
 
     S3 Buckets:
-    alt-enter   Explore bucket (external viewer if AWS_FZF_S3_BUCKET_VIEWER set, otherwise list objects)
+    alt-enter   List objects
 
     Additional shortcuts (service-specific):
     ctrl-v      Get secret/parameter value (secret, param)
