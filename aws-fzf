@@ -16,6 +16,7 @@ source "$_aws_fzf_source_dir/scripts/aws_s3.sh"
 source "$_aws_fzf_source_dir/scripts/aws_rds.sh"
 source "$_aws_fzf_source_dir/scripts/aws_dsql.sh"
 source "$_aws_fzf_source_dir/scripts/aws_dynamodb.sh"
+source "$_aws_fzf_source_dir/scripts/aws_sso.sh"
 
 # _show_root_help()
 #
@@ -93,6 +94,9 @@ COMMANDS:
 
     DynamoDB:
         aws fzf dynamodb table list               Browse DynamoDB tables
+
+    SSO:
+        aws fzf sso profile list                  Browse and login to SSO profiles
 
 AWS OPTIONS (specify after action):
     All AWS CLI options are supported and passed through:
@@ -176,7 +180,7 @@ main() {
             _show_root_help
             exit 0
             ;;
-        lambda | param | secret | ecs | log | s3 | rds | dsql | dynamodb)
+        lambda | param | secret | ecs | log | s3 | rds | dsql | dynamodb | sso)
             # Found the service, everything after this is service args
             service="$1"
             shift
@@ -230,12 +234,15 @@ main() {
     dynamodb)
         _aws_dynamodb_main "${service_args[@]}"
         ;;
+    sso)
+        _aws_sso_main "${service_args[@]}"
+        ;;
     "")
         _show_root_help
         ;;
     *)
         gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, log, rds, dsql, dynamodb"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, log, rds, dsql, dynamodb, sso"
         gum log --level info "Run 'aws fzf --help' for detailed usage information"
         exit 1
         ;;
