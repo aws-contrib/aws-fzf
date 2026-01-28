@@ -45,7 +45,7 @@ _aws_dsql_cluster_list() {
 	aws_context=$(_get_aws_context)
 
 	# Build fzf options with user-provided flags
-	_aws_fzf_options
+	_aws_fzf_options "DSQL_CLUSTER"
 
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \

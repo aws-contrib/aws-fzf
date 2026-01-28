@@ -45,7 +45,7 @@ _aws_dynamodb_table_list() {
 	aws_context=$(_get_aws_context)
 
 	# Build fzf options with user-provided flags
-	_aws_fzf_options
+	_aws_fzf_options "DYNAMODB_TABLE"
 
 	# Display in fzf with keybindings
 	echo "$table_list" | fzf "${_fzf_options[@]}" \

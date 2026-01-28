@@ -45,7 +45,7 @@ _aws_secret_list() {
 	aws_context=$(_get_aws_context)
 
 	# Build fzf options with user-provided flags
-	_aws_fzf_options
+	_aws_fzf_options "SECRET"
 
 	# Display in fzf with full keybindings
 	echo "$secrets_list" | fzf "${_fzf_options[@]}" \

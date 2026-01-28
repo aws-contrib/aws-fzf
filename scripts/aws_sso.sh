@@ -39,7 +39,7 @@ _aws_sso_profile_list() {
     fi
 
     # Build fzf options with user-provided flags
-    _aws_fzf_options
+    _aws_fzf_options "SSO_PROFILE"
 
     # Display in fzf with keybindings
     # Note: enter returns just the profile name (first column) for script usage

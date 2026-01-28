@@ -45,7 +45,7 @@ _aws_rds_instance_list() {
 	aws_context=$(_get_aws_context)
 
 	# Build fzf options with user-provided flags
-	_aws_fzf_options
+	_aws_fzf_options "RDS_INSTANCE"
 
 	# Display in fzf with full keybindings
 	echo "$instance_list" | fzf "${_fzf_options[@]}" \
@@ -96,7 +96,7 @@ _aws_rds_cluster_list() {
 	aws_context=$(_get_aws_context)
 
 	# Build fzf options with user-provided flags
-	_aws_fzf_options
+	_aws_fzf_options "RDS_CLUSTER"
 
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \

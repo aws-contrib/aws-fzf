@@ -10,28 +10,37 @@ _fzf_split="·"
 #
 # DESCRIPTION:
 #   Constructs the fzf options array by combining default options with
-#   user-provided flags from FZF_AWS_FLAGS environment variable. This function
+#   user-provided flags from FZF_AWS_FLAGS environment variable and per-command
+#   FZF_AWS_<SERVICE>_<RESOURCE>_OPTS environment variables. This function
 #   must be called at runtime (not at source time) to pick up flags set by main().
 #
-#   Default options are always applied first, then user flags are appended.
+#   Precedence order (last wins):
+#   1. Default options (defined in code)
+#   2. FZF_AWS_FLAGS (global, set via CLI)
+#   3. FZF_AWS_<SERVICE>_<RESOURCE>_OPTS (per-command, highest priority)
+#
 #   If user flags conflict with defaults (e.g., both specify --height), fzf's
 #   last-wins behavior means user flags take precedence.
 #
 # PARAMETERS:
-#   None
+#   $1 - Optional command identifier (e.g., "SECRET", "S3_BUCKET", "ECS_CLUSTER")
+#        Used to lookup per-command environment variable FZF_AWS_${command_id}_OPTS
 #
 # RETURNS:
 #   Sets _fzf_options array with merged options
 #
 # ENVIRONMENT:
 #   FZF_AWS_FLAGS - Space-separated string of user fzf flags (set by main entry point)
+#   FZF_AWS_<SERVICE>_<RESOURCE>_OPTS - Per-command fzf options (e.g., FZF_AWS_SECRET_OPTS)
 #
 # EXAMPLE:
 #   # Call this before using fzf in any service function
-#   _aws_fzf_options
+#   _aws_fzf_options "SECRET"
 #   echo "$data" | fzf "${_fzf_options[@]}" ...
 #
 _aws_fzf_options() {
+	local command_id="${1:-}"
+
 	# Default fzf options for aws-fzf
 	_fzf_options=(
 		--ansi
@@ -44,12 +53,31 @@ _aws_fzf_options() {
 		--layout='reverse-list'
 	)
 
-	# Add user-provided fzf flags
+	# Add user-provided fzf flags (global)
 	if [[ -n "$FZF_AWS_FLAGS" ]]; then
 		# Safely parse quoted string back to array
+		# Use eval with proper quoting to handle complex flags
 		local user_flags=()
-		eval "user_flags=($FZF_AWS_FLAGS)"
+		eval "user_flags=($FZF_AWS_FLAGS)" 2>/dev/null || {
+			# Fallback to simple word splitting if eval fails
+			read -ra user_flags <<< "$FZF_AWS_FLAGS"
+		}
 		_fzf_options+=("${user_flags[@]}")
+	fi
+
+	# Add per-command fzf options (highest precedence)
+	if [[ -n "$command_id" ]]; then
+		local var_name="FZF_AWS_${command_id}_OPTS"
+		local cmd_flags="${!var_name}"
+		if [[ -n "$cmd_flags" ]]; then
+			local cmd_flags_array=()
+			# Use eval with proper quoting to handle complex flags
+			eval "cmd_flags_array=($cmd_flags)" 2>/dev/null || {
+				# Fallback to simple word splitting if eval fails
+				read -ra cmd_flags_array <<< "$cmd_flags"
+			}
+			_fzf_options+=("${cmd_flags_array[@]}")
+		fi
 	fi
 }
 

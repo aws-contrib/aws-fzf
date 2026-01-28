@@ -45,7 +45,7 @@ _aws_lambda_list() {
 	aws_context=$(_get_aws_context)
 
 	# Build fzf options with user-provided flags
-	_aws_fzf_options
+	_aws_fzf_options "LAMBDA"
 
 	# Display in fzf with keybindings
 	echo "$function_list" | fzf "${_fzf_options[@]}" \

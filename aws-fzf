@@ -62,6 +62,44 @@ FZF FLAGS (specify before service):
 
     See 'man fzf' for all available fzf options.
 
+ENVIRONMENT VARIABLES:
+    Per-command fzf configuration (highest precedence):
+
+    FZF_AWS_<SERVICE>_<RESOURCE>_OPTS
+        Override fzf options for specific commands.
+
+        Available variables:
+            FZF_AWS_SECRET_OPTS              FZF_AWS_ECS_CLUSTER_OPTS
+            FZF_AWS_PARAM_OPTS               FZF_AWS_ECS_SERVICE_OPTS
+            FZF_AWS_LAMBDA_OPTS              FZF_AWS_ECS_TASK_OPTS
+            FZF_AWS_S3_BUCKET_OPTS           FZF_AWS_LOGS_GROUP_OPTS
+            FZF_AWS_S3_OBJECT_OPTS           FZF_AWS_LOGS_STREAM_OPTS
+            FZF_AWS_RDS_INSTANCE_OPTS        FZF_AWS_DSQL_CLUSTER_OPTS
+            FZF_AWS_RDS_CLUSTER_OPTS         FZF_AWS_DYNAMODB_TABLE_OPTS
+            FZF_AWS_SSO_PROFILE_OPTS
+
+    Global fzf configuration (lower precedence):
+
+    FZF_AWS_FLAGS
+        Global fzf flags (set automatically from CLI --flags)
+
+    Precedence: Defaults < FZF_AWS_FLAGS < FZF_AWS_<SERVICE>_<RESOURCE>_OPTS
+
+    Examples:
+        # Different heights per command
+        export FZF_AWS_S3_BUCKET_OPTS="--height 90%"
+        export FZF_AWS_SECRET_OPTS="--height 50%"
+
+        # Custom preview windows
+        export FZF_AWS_S3_BUCKET_OPTS="--preview 'aws s3 ls s3://{1} | head -20'"
+
+        # Multi-select for batch operations
+        export FZF_AWS_ECS_CLUSTER_OPTS="--multi"
+
+        # Different layouts per command
+        export FZF_AWS_SECRET_OPTS="--layout=reverse"
+        export FZF_AWS_LOGS_GROUP_OPTS="--layout=default --preview-window=bottom:40%"
+
 COMMANDS:
     Secrets Manager:
         aws fzf secret list                       Browse secrets
