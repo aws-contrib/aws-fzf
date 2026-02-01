@@ -51,7 +51,7 @@ _aws_sso_profile_list() {
         --bind "alt-enter:execute($_aws_sso_source_dir/aws_sso_cmd.sh login {1})+abort" \
         --bind "alt-n:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-profile-name {1})" \
         --bind "alt-a:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-account-id {1})" \
-        --bind "alt-l:execute($_aws_sso_source_dir/aws_sso_cmd.sh logout {1})+reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" |
+        --bind "alt-x:execute($_aws_sso_source_dir/aws_sso_cmd.sh logout {1})+reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" |
         awk '{print $1}'
 }
 
@@ -77,7 +77,7 @@ KEYBOARD SHORTCUTS:
     ctrl-o      Open AWS console in browser (bypasses account selection)
     alt-n       Copy profile name to clipboard
     alt-a       Copy account ID to clipboard
-    alt-l       Logout from selected profile (then reload list)
+    alt-x       Logout from selected profile (then reload list)
 
 PROFILE DISCOVERY:
     This command discovers SSO profiles by:
@@ -104,7 +104,7 @@ LOGIN BEHAVIOR:
     - Useful for scripts and command substitution
 
 LOGOUT BEHAVIOR:
-    When you press alt-l on a profile:
+    When you press alt-x on a profile:
     1. AWS SSO logout is executed
     2. Profile list reloads automatically
     3. fzf remains open
