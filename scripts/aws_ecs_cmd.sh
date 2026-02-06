@@ -323,6 +323,86 @@ _copy_task_arn() {
 	_copy_to_clipboard "$task" "task ARN"
 }
 
+# _aws_ecs_cluster_help_interactive()
+#
+# Display interactive help for ECS clusters view
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_ecs_cluster_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View services |
+| **`ctrl-o`** | Open in console |
+| **`alt-enter`** | View metadata |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
+# _aws_ecs_service_help_interactive()
+#
+# Display interactive help for ECS services view
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_ecs_service_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View tasks |
+| **`ctrl-o`** | Open in console |
+| **`alt-enter`** | View metadata |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
+# _aws_ecs_task_help_interactive()
+#
+# Display interactive help for ECS tasks view
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_ecs_task_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View metadata |
+| **`ctrl-o`** | Open in console |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # _aws_ecs_cluster_list_cmd()
 #
 # Fetch and format ECS clusters for fzf display
@@ -432,6 +512,15 @@ list-services)
 list-tasks)
 	shift
 	_aws_ecs_task_list_cmd "$@"
+	;;
+help-clusters)
+	_aws_ecs_cluster_help_interactive
+	;;
+help-services)
+	_aws_ecs_service_help_interactive
+	;;
+help-tasks)
+	_aws_ecs_task_help_interactive
 	;;
 batch-describe-clusters)
 	shift

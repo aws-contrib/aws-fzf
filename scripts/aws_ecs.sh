@@ -52,11 +52,13 @@ _aws_ecs_cluster_list() {
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Clusters $_fzf_split $aws_context" \
+		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-clusters" \
 		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-name {1})"
+		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-name {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_ecs_service_list()
@@ -120,11 +122,13 @@ _aws_ecs_service_list() {
 	echo "$service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
+		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-services" \
 		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-services '$cluster' ${list_services_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn $cluster {1})" \
-		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-name {1})"
+		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-name {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_ecs_task_list()
@@ -188,10 +192,12 @@ _aws_ecs_task_list() {
 	echo "$task_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
+		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-tasks" \
 		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks '$cluster' ${list_tasks_args[*]})" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster $cluster --tasks {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})" \
-		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})"
+		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_ecs_help()

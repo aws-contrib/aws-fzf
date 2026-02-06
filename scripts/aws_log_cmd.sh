@@ -306,15 +306,78 @@ _aws_log_stream_list_cmd() {
 		jq -r "$stream_list_jq" | column -t -s $'\t'
 }
 
+# _aws_log_group_help_interactive()
+#
+# Display interactive help for log group commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_log_group_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View details |
+| **`ctrl-o`** | Open in console |
+| **`alt-enter`** | List streams |
+| **`alt-t`** | Tail logs |
+| **`alt-l`** | Read logs |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
+# _aws_log_stream_help_interactive()
+#
+# Display interactive help for log stream commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_log_stream_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View details |
+| **`ctrl-o`** | Open in console |
+| **`alt-t`** | Tail logs |
+| **`alt-l`** | Read logs |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # Command router
 case "${1:-}" in
 list-groups)
 	shift
 	_aws_log_group_list_cmd "$@"
 	;;
+help-groups)
+	_aws_log_group_help_interactive
+	;;
 list-streams)
 	shift
 	_aws_log_stream_list_cmd "$@"
+	;;
+help-streams)
+	_aws_log_stream_help_interactive
 	;;
 view-group)
 	shift

@@ -209,11 +209,42 @@ _aws_sso_copy_account_id() {
 	_copy_to_clipboard "$account_id" "account ID"
 }
 
+# _aws_sso_help_interactive()
+#
+# Display interactive help for SSO commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_sso_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | Login |
+| **`ctrl-o`** | Open console |
+| **`alt-enter`** | Export profile |
+| **`alt-x`** | Logout |
+| **`alt-n`** | Copy name |
+| **`alt-a`** | Copy account ID |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # Command router
 case "${1:-}" in
 list)
 	shift
 	_aws_sso_profile_list_cmd "$@"
+	;;
+help)
+	_aws_sso_help_interactive
 	;;
 login)
 	shift

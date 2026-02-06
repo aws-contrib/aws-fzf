@@ -100,6 +100,34 @@ _aws_lambda_copy_name() {
 	_copy_to_clipboard "$function" "function name"
 }
 
+# _aws_lambda_help_interactive()
+#
+# Display interactive help for Lambda commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_lambda_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View details |
+| **`ctrl-o`** | Open in console |
+| **`alt-t`** | Tail logs |
+| **`alt-l`** | View logs |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # _aws_lambda_list_cmd()
 #
 # Fetch and format Lambda functions for fzf display
@@ -131,6 +159,9 @@ case "${1:-}" in
 list)
 	shift
 	_aws_lambda_list_cmd "$@"
+	;;
+help)
+	_aws_lambda_help_interactive
 	;;
 view-function)
 	shift

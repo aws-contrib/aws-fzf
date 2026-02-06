@@ -51,13 +51,15 @@ _aws_log_group_list() {
 	echo "$group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context" \
+		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-groups" \
 		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-groups ${list_groups_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log {1})" \
 		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})"
+		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_log_stream_list()
@@ -121,13 +123,15 @@ _aws_log_stream_list() {
 	echo "$stream_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
+		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-streams" \
 		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-streams '$log_group_name' ${list_streams_args[*]})" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log '$log_group_name' {1})" \
 		--bind "alt-a:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
-		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})"
+		--bind "alt-n:execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_log_help()

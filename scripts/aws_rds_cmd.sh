@@ -417,6 +417,60 @@ _copy_cluster_name() {
 	_copy_to_clipboard "$cluster" "cluster identifier"
 }
 
+# _aws_rds_instance_help_interactive()
+#
+# Display interactive help for RDS instance commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_rds_instance_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | Connect (psql) |
+| **`ctrl-o`** | Open in console |
+| **`alt-c`** | Connect (psql) |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy identifier |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
+# _aws_rds_cluster_help_interactive()
+#
+# Display interactive help for RDS cluster commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_rds_cluster_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | Connect (psql) |
+| **`ctrl-o`** | Open in console |
+| **`alt-c`** | Connect (psql) |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy identifier |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # _aws_rds_instance_list_cmd()
 #
 # Fetch and format RDS instances for fzf display
@@ -478,6 +532,12 @@ list-instances)
 list-clusters)
 	shift
 	_aws_rds_cluster_list_cmd "$@"
+	;;
+help-instances)
+	_aws_rds_instance_help_interactive
+	;;
+help-clusters)
+	_aws_rds_cluster_help_interactive
 	;;
 view-instance)
 	shift

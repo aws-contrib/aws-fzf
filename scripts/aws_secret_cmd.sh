@@ -137,6 +137,33 @@ _aws_secret_copy_name() {
 	_copy_to_clipboard "$secret_name" "secret name"
 }
 
+# _aws_secret_help_interactive()
+#
+# Display interactive help for secret commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_secret_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View details |
+| **`ctrl-o`** | Open in console |
+| **`alt-v`** | Copy value |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # _aws_secret_list_cmd()
 #
 # Fetch and format secrets for fzf display
@@ -168,6 +195,9 @@ case "${1:-}" in
 list)
 	shift
 	_aws_secret_list_cmd "$@"
+	;;
+help)
+	_aws_secret_help_interactive
 	;;
 copy-value)
 	shift

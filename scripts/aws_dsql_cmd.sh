@@ -188,6 +188,33 @@ _copy_cluster_name() {
 	_copy_to_clipboard "$cluster" "cluster identifier"
 }
 
+# _aws_dsql_help_interactive()
+#
+# Display interactive help for DSQL commands
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_dsql_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | Connect (psql) |
+| **`ctrl-o`** | Open in console |
+| **`alt-c`** | Copy cluster ID |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # _aws_dsql_cluster_list_cmd()
 #
 # Fetch and format DSQL clusters for fzf display
@@ -219,6 +246,9 @@ case "${1:-}" in
 list)
 	shift
 	_aws_dsql_cluster_list_cmd "$@"
+	;;
+help)
+	_aws_dsql_help_interactive
 	;;
 view-cluster)
 	shift

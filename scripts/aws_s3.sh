@@ -65,11 +65,13 @@ _aws_s3_bucket_list() {
 	echo "$bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Buckets $_fzf_split $aws_context" \
+		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-buckets" \
 		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-buckets ${list_buckets_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
 		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-name {1})"
+		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-name {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_s3_object_list()
@@ -133,11 +135,13 @@ _aws_s3_object_list() {
 	echo "$object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket" \
+		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-objects" \
 		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-objects '$bucket' ${list_objects_args[*]})" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn $bucket {1})" \
-		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})"
+		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})" \
+		--bind "alt-h:toggle-preview"
 }
 
 # _aws_s3_help()

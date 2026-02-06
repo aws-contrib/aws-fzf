@@ -165,6 +165,55 @@ _copy_object_key() {
 	_copy_to_clipboard "$key" "object key"
 }
 
+# _aws_s3_bucket_help_interactive()
+#
+# Display interactive help for S3 bucket view
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_s3_bucket_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View bucket contents |
+| **`ctrl-o`** | Open in console |
+| **`alt-enter`** | Copy bucket ARN to clipboard |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
+# _aws_s3_object_help_interactive()
+#
+# Display interactive help for S3 object view
+#
+# DESCRIPTION:
+#   Shows keyboard shortcuts and available actions in a formatted help panel
+#   using gum format with markdown. Designed to be used in fzf preview window.
+#
+_aws_s3_object_help_interactive() {
+	gum format <<'EOF'
+# Help
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| **`ctrl-r`** | Reload list |
+| **`enter`** | View details |
+| **`ctrl-o`** | Open in console |
+| **`alt-h`** | Toggle help |
+| **`ESC`** | Exit |
+EOF
+}
+
 # _aws_s3_bucket_list_cmd()
 #
 # Fetch and format S3 buckets for fzf display
@@ -235,6 +284,12 @@ list-buckets)
 list-objects)
 	shift
 	_aws_s3_object_list_cmd "$@"
+	;;
+help-buckets)
+	_aws_s3_bucket_help_interactive
+	;;
+help-objects)
+	_aws_s3_object_help_interactive
 	;;
 view-bucket)
 	shift
