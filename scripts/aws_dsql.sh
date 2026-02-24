@@ -54,7 +54,7 @@ _aws_dsql_cluster_list() {
 		--preview "$_aws_dsql_source_dir/aws_dsql_cmd.sh help" \
 		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
-		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq .)+abort" \
+		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})" \
 		--bind "alt-a:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-name {1})" \

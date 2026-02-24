@@ -55,7 +55,7 @@ _aws_dynamodb_table_list() {
 		--bind "ctrl-r:reload($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh list ${list_tables_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "alt-enter:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
-		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq .)+abort" \
+		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq . | gum pager)" \
 		--bind "alt-a:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-name {1})" \
 		--bind "alt-h:toggle-preview"

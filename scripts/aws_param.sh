@@ -53,7 +53,7 @@ _aws_param_list() {
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
 		--preview "$_aws_param_source_dir/aws_param_cmd.sh help" \
 		--bind "ctrl-r:reload($_aws_param_source_dir/aws_param_cmd.sh list ${describe_params_args[*]})" \
-		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq .)+abort" \
+		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})" \

@@ -54,7 +54,7 @@ _aws_rds_instance_list() {
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-instances" \
 		--bind "ctrl-r:reload($_aws_rds_source_dir/aws_rds_cmd.sh list-instances ${list_instances_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
-		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq .)+abort" \
+		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})" \
 		--bind "alt-a:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-name {1})" \
@@ -107,7 +107,7 @@ _aws_rds_cluster_list() {
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-clusters" \
 		--bind "ctrl-r:reload($_aws_rds_source_dir/aws_rds_cmd.sh list-clusters ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
-		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq .)+abort" \
+		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})" \
 		--bind "alt-a:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-name {1})" \

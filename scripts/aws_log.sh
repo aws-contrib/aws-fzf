@@ -125,7 +125,7 @@ _aws_log_stream_list() {
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-streams" \
 		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-streams '$log_group_name' ${list_streams_args[*]})" \
-		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq .)+abort" \
+		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log '$log_group_name' {1})" \

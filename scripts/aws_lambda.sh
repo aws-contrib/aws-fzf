@@ -53,7 +53,7 @@ _aws_lambda_list() {
 		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
 		--preview "$_aws_lambda_source_dir/aws_lambda_cmd.sh help" \
 		--bind "ctrl-r:reload($_aws_lambda_source_dir/aws_lambda_cmd.sh list ${list_functions_args[*]})" \
-		--bind "enter:execute(aws lambda get-function --function-name {1} | jq .)+abort" \
+		--bind "enter:execute(aws lambda get-function --function-name {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})+abort" \
 		--bind "alt-l:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})+abort" \

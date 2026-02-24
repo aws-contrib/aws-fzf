@@ -137,7 +137,7 @@ _aws_s3_object_list() {
 		--footer "$_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket" \
 		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-objects" \
 		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-objects '$bucket' ${list_objects_args[*]})" \
-		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq .)+abort" \
+		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn $bucket {1})" \
 		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})" \
