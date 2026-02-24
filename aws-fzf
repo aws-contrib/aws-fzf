@@ -150,8 +150,8 @@ KEYBOARD SHORTCUTS:
     alt-enter   List objects
 
     Additional shortcuts (service-specific):
-    ctrl-v      Get secret/parameter value (secret, param)
-    alt-c       Copy resource name/ID
+    alt-v       Get secret/parameter value (secret, param)
+    alt-n       Copy resource name/ID
     alt-a       Copy resource ARN
 
 EXAMPLES:

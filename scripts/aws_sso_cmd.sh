@@ -226,9 +226,9 @@ _aws_sso_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | Login |
+| **`enter`** | Return profile name |
 | **`ctrl-o`** | Open console |
-| **`alt-enter`** | Export profile |
+| **`alt-enter`** | Login |
 | **`alt-x`** | Logout |
 | **`alt-n`** | Copy name |
 | **`alt-a`** | Copy account ID |

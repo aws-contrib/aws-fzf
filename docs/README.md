@@ -17,6 +17,7 @@ Complete guide for using aws-fzf, an interactive fuzzy finder for AWS resources.
   - [RDS](#rds)
   - [DSQL](#dsql)
   - [DynamoDB](#dynamodb)
+  - [SSO](#sso)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -318,6 +319,20 @@ Additional service-specific keybindings are documented below.
 | `alt-enter` | Open items explorer in AWS Console   |
 | `alt-a`     | Copy table ARN to clipboard          |
 | `alt-n`     | Copy table name to clipboard         |
+
+### SSO
+
+| Key         | Action                                      |
+| ----------- | ------------------------------------------- |
+| `enter`     | Return selected profile name to stdout      |
+| `alt-enter` | Login to selected profile (opens browser)   |
+| `ctrl-r`    | Reload profile list                         |
+| `ctrl-o`    | Open AWS Console (bypasses account selection) |
+| `alt-n`     | Copy profile name to clipboard              |
+| `alt-a`     | Copy account ID to clipboard                |
+| `alt-x`     | Logout from selected profile                |
+| `alt-h`     | Toggle help panel                           |
+| `ESC`       | Exit                                        |
 
 ---
 
@@ -831,6 +846,111 @@ When viewing table details with `enter`, you'll see:
 - Use `--region` to list tables in different AWS regions
 - DynamoDB tables are region-specific (unlike global services)
 - DynamoDB is a managed NoSQL service - no client connection like psql
+
+---
+
+### SSO
+
+Browse and login to AWS SSO profiles interactively.
+
+#### Usage
+
+```bash
+# List SSO profiles
+aws fzf sso profile list
+
+# With specific region
+aws fzf sso profile list --region us-east-1
+```
+
+#### Configuration
+
+SSO profiles can be configured in two ways:
+
+**JSON config file** (`~/.aws/aws-fzf-sso.json`):
+
+```json
+[
+  {
+    "profile": "dev",
+    "account": "123456789012",
+    "role": "DeveloperAccess",
+    "label": "Development"
+  },
+  {
+    "profile": "prod",
+    "account": "987654321098",
+    "role": "ReadOnlyAccess",
+    "label": "Production"
+  }
+]
+```
+
+**AWS CLI config** (`~/.aws/config`):
+
+```ini
+[profile dev]
+sso_start_url = https://my-sso.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 123456789012
+sso_role_name = DeveloperAccess
+
+[profile prod]
+sso_start_url = https://my-sso.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 987654321098
+sso_role_name = ReadOnlyAccess
+```
+
+#### Keyboard Shortcuts
+
+- `enter` - Return selected profile name to stdout
+- `alt-enter` - Login to selected profile (opens browser for SSO authentication, then exits)
+- `ctrl-r` - Reload the profile list
+- `ctrl-o` - Open AWS Console in browser (bypasses account selection)
+- `alt-n` - Copy profile name to clipboard
+- `alt-a` - Copy account ID to clipboard
+- `alt-x` - Logout from selected profile (then reload list)
+- `alt-h` - Toggle help panel
+
+#### Examples
+
+```bash
+# Interactive profile selection
+aws fzf sso profile list
+
+# Use selected profile in a command
+AWS_PROFILE=$(aws fzf sso profile list) aws s3 ls
+
+# Custom fzf binding: open profile in a new tmux window
+aws fzf --bind 'alt-enter:execute(tmux new-window -e AWS_PROFILE={1} -n {2}-{4})+abort' sso profile list
+```
+
+#### Tips
+
+- Press `alt-enter` to authenticate — a browser window opens for SSO login
+- Press `enter` to return the profile name for use in scripts
+- Press `ctrl-o` to open the AWS Console directly without re-authenticating
+- Use `alt-x` to logout when done
+
+#### IAM Permissions Required
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sso:ListAccountRoles",
+        "sso:ListAccounts",
+        "sso:GetRoleCredentials"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
 
 ---
 

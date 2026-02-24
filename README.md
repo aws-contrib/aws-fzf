@@ -44,6 +44,7 @@ aws fzf rds instance list        # Browse RDS instances
 aws fzf dsql cluster list        # Browse DSQL clusters
 aws fzf dynamodb table list      # Browse DynamoDB tables
 aws fzf logs group list          # Browse CloudWatch logs
+aws fzf sso profile list         # Browse and login to SSO profiles
 ```
 
 ## Documentation
@@ -51,7 +52,7 @@ aws fzf logs group list          # Browse CloudWatch logs
 See [docs/README.md](docs/README.md) for complete documentation including:
 
 - Configuration (profiles, regions, environment variables), shortcuts
-- Service Guides (`S3`, `SSM`, `Secrets Manager`, `ECS`, `Lambda`, `CloudWatch Logs`, `RDS`, `DSQL`, `DynamoDB`)
+- Service Guides (`S3`, `SSM`, `Secrets Manager`, `ECS`, `Lambda`, `CloudWatch Logs`, `RDS`, `DSQL`, `DynamoDB`, `SSO`)
 
 ## Contributing
 
