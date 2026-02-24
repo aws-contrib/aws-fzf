@@ -139,7 +139,7 @@ _aws_dynamodb_help_interactive() {
 | **`ctrl-r`** | Reload list |
 | **`enter`** | View details |
 | **`ctrl-o`** | Open overview |
-| **`ctrl-O`** | Open items (scan) |
+| **`alt-enter`** | Open items (scan) |
 | **`alt-a`** | Copy ARN |
 | **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |

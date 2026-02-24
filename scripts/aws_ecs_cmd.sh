@@ -340,9 +340,9 @@ _aws_ecs_cluster_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | View services |
+| **`enter`** | Return cluster name |
 | **`ctrl-o`** | Open in console |
-| **`alt-enter`** | View metadata |
+| **`alt-enter`** | List services |
 | **`alt-a`** | Copy ARN |
 | **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |
@@ -367,9 +367,9 @@ _aws_ecs_service_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | View tasks |
+| **`enter`** | Return service name |
 | **`ctrl-o`** | Open in console |
-| **`alt-enter`** | View metadata |
+| **`alt-enter`** | List tasks |
 | **`alt-a`** | Copy ARN |
 | **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |
@@ -394,10 +394,9 @@ _aws_ecs_task_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | View metadata |
+| **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

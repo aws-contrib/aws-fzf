@@ -205,9 +205,9 @@ _aws_dsql_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | Connect (psql) |
+| **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
-| **`alt-c`** | Copy cluster ID |
+| **`alt-c`** | Connect (psql) |
 | **`alt-a`** | Copy ARN |
 | **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |

@@ -434,7 +434,7 @@ _aws_rds_instance_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | Connect (psql) |
+| **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-c`** | Connect (psql) |
 | **`alt-a`** | Copy ARN |
@@ -461,7 +461,7 @@ _aws_rds_cluster_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | Connect (psql) |
+| **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-c`** | Connect (psql) |
 | **`alt-a`** | Copy ARN |

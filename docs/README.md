@@ -315,7 +315,7 @@ Additional service-specific keybindings are documented below.
 | Key         | Action                               |
 | ----------- | ------------------------------------ |
 | `enter`     | View table details (full JSON)       |
-| `ctrl-o`    | Open table in AWS Console (overview) |
+| `ctrl-o`    | Open table overview in AWS Console   |
 | `alt-enter` | Open items explorer in AWS Console   |
 | `alt-a`     | Copy table ARN to clipboard          |
 | `alt-n`     | Copy table name to clipboard         |
@@ -816,7 +816,7 @@ aws fzf dynamodb table list --profile production
 #### Keyboard Shortcuts
 
 - `enter` - Show table details (full JSON including schema, provisioned throughput, indexes)
-- `ctrl-o` - Open table overview in AWS Console (shows schema, indexes, metrics)
+- `ctrl-o` - Open table overview in AWS Console (schema, indexes, metrics)
 - `alt-enter` - Open items explorer in AWS Console (browse and query table data)
 - `alt-a` - Copy table ARN to clipboard
 - `alt-n` - Copy table name to clipboard

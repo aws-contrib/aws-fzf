@@ -182,9 +182,11 @@ _aws_s3_bucket_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | View bucket contents |
+| **`enter`** | Return bucket name |
 | **`ctrl-o`** | Open in console |
-| **`alt-enter`** | Copy bucket ARN to clipboard |
+| **`alt-enter`** | List objects |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
@@ -209,6 +211,8 @@ _aws_s3_object_help_interactive() {
 | **`ctrl-r`** | Reload list |
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
+| **`alt-a`** | Copy ARN |
+| **`alt-n`** | Copy key |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
