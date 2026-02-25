@@ -155,6 +155,68 @@ aws fzf s3 object list \
 
 ### Environment Variables
 
+#### Per-Command fzf Options (Highest Precedence)
+
+Override fzf options for specific commands using `FZF_AWS_<SERVICE>_<RESOURCE>_OPTS`:
+
+| Variable                       | Service          |
+| ------------------------------ | ---------------- |
+| `FZF_AWS_SECRET_OPTS`          | Secrets Manager  |
+| `FZF_AWS_PARAM_OPTS`           | Parameter Store  |
+| `FZF_AWS_LAMBDA_OPTS`          | Lambda           |
+| `FZF_AWS_S3_BUCKET_OPTS`       | S3 Buckets       |
+| `FZF_AWS_S3_OBJECT_OPTS`       | S3 Objects       |
+| `FZF_AWS_ECS_CLUSTER_OPTS`     | ECS Clusters     |
+| `FZF_AWS_ECS_SERVICE_OPTS`     | ECS Services     |
+| `FZF_AWS_ECS_TASK_OPTS`        | ECS Tasks        |
+| `FZF_AWS_LOGS_GROUP_OPTS`      | Log Groups       |
+| `FZF_AWS_LOGS_STREAM_OPTS`     | Log Streams      |
+| `FZF_AWS_RDS_INSTANCE_OPTS`    | RDS Instances    |
+| `FZF_AWS_RDS_CLUSTER_OPTS`     | RDS Clusters     |
+| `FZF_AWS_DSQL_CLUSTER_OPTS`    | DSQL Clusters    |
+| `FZF_AWS_DYNAMODB_TABLE_OPTS`  | DynamoDB Tables  |
+| `FZF_AWS_SSO_PROFILE_OPTS`     | SSO Profiles     |
+
+#### Global fzf Options (Lower Precedence)
+
+| Variable         | Description                                          |
+| ---------------- | ---------------------------------------------------- |
+| `FZF_AWS_FLAGS`  | Global fzf flags (set automatically from CLI --flags) |
+
+#### Service-Specific Variables
+
+| Variable               | Description                                     | Default                         |
+| ---------------------- | ----------------------------------------------- | ------------------------------- |
+| `FZF_AWS_LOG_HISTORY`  | Duration to look back for log tailing            | `1h`                            |
+| `AWS_SSO_CONFIG_FILE`  | Override SSO JSON config file location            | `~/.aws/cli/fzf/config.json`   |
+
+#### Precedence
+
+```
+Defaults < FZF_AWS_FLAGS < FZF_AWS_<SERVICE>_<RESOURCE>_OPTS
+```
+
+#### Examples
+
+```bash
+# Different heights per command
+export FZF_AWS_S3_BUCKET_OPTS="--height 90%"
+export FZF_AWS_SECRET_OPTS="--height 50%"
+
+# Custom preview windows
+export FZF_AWS_S3_BUCKET_OPTS="--preview 'aws s3 ls s3://{1} | head -20'"
+
+# Multi-select for batch operations
+export FZF_AWS_ECS_CLUSTER_OPTS="--multi"
+
+# Different layouts per command
+export FZF_AWS_SECRET_OPTS="--layout=reverse"
+export FZF_AWS_LOGS_GROUP_OPTS="--layout=default --preview-window=bottom:40%"
+
+# Look back further in log history
+export FZF_AWS_LOG_HISTORY="24h"
+```
+
 ---
 
 ## Keyboard Shortcuts
@@ -606,15 +668,11 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 
 
 
-
-
-
 #### Tips
 
 - Use `--log-group-name-prefix` to filter log groups (e.g., `/aws/lambda` for all Lambda function logs)
 - Press `alt-enter` on a log group to drill down into streams
 - Press `alt-t` to tail logs in real-time
-
 
 ---
 
@@ -867,24 +925,30 @@ aws fzf sso profile list --region us-east-1
 
 SSO profiles can be configured in two ways:
 
-**JSON config file** (`~/.aws/aws-fzf-sso.json`):
+**JSON config file** (`~/.aws/cli/fzf/config.json`):
 
 ```json
-[
-  {
-    "profile": "dev",
-    "account": "123456789012",
-    "role": "DeveloperAccess",
-    "label": "Development"
-  },
-  {
-    "profile": "prod",
-    "account": "987654321098",
-    "role": "ReadOnlyAccess",
-    "label": "Production"
-  }
-]
+{
+  "profiles": [
+    {
+      "profile": "dev",
+      "sso_account_id": "123456789012",
+      "sso_role_name": "DeveloperAccess",
+      "sso_region": "us-east-1",
+      "sso_start_url": "https://my-org.awsapps.com/start"
+    },
+    {
+      "profile": "prod",
+      "sso_account_id": "987654321098",
+      "sso_role_name": "ReadOnlyAccess",
+      "sso_region": "us-east-1",
+      "sso_start_url": "https://my-org.awsapps.com/start"
+    }
+  ]
+}
 ```
+
+Override the config file location with the `AWS_SSO_CONFIG_FILE` environment variable.
 
 **AWS CLI config** (`~/.aws/config`):
 
@@ -1212,9 +1276,6 @@ brew install lnav
 # Ubuntu/Debian
 sudo apt-get install lnav
 ```
-
-
-
 
 
 ---

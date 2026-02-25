@@ -167,7 +167,6 @@ _aws_rds_connect_instance() {
 	fi
 
 	# Generate IAM auth token
-	gum log --level info "Generating IAM auth token..."
 	local region
 	region=$(_get_aws_region)
 

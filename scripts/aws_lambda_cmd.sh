@@ -189,16 +189,12 @@ CLIPBOARD OPERATIONS:
     aws_lambda_cmd copy-arn <function-name>
     aws_lambda_cmd copy-name <function-name>
 
-LOG OPERATIONS:
-    aws_lambda_cmd tail-logs <function-name>
-
 DESCRIPTION:
     Utility commands for Lambda operations.
     list fetches and formats Lambda functions for fzf display.
     view-function opens Lambda functions in the AWS Console.
     copy-arn copies the function ARN to clipboard.
     copy-name copies the function name to clipboard.
-    tail-logs tails the function's CloudWatch Logs.
 
 EXAMPLES:
     # List functions (for fzf reload)
@@ -210,9 +206,6 @@ EXAMPLES:
     # Clipboard operations
     aws_lambda_cmd copy-arn my-function
     aws_lambda_cmd copy-name my-function
-
-    # Tail logs
-    aws_lambda_cmd tail-logs my-function
 
 EOF
 	;;

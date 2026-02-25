@@ -92,7 +92,7 @@ _tail_log() {
 # ENVIRONMENT VARIABLES:
 #   FZF_AWS_LOG_HISTORY     - Duration to look back (default: 1h).
 #                             Formats: 15m (minutes), 2h (hours), 1d (days)
-##
+#
 # DESCRIPTION:
 #   Retrieves historical CloudWatch logs within a time range.
 #   - If stream-name is provided: filters to that specific stream
@@ -445,13 +445,11 @@ DESCRIPTION:
     - copy-group-name: Copies log group name to clipboard
     - copy-stream-name: Copies stream name to clipboard
 
-
-
 EOF
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_log_cmd {view-group|view-stream|tail} [args]"
+	gum log --level info "Usage: aws_log_cmd {list-groups|list-streams|view-group|view-stream|tail-log|read-log|copy-*} [args]"
 	gum log --level info "Run 'aws_log_cmd --help' for more information"
 	exit 1
 	;;

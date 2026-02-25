@@ -125,7 +125,7 @@ EOF
 #   - fzf
 #   - jq
 #   - gum
-#   - Utility functions from utils/ (clipboard, console_url)
+#   - Utility functions from aws_core.sh (clipboard, console_url)
 
 # _aws_secret_main()
 #

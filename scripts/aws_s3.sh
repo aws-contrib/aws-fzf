@@ -19,7 +19,7 @@ source "$_aws_s3_source_dir/aws_core.sh"
 #   - fzf
 #   - jq
 #   - gum
-#   - Utility functions from utils/ (clipboard)
+#   - Utility functions from aws_core.sh (clipboard)
 
 # _aws_s3_bucket_list()
 #

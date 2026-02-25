@@ -286,7 +286,7 @@ EOF
 #   - fzf
 #   - jq
 #   - gum
-#   - Utility functions from utils/ (clipboard, console_url)
+#   - Utility functions from aws_core.sh (clipboard, console_url)
 
 # _aws_ecs_main()
 #
@@ -379,7 +379,7 @@ _aws_ecs_main() {
 # ------------------------------------------------------------------------------
 # Direct Execution Support
 # ------------------------------------------------------------------------------
-# When run directly (not sourced), pass all arguments to hsdk-env.
+# When run directly (not sourced), pass all arguments to _aws_ecs_main.
 # This enables tmux integration and scripted usage.
 # ------------------------------------------------------------------------------
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

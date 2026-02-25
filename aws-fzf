@@ -218,7 +218,7 @@ main() {
             _show_root_help
             exit 0
             ;;
-        lambda | param | secret | ecs | log | s3 | rds | dsql | dynamodb | sso)
+        lambda | param | secret | ecs | log | logs | s3 | rds | dsql | dynamodb | sso)
             # Found the service, everything after this is service args
             service="$1"
             shift
@@ -257,7 +257,7 @@ main() {
     ecs)
         _aws_ecs_main "${service_args[@]}"
         ;;
-    log)
+    log | logs)
         _aws_log_main "${service_args[@]}"
         ;;
     s3)
@@ -280,7 +280,7 @@ main() {
         ;;
     *)
         gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, log, rds, dsql, dynamodb, sso"
+        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql, dynamodb, sso"
         gum log --level info "Run 'aws fzf --help' for detailed usage information"
         exit 1
         ;;

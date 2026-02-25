@@ -16,3 +16,6 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Local/internal scripts
+hsdk-*.sh
