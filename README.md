@@ -16,9 +16,16 @@ An interactive terminal UI for AWS that lets you quickly discover, inspect, and 
 
 ```bash
 git clone https://github.com/aws-contrib/aws-fzf.git
-cd aws-fzf
-make install
 ```
+
+Add the following to `~/.aws/cli/alias`:
+
+```ini
+[toplevel]
+fzf = !/path/to/aws-fzf/aws-fzf
+```
+
+Replace `/path/to/aws-fzf` with the actual clone location.
 
 ## Usage
 

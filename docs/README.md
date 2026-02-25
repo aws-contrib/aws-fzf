@@ -42,24 +42,16 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/aws-contrib/aws-fzf.git
-cd aws-fzf
 ```
 
-Configure AWS CLI alias by creating or editing `~/.aws/cli/alias` file:
+Add the following to `~/.aws/cli/alias` (create the file if it doesn't exist):
 
 ```ini
 [toplevel]
-fzf = !/path/to/github.com/aws-contrib/aws-fzf/aws-fzf
+fzf = !/path/to/aws-fzf/aws-fzf
 ```
 
-Replace `/path/to/github.com/aws-contrib/aws-fzf/aws-fzf` with the absolute path to your cloned `aws-fzf` script.
-
-Make sure scripts are executable:
-
-```bash
-chmod +x aws-fzf
-chmod +x scripts/*.sh
-```
+Replace `/path/to/aws-fzf` with the absolute path to your cloned repository.
 
 ### Verify Installation
 
