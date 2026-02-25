@@ -139,9 +139,13 @@ _aws_sso_open() {
 	fi
 
 	# Get SSO configuration from profile
-	local sso_url account_id role_name
+	local sso_url
 	sso_url=$(aws configure get sso_start_url --profile "$profile" 2>/dev/null)
+
+	local account_id
 	account_id=$(aws configure get sso_account_id --profile "$profile" 2>/dev/null)
+
+	local role_name
 	role_name=$(aws configure get sso_role_name --profile "$profile" 2>/dev/null)
 
 	if [ -z "$sso_url" ]; then

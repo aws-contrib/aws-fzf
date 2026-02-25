@@ -124,8 +124,10 @@ _get_aws_account_id() {
 }
 
 _get_aws_context() {
-	local account_id region
+	local account_id
 	account_id=$(_get_aws_account_id)
+
+	local region
 	region=$(_get_aws_region)
 	echo "${account_id}-${region}"
 }
@@ -234,8 +236,11 @@ _copy_to_clipboard() {
 #   _parse_duration "1d"   # Returns 86400
 #
 _parse_duration() {
-	local value=$1
-	local num unit
+	local value
+	value=$1
+
+	local num
+	local unit
 
 	[[ $value =~ ^([0-9]+)([smhd])$ ]] || return 1
 	num=${BASH_REMATCH[1]}

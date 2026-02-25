@@ -88,8 +88,10 @@ _aws_dynamodb_copy_arn() {
 		exit 1
 	fi
 
-	local region account_id
+	local region
 	region=$(_get_aws_region)
+
+	local account_id
 	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:dynamodb:${region}:${account_id}:table/${table}"

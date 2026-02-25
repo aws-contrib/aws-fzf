@@ -221,8 +221,10 @@ _copy_cluster_arn() {
 		exit 1
 	fi
 
-	local region account_id
+	local region
 	region=$(_get_aws_region)
+
+	local account_id
 	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:ecs:${region}:${account_id}:cluster/${cluster}"
@@ -270,8 +272,10 @@ _copy_service_arn() {
 		exit 1
 	fi
 
-	local region account_id
+	local region
 	region=$(_get_aws_region)
+
+	local account_id
 	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:ecs:${region}:${account_id}:service/${cluster}/${service}"

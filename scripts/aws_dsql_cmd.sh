@@ -67,12 +67,14 @@ _aws_dsql_connect_cluster() {
 
 	local cluster_info
 	# Get cluster details
-	if ! cluster_info="$(
+	cluster_info="$(
 		gum spin --title "Getting AWS DSQL Cluster Details..." -- \
 			aws dsql get-cluster \
 			--identifier "$cluster" \
 			--output json
-	)"; then
+	)" || true
+
+	if [ -z "$cluster_info" ]; then
 		gum log --level error "Failed to describe cluster: $cluster"
 		gum log --level info "Check that the cluster exists and you have permissions"
 		gum log --level info "Required IAM permissions: dsql:GetCluster"
@@ -103,13 +105,15 @@ _aws_dsql_connect_cluster() {
 	region=$(_get_aws_region)
 
 	local token
-	if ! token=$(
+	token=$(
 		gum spin --title "Generating IAM Auth Token..." -- \
 			aws dsql generate-db-connect-admin-auth-token \
 			--region "$region" \
 			--expires-in 3600 \
 			--hostname "$endpoint"
-	); then
+	) || true
+
+	if [ -z "$token" ]; then
 		gum log --level error "Failed to generate IAM auth token"
 		gum log --level info "Check your AWS credentials and IAM permissions"
 		gum log --level info "Required IAM permissions: dsql:DbConnect"
