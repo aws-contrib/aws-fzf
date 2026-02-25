@@ -546,6 +546,54 @@ _aws_rds_cluster_list_cmd() {
 		jq -r "$cluster_list_jq" | column -t -s $'\t'
 }
 
+# _aws_rds_cmd_help()
+#
+# Display CLI help for RDS commands
+#
+_aws_rds_cmd_help() {
+	cat <<'EOF'
+aws_rds_cmd - Utility commands for RDS operations
+
+LISTING:
+    aws_rds_cmd list-instances [aws-cli-args]
+    aws_rds_cmd list-clusters [aws-cli-args]
+
+CONSOLE VIEWS:
+    aws_rds_cmd view-instance <db-instance-identifier>
+    aws_rds_cmd view-cluster <db-cluster-identifier>
+
+DATABASE CONNECTION:
+    aws_rds_cmd connect-instance <db-instance-identifier>
+    aws_rds_cmd connect-cluster <db-cluster-identifier>
+
+CLIPBOARD OPERATIONS:
+    aws_rds_cmd copy-instance-arn <db-instance-identifier>
+    aws_rds_cmd copy-instance-name <db-instance-identifier>
+    aws_rds_cmd copy-cluster-arn <db-cluster-identifier>
+    aws_rds_cmd copy-cluster-name <db-cluster-identifier>
+
+DESCRIPTION:
+    list-instances/list-clusters: Fetches and formats RDS resources for fzf display.
+    View commands open RDS resources in the AWS Console via the default browser.
+    Connection commands use psql with IAM authentication (PostgreSQL only).
+    Clipboard operations copy resource identifiers to the system clipboard.
+
+EXAMPLES:
+    # List resources (for fzf reload)
+    aws_rds_cmd list-instances --region us-east-1
+    aws_rds_cmd list-clusters
+
+    # Console views
+    aws_rds_cmd view-instance my-database
+    aws_rds_cmd view-cluster my-aurora-cluster
+
+    # Database connections
+    aws_rds_cmd connect-instance my-postgres-db
+    aws_rds_cmd connect-cluster my-aurora-cluster
+
+EOF
+}
+
 # Command router
 case "${1:-}" in
 list-instances)
@@ -595,47 +643,7 @@ copy-cluster-name)
 	_aws_rds_copy_cluster_name "$@"
 	;;
 --help | -h | help | "")
-	cat <<'EOF'
-aws_rds_cmd - Utility commands for RDS operations
-
-LISTING:
-    aws_rds_cmd list-instances [aws-cli-args]
-    aws_rds_cmd list-clusters [aws-cli-args]
-
-CONSOLE VIEWS:
-    aws_rds_cmd view-instance <db-instance-identifier>
-    aws_rds_cmd view-cluster <db-cluster-identifier>
-
-DATABASE CONNECTION:
-    aws_rds_cmd connect-instance <db-instance-identifier>
-    aws_rds_cmd connect-cluster <db-cluster-identifier>
-
-CLIPBOARD OPERATIONS:
-    aws_rds_cmd copy-instance-arn <db-instance-identifier>
-    aws_rds_cmd copy-instance-name <db-instance-identifier>
-    aws_rds_cmd copy-cluster-arn <db-cluster-identifier>
-    aws_rds_cmd copy-cluster-name <db-cluster-identifier>
-
-DESCRIPTION:
-    list-instances/list-clusters: Fetches and formats RDS resources for fzf display.
-    View commands open RDS resources in the AWS Console via the default browser.
-    Connection commands use psql with IAM authentication (PostgreSQL only).
-    Clipboard operations copy resource identifiers to the system clipboard.
-
-EXAMPLES:
-    # List resources (for fzf reload)
-    aws_rds_cmd list-instances --region us-east-1
-    aws_rds_cmd list-clusters
-
-    # Console views
-    aws_rds_cmd view-instance my-database
-    aws_rds_cmd view-cluster my-aurora-cluster
-
-    # Database connections
-    aws_rds_cmd connect-instance my-postgres-db
-    aws_rds_cmd connect-cluster my-aurora-cluster
-
-EOF
+	_aws_rds_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

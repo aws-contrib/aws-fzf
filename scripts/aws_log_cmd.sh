@@ -363,6 +363,51 @@ _aws_log_stream_help_interactive() {
 EOF
 }
 
+# _aws_log_cmd_help()
+#
+# Display CLI help for CloudWatch Logs commands
+#
+_aws_log_cmd_help() {
+	cat <<'EOF'
+aws_log_cmd - CloudWatch Logs operations
+
+LISTING:
+    aws_log_cmd list-groups [aws-cli-args]
+    aws_log_cmd list-streams <log-group-name> [aws-cli-args]
+
+CONSOLE VIEWS:
+    aws_log_cmd view-group <log-group-name>
+    aws_log_cmd view-stream <log-group-name> <stream-name>
+
+LOG OPERATIONS:
+    aws_log_cmd tail-log <log-group-name> [stream-name]
+    aws_log_cmd read-log <log-group-name> [stream-name]
+
+CLIPBOARD OPERATIONS:
+    aws_log_cmd copy-group-arn <log-group-name>
+    aws_log_cmd copy-group-name <log-group-name>
+    aws_log_cmd copy-stream-name <stream-name>
+
+DESCRIPTION:
+    List commands fetch and format CloudWatch Logs resources for fzf display.
+    View and tail CloudWatch Logs resources.
+    - list-groups: Fetches and formats log groups for fzf display
+    - list-streams: Fetches and formats log streams for fzf display
+    - view-group: Opens log group in AWS Console
+    - view-stream: Opens log stream in AWS Console
+    - tail-log: Streams logs in real-time (exit with Ctrl+C)
+                If stream-name omitted: tails all streams in group
+                If stream-name provided: tails specific stream
+    - read-log: Read historical logs within a time range
+                If stream-name omitted: searches all streams in group
+                If stream-name provided: filters to specific stream
+    - copy-group-arn: Copies log group ARN to clipboard
+    - copy-group-name: Copies log group name to clipboard
+    - copy-stream-name: Copies stream name to clipboard
+
+EOF
+}
+
 # Command router
 case "${1:-}" in
 list-groups)
@@ -408,44 +453,7 @@ copy-stream-name)
 	_aws_log_copy_stream_name "$@"
 	;;
 --help | -h | help | "")
-	cat <<'EOF'
-aws_log_cmd - CloudWatch Logs operations
-
-LISTING:
-    aws_log_cmd list-groups [aws-cli-args]
-    aws_log_cmd list-streams <log-group-name> [aws-cli-args]
-
-CONSOLE VIEWS:
-    aws_log_cmd view-group <log-group-name>
-    aws_log_cmd view-stream <log-group-name> <stream-name>
-
-LOG OPERATIONS:
-    aws_log_cmd tail-log <log-group-name> [stream-name]
-    aws_log_cmd read-log <log-group-name> [stream-name]
-
-CLIPBOARD OPERATIONS:
-    aws_log_cmd copy-group-arn <log-group-name>
-    aws_log_cmd copy-group-name <log-group-name>
-    aws_log_cmd copy-stream-name <stream-name>
-
-DESCRIPTION:
-    List commands fetch and format CloudWatch Logs resources for fzf display.
-    View and tail CloudWatch Logs resources.
-    - list-groups: Fetches and formats log groups for fzf display
-    - list-streams: Fetches and formats log streams for fzf display
-    - view-group: Opens log group in AWS Console
-    - view-stream: Opens log stream in AWS Console
-    - tail-log: Streams logs in real-time (exit with Ctrl+C)
-                If stream-name omitted: tails all streams in group
-                If stream-name provided: tails specific stream
-    - read-log: Read historical logs within a time range
-                If stream-name omitted: searches all streams in group
-                If stream-name provided: filters to specific stream
-    - copy-group-arn: Copies log group ARN to clipboard
-    - copy-group-name: Copies log group name to clipboard
-    - copy-stream-name: Copies stream name to clipboard
-
-EOF
+	_aws_log_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

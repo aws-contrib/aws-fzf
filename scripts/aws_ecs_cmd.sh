@@ -499,6 +499,61 @@ _aws_ecs_task_list_cmd() {
 		jq -rs "$task_list_jq" | column -t -s $'\t'
 }
 
+# _aws_ecs_cmd_help()
+#
+# Display CLI help for ECS commands
+#
+_aws_ecs_cmd_help() {
+	cat <<'EOF'
+aws_ecs_cmd - Batch processing and utility commands for ECS operations
+
+LISTING:
+    aws_ecs_cmd list-clusters [aws-cli-args]
+    aws_ecs_cmd list-services <cluster> [aws-cli-args]
+    aws_ecs_cmd list-tasks <cluster> [aws-cli-args]
+
+BATCH PROCESSING:
+    aws_ecs_cmd batch-describe-clusters [aws-cli-args]
+    aws_ecs_cmd batch-describe-services <cluster> [aws-cli-args]
+    aws_ecs_cmd batch-describe-tasks <cluster> [aws-cli-args]
+
+CONSOLE VIEWS:
+    aws_ecs_cmd view-cluster <cluster-name>
+    aws_ecs_cmd view-service <cluster-name> <service-name>
+    aws_ecs_cmd view-task <cluster-name> <task-id>
+
+CLIPBOARD OPERATIONS:
+    aws_ecs_cmd copy-cluster-arn <cluster-name>
+    aws_ecs_cmd copy-cluster-name <cluster-name>
+    aws_ecs_cmd copy-service-arn <cluster-name> <service-name>
+    aws_ecs_cmd copy-service-name <service-name>
+    aws_ecs_cmd copy-task-arn <task-arn>
+
+DESCRIPTION:
+    List commands fetch and format ECS resources for fzf display.
+    Batch processing commands perform AWS ECS API calls in batches to handle API limits.
+    View commands open ECS resources in the AWS Console via the default browser.
+    Clipboard operations copy resource identifiers to the system clipboard.
+
+EXAMPLES:
+    # List resources (for fzf reload)
+    aws_ecs_cmd list-clusters --region us-east-1
+    aws_ecs_cmd list-services my-cluster
+    aws_ecs_cmd list-tasks my-cluster --desired-status RUNNING
+
+    # Batch processing
+    aws_ecs_cmd batch-describe-clusters --region us-east-1
+    aws_ecs_cmd batch-describe-services my-cluster
+    aws_ecs_cmd batch-describe-tasks my-cluster --desired-status RUNNING
+
+    # Console views
+    aws_ecs_cmd view-cluster my-cluster
+    aws_ecs_cmd view-service my-cluster my-service
+    aws_ecs_cmd view-task my-cluster abc123def456
+
+EOF
+}
+
 # Command router
 case "${1:-}" in
 list-clusters)
@@ -567,54 +622,7 @@ copy-task-arn)
 	_aws_ecs_copy_task_arn "$@"
 	;;
 --help | -h | help | "")
-	cat <<'EOF'
-aws_ecs_cmd - Batch processing and utility commands for ECS operations
-
-LISTING:
-    aws_ecs_cmd list-clusters [aws-cli-args]
-    aws_ecs_cmd list-services <cluster> [aws-cli-args]
-    aws_ecs_cmd list-tasks <cluster> [aws-cli-args]
-
-BATCH PROCESSING:
-    aws_ecs_cmd batch-describe-clusters [aws-cli-args]
-    aws_ecs_cmd batch-describe-services <cluster> [aws-cli-args]
-    aws_ecs_cmd batch-describe-tasks <cluster> [aws-cli-args]
-
-CONSOLE VIEWS:
-    aws_ecs_cmd view-cluster <cluster-name>
-    aws_ecs_cmd view-service <cluster-name> <service-name>
-    aws_ecs_cmd view-task <cluster-name> <task-id>
-
-CLIPBOARD OPERATIONS:
-    aws_ecs_cmd copy-cluster-arn <cluster-name>
-    aws_ecs_cmd copy-cluster-name <cluster-name>
-    aws_ecs_cmd copy-service-arn <cluster-name> <service-name>
-    aws_ecs_cmd copy-service-name <service-name>
-    aws_ecs_cmd copy-task-arn <task-arn>
-
-DESCRIPTION:
-    List commands fetch and format ECS resources for fzf display.
-    Batch processing commands perform AWS ECS API calls in batches to handle API limits.
-    View commands open ECS resources in the AWS Console via the default browser.
-    Clipboard operations copy resource identifiers to the system clipboard.
-
-EXAMPLES:
-    # List resources (for fzf reload)
-    aws_ecs_cmd list-clusters --region us-east-1
-    aws_ecs_cmd list-services my-cluster
-    aws_ecs_cmd list-tasks my-cluster --desired-status RUNNING
-
-    # Batch processing
-    aws_ecs_cmd batch-describe-clusters --region us-east-1
-    aws_ecs_cmd batch-describe-services my-cluster
-    aws_ecs_cmd batch-describe-tasks my-cluster --desired-status RUNNING
-
-    # Console views
-    aws_ecs_cmd view-cluster my-cluster
-    aws_ecs_cmd view-service my-cluster my-service
-    aws_ecs_cmd view-task my-cluster abc123def456
-
-EOF
+	_aws_ecs_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

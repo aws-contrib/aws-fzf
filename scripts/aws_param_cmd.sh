@@ -203,32 +203,11 @@ _aws_param_list_cmd() {
 		jq -r "$param_list_jq" | column -t -s $'\t'
 }
 
-# Command router
-case "${1:-}" in
-list)
-	shift
-	_aws_param_list_cmd "$@"
-	;;
-help)
-	_aws_param_help_interactive
-	;;
-copy-value)
-	shift
-	_aws_params_copy_value "$@"
-	;;
-view-parameter)
-	shift
-	_aws_params_view_parameter "$@"
-	;;
-copy-arn)
-	shift
-	_aws_param_copy_arn "$@"
-	;;
-copy-name)
-	shift
-	_aws_param_copy_name "$@"
-	;;
---help | -h | "")
+# _aws_param_cmd_help()
+#
+# Display CLI help for parameter commands
+#
+_aws_param_cmd_help() {
 	cat <<'EOF'
 aws_param_cmd - Utility commands for Parameter Store operations
 
@@ -266,6 +245,35 @@ EXAMPLES:
     aws_param_cmd copy-name /app/database/password
 
 EOF
+}
+
+# Command router
+case "${1:-}" in
+list)
+	shift
+	_aws_param_list_cmd "$@"
+	;;
+help)
+	_aws_param_help_interactive
+	;;
+copy-value)
+	shift
+	_aws_params_copy_value "$@"
+	;;
+view-parameter)
+	shift
+	_aws_params_view_parameter "$@"
+	;;
+copy-arn)
+	shift
+	_aws_param_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_param_copy_name "$@"
+	;;
+--help | -h | "")
+	_aws_param_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

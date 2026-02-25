@@ -190,32 +190,11 @@ _aws_secret_list_cmd() {
 		jq -r "$secrets_list_jq" | column -t -s $'\t'
 }
 
-# Command router
-case "${1:-}" in
-list)
-	shift
-	_aws_secret_list_cmd "$@"
-	;;
-help)
-	_aws_secret_help_interactive
-	;;
-copy-value)
-	shift
-	_aws_secrets_copy_value "$@"
-	;;
-view-secret)
-	shift
-	_aws_secrets_view_secret "$@"
-	;;
-copy-arn)
-	shift
-	_aws_secret_copy_arn "$@"
-	;;
-copy-name)
-	shift
-	_aws_secret_copy_name "$@"
-	;;
---help | -h | "")
+# _aws_secret_cmd_help()
+#
+# Display CLI help for secret commands
+#
+_aws_secret_cmd_help() {
 	cat <<'EOF'
 aws_secret_cmd - Utility commands for Secrets Manager operations
 
@@ -253,6 +232,35 @@ EXAMPLES:
     aws_secret_cmd copy-name my-database-password
 
 EOF
+}
+
+# Command router
+case "${1:-}" in
+list)
+	shift
+	_aws_secret_list_cmd "$@"
+	;;
+help)
+	_aws_secret_help_interactive
+	;;
+copy-value)
+	shift
+	_aws_secrets_copy_value "$@"
+	;;
+view-secret)
+	shift
+	_aws_secrets_view_secret "$@"
+	;;
+copy-arn)
+	shift
+	_aws_secret_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_secret_copy_name "$@"
+	;;
+--help | -h | "")
+	_aws_secret_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

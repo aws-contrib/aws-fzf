@@ -241,36 +241,11 @@ _aws_sso_help_interactive() {
 EOF
 }
 
-# Command router
-case "${1:-}" in
-list)
-	shift
-	_aws_sso_profile_list_cmd "$@"
-	;;
-help)
-	_aws_sso_help_interactive
-	;;
-login)
-	shift
-	_aws_sso_login "$@"
-	;;
-logout)
-	shift
-	_aws_sso_logout "$@"
-	;;
-open)
-	shift
-	_aws_sso_open "$@"
-	;;
-copy-profile-name)
-	shift
-	_aws_sso_copy_profile_name "$@"
-	;;
-copy-account-id)
-	shift
-	_aws_sso_copy_account_id "$@"
-	;;
---help | -h | "")
+# _aws_sso_cmd_help()
+#
+# Display CLI help for SSO commands
+#
+_aws_sso_cmd_help() {
 	cat <<'EOF'
 aws_sso_cmd - Utility commands for SSO operations
 
@@ -314,6 +289,39 @@ EXAMPLES:
     aws_sso_cmd copy-account-id my-sso-profile
 
 EOF
+}
+
+# Command router
+case "${1:-}" in
+list)
+	shift
+	_aws_sso_profile_list_cmd "$@"
+	;;
+help)
+	_aws_sso_help_interactive
+	;;
+login)
+	shift
+	_aws_sso_login "$@"
+	;;
+logout)
+	shift
+	_aws_sso_logout "$@"
+	;;
+open)
+	shift
+	_aws_sso_open "$@"
+	;;
+copy-profile-name)
+	shift
+	_aws_sso_copy_profile_name "$@"
+	;;
+copy-account-id)
+	shift
+	_aws_sso_copy_account_id "$@"
+	;;
+--help | -h | "")
+	_aws_sso_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

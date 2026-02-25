@@ -154,28 +154,11 @@ _aws_lambda_list_cmd() {
 		jq -r "$function_list_jq" | column -t -s $'\t'
 }
 
-# Command router
-case "${1:-}" in
-list)
-	shift
-	_aws_lambda_list_cmd "$@"
-	;;
-help)
-	_aws_lambda_help_interactive
-	;;
-view-function)
-	shift
-	_aws_lambda_view_function "$@"
-	;;
-copy-arn)
-	shift
-	_aws_lambda_copy_arn "$@"
-	;;
-copy-name)
-	shift
-	_aws_lambda_copy_name "$@"
-	;;
---help | -h | "")
+# _aws_lambda_cmd_help()
+#
+# Display CLI help for Lambda commands
+#
+_aws_lambda_cmd_help() {
 	cat <<'EOF'
 aws_lambda_cmd - Utility commands for Lambda operations
 
@@ -208,6 +191,31 @@ EXAMPLES:
     aws_lambda_cmd copy-name my-function
 
 EOF
+}
+
+# Command router
+case "${1:-}" in
+list)
+	shift
+	_aws_lambda_list_cmd "$@"
+	;;
+help)
+	_aws_lambda_help_interactive
+	;;
+view-function)
+	shift
+	_aws_lambda_view_function "$@"
+	;;
+copy-arn)
+	shift
+	_aws_lambda_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_lambda_copy_name "$@"
+	;;
+--help | -h | "")
+	_aws_lambda_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

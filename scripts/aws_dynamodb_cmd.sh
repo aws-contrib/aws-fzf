@@ -172,32 +172,11 @@ _aws_dynamodb_table_list_cmd() {
 		jq -r "$table_list_jq" | column -t -s $'\t'
 }
 
-# Command router
-case "${1:-}" in
-list)
-	shift
-	_aws_dynamodb_table_list_cmd "$@"
-	;;
-help)
-	_aws_dynamodb_help_interactive
-	;;
-view-table)
-	shift
-	_aws_dynamodb_view_table "$@"
-	;;
-view-items)
-	shift
-	_aws_dynamodb_view_items "$@"
-	;;
-copy-arn)
-	shift
-	_aws_dynamodb_copy_arn "$@"
-	;;
-copy-name)
-	shift
-	_aws_dynamodb_copy_name "$@"
-	;;
---help | -h | "")
+# _aws_dynamodb_cmd_help()
+#
+# Display CLI help for DynamoDB commands
+#
+_aws_dynamodb_cmd_help() {
 	cat <<'EOF'
 aws_dynamodb_cmd - Utility commands for DynamoDB operations
 
@@ -235,6 +214,35 @@ EXAMPLES:
     aws_dynamodb_cmd copy-name my-table
 
 EOF
+}
+
+# Command router
+case "${1:-}" in
+list)
+	shift
+	_aws_dynamodb_table_list_cmd "$@"
+	;;
+help)
+	_aws_dynamodb_help_interactive
+	;;
+view-table)
+	shift
+	_aws_dynamodb_view_table "$@"
+	;;
+view-items)
+	shift
+	_aws_dynamodb_view_items "$@"
+	;;
+copy-arn)
+	shift
+	_aws_dynamodb_copy_arn "$@"
+	;;
+copy-name)
+	shift
+	_aws_dynamodb_copy_name "$@"
+	;;
+--help | -h | "")
+	_aws_dynamodb_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"

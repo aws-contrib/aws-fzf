@@ -239,32 +239,11 @@ _aws_dsql_cluster_list_cmd() {
 		jq -r "$cluster_list_jq" | column -t -s $'\t'
 }
 
-# Command router
-case "${1:-}" in
-list)
-	shift
-	_aws_dsql_cluster_list_cmd "$@"
-	;;
-help)
-	_aws_dsql_help_interactive
-	;;
-view-cluster)
-	shift
-	_aws_dsql_view_cluster "$@"
-	;;
-connect-cluster)
-	shift
-	_aws_dsql_connect_cluster "$@"
-	;;
-copy-cluster-arn)
-	shift
-	_aws_dsql_copy_cluster_arn "$@"
-	;;
-copy-cluster-name)
-	shift
-	_aws_dsql_copy_cluster_name "$@"
-	;;
---help | -h | "")
+# _aws_dsql_cmd_help()
+#
+# Display CLI help for DSQL commands
+#
+_aws_dsql_cmd_help() {
 	cat <<'EOF'
 aws_dsql_cmd - Utility commands for DSQL operations
 
@@ -298,6 +277,35 @@ EXAMPLES:
     aws_dsql_cmd connect-cluster my-dsql-cluster
 
 EOF
+}
+
+# Command router
+case "${1:-}" in
+list)
+	shift
+	_aws_dsql_cluster_list_cmd "$@"
+	;;
+help)
+	_aws_dsql_help_interactive
+	;;
+view-cluster)
+	shift
+	_aws_dsql_view_cluster "$@"
+	;;
+connect-cluster)
+	shift
+	_aws_dsql_connect_cluster "$@"
+	;;
+copy-cluster-arn)
+	shift
+	_aws_dsql_copy_cluster_arn "$@"
+	;;
+copy-cluster-name)
+	shift
+	_aws_dsql_copy_cluster_name "$@"
+	;;
+--help | -h | "")
+	_aws_dsql_cmd_help
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
