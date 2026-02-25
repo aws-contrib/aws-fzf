@@ -334,7 +334,7 @@ _aws_rds_connect_cluster() {
 	psql -d postgres
 }
 
-# _copy_instance_arn()
+# _aws_rds_copy_instance_arn()
 #
 # Copy DB instance ARN to clipboard
 #
@@ -344,7 +344,7 @@ _aws_rds_connect_cluster() {
 # DESCRIPTION:
 #   Fetches the instance ARN and copies it to the clipboard
 #
-_copy_instance_arn() {
+_aws_rds_copy_instance_arn() {
 	local instance="${1:-}"
 
 	if [ -z "$instance" ]; then
@@ -356,7 +356,7 @@ _copy_instance_arn() {
 	arn=$(
 		gum spin --title "Getting AWS RDS Instance ARN..." -- \
 			aws rds describe-db-instances --db-instance-identifier "$instance" --query 'DBInstances[0].DBInstanceArn' --output text 2>/dev/null
-	)
+	) || true
 
 	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
 		gum log --level error "Failed to fetch instance ARN"
@@ -366,7 +366,7 @@ _copy_instance_arn() {
 	_copy_to_clipboard "$arn" "instance ARN"
 }
 
-# _copy_instance_name()
+# _aws_rds_copy_instance_name()
 #
 # Copy DB instance identifier to clipboard
 #
@@ -376,7 +376,7 @@ _copy_instance_arn() {
 # DESCRIPTION:
 #   Copies the instance identifier to the clipboard
 #
-_copy_instance_name() {
+_aws_rds_copy_instance_name() {
 	local instance="${1:-}"
 
 	if [ -z "$instance" ]; then
@@ -387,7 +387,7 @@ _copy_instance_name() {
 	_copy_to_clipboard "$instance" "instance identifier"
 }
 
-# _copy_cluster_arn()
+# _aws_rds_copy_cluster_arn()
 #
 # Copy DB cluster ARN to clipboard
 #
@@ -397,7 +397,7 @@ _copy_instance_name() {
 # DESCRIPTION:
 #   Fetches the cluster ARN and copies it to the clipboard
 #
-_copy_cluster_arn() {
+_aws_rds_copy_cluster_arn() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -409,7 +409,7 @@ _copy_cluster_arn() {
 	arn=$(
 		gum spin --title "Getting AWS RDS Cluster ARN..." -- \
 			aws rds describe-db-clusters --db-cluster-identifier "$cluster" --query 'DBClusters[0].DBClusterArn' --output text 2>/dev/null
-	)
+	) || true
 
 	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
 		gum log --level error "Failed to fetch cluster ARN"
@@ -419,7 +419,7 @@ _copy_cluster_arn() {
 	_copy_to_clipboard "$arn" "cluster ARN"
 }
 
-# _copy_cluster_name()
+# _aws_rds_copy_cluster_name()
 #
 # Copy DB cluster identifier to clipboard
 #
@@ -429,7 +429,7 @@ _copy_cluster_arn() {
 # DESCRIPTION:
 #   Copies the cluster identifier to the clipboard
 #
-_copy_cluster_name() {
+_aws_rds_copy_cluster_name() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -580,19 +580,19 @@ connect-cluster)
 	;;
 copy-instance-arn)
 	shift
-	_copy_instance_arn "$@"
+	_aws_rds_copy_instance_arn "$@"
 	;;
 copy-instance-name)
 	shift
-	_copy_instance_name "$@"
+	_aws_rds_copy_instance_name "$@"
 	;;
 copy-cluster-arn)
 	shift
-	_copy_cluster_arn "$@"
+	_aws_rds_copy_cluster_arn "$@"
 	;;
 copy-cluster-name)
 	shift
-	_copy_cluster_name "$@"
+	_aws_rds_copy_cluster_name "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'

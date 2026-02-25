@@ -133,7 +133,7 @@ _aws_dsql_connect_cluster() {
 	psql -d postgres
 }
 
-# _copy_cluster_arn()
+# _aws_dsql_copy_cluster_arn()
 #
 # Copy DSQL cluster ARN to clipboard
 #
@@ -143,7 +143,7 @@ _aws_dsql_connect_cluster() {
 # DESCRIPTION:
 #   Fetches the cluster ARN and copies it to the clipboard
 #
-_copy_cluster_arn() {
+_aws_dsql_copy_cluster_arn() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -155,7 +155,7 @@ _copy_cluster_arn() {
 	arn=$(
 		gum spin --title "Getting AWS DSQL Cluster ARN..." -- \
 			aws dsql get-cluster --identifier "$cluster" --query 'arn' --output text 2>/dev/null
-	)
+	) || true
 
 	if [ -z "$arn" ] || [ "$arn" = "None" ]; then
 		gum log --level error "Failed to fetch cluster ARN"
@@ -165,7 +165,7 @@ _copy_cluster_arn() {
 	_copy_to_clipboard "$arn" "cluster ARN"
 }
 
-# _copy_cluster_name()
+# _aws_dsql_copy_cluster_name()
 #
 # Copy DSQL cluster identifier to clipboard
 #
@@ -175,7 +175,7 @@ _copy_cluster_arn() {
 # DESCRIPTION:
 #   Copies the cluster identifier to the clipboard
 #
-_copy_cluster_name() {
+_aws_dsql_copy_cluster_name() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -258,11 +258,11 @@ connect-cluster)
 	;;
 copy-cluster-arn)
 	shift
-	_copy_cluster_arn "$@"
+	_aws_dsql_copy_cluster_arn "$@"
 	;;
 copy-cluster-name)
 	shift
-	_copy_cluster_name "$@"
+	_aws_dsql_copy_cluster_name "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'

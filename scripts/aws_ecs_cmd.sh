@@ -24,7 +24,7 @@ _aws_ecs_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=scripts/aws_core.sh
 source "$_aws_ecs_cmd_source_dir/aws_core.sh"
 
-# _batch_describe_clusters()
+# _aws_ecs_batch_describe_clusters()
 #
 # List and describe ECS clusters in batches
 #
@@ -34,7 +34,7 @@ source "$_aws_ecs_cmd_source_dir/aws_core.sh"
 # OUTPUT:
 #   JSON array of cluster descriptions
 #
-_batch_describe_clusters() {
+_aws_ecs_batch_describe_clusters() {
 	local args=("$@")
 
 	aws ecs list-clusters "${args[@]}" --output json |
@@ -45,7 +45,7 @@ _batch_describe_clusters() {
 		done
 }
 
-# _batch_describe_services()
+# _aws_ecs_batch_describe_services()
 #
 # List and describe ECS services in a cluster in batches
 #
@@ -56,7 +56,7 @@ _batch_describe_clusters() {
 # OUTPUT:
 #   JSON array of service descriptions
 #
-_batch_describe_services() {
+_aws_ecs_batch_describe_services() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -82,7 +82,7 @@ _batch_describe_services() {
 	fi
 }
 
-# _batch_describe_tasks()
+# _aws_ecs_batch_describe_tasks()
 #
 # List and describe ECS tasks in a cluster in batches
 #
@@ -93,7 +93,7 @@ _batch_describe_services() {
 # OUTPUT:
 #   JSON array of task descriptions
 #
-_batch_describe_tasks() {
+_aws_ecs_batch_describe_tasks() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -203,7 +203,7 @@ _aws_ecs_view_task() {
 	_open_url "https://console.aws.amazon.com/ecs/v2/clusters/${cluster}/tasks/${task_id}?region=${region}"
 }
 
-# _copy_cluster_arn()
+# _aws_ecs_copy_cluster_arn()
 #
 # Copy cluster ARN to clipboard
 #
@@ -213,7 +213,7 @@ _aws_ecs_view_task() {
 # DESCRIPTION:
 #   Constructs the cluster ARN and copies it to the clipboard
 #
-_copy_cluster_arn() {
+_aws_ecs_copy_cluster_arn() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -231,7 +231,7 @@ _copy_cluster_arn() {
 	_copy_to_clipboard "$arn" "cluster ARN"
 }
 
-# _copy_cluster_name()
+# _aws_ecs_copy_cluster_name()
 #
 # Copy cluster name to clipboard
 #
@@ -241,7 +241,7 @@ _copy_cluster_arn() {
 # DESCRIPTION:
 #   Copies the cluster name to the clipboard
 #
-_copy_cluster_name() {
+_aws_ecs_copy_cluster_name() {
 	local cluster="${1:-}"
 
 	if [ -z "$cluster" ]; then
@@ -252,7 +252,7 @@ _copy_cluster_name() {
 	_copy_to_clipboard "$cluster" "cluster name"
 }
 
-# _copy_service_arn()
+# _aws_ecs_copy_service_arn()
 #
 # Copy service ARN to clipboard
 #
@@ -263,7 +263,7 @@ _copy_cluster_name() {
 # DESCRIPTION:
 #   Constructs the service ARN and copies it to the clipboard
 #
-_copy_service_arn() {
+_aws_ecs_copy_service_arn() {
 	local cluster="${1:-}"
 	local service="${2:-}"
 
@@ -282,7 +282,7 @@ _copy_service_arn() {
 	_copy_to_clipboard "$arn" "service ARN"
 }
 
-# _copy_service_name()
+# _aws_ecs_copy_service_name()
 #
 # Copy service name to clipboard
 #
@@ -292,7 +292,7 @@ _copy_service_arn() {
 # DESCRIPTION:
 #   Copies the service name to the clipboard
 #
-_copy_service_name() {
+_aws_ecs_copy_service_name() {
 	local service="${1:-}"
 
 	if [ -z "$service" ]; then
@@ -303,7 +303,7 @@ _copy_service_name() {
 	_copy_to_clipboard "$service" "service name"
 }
 
-# _copy_task_arn()
+# _aws_ecs_copy_task_arn()
 #
 # Copy task ARN to clipboard
 #
@@ -313,7 +313,7 @@ _copy_service_name() {
 # DESCRIPTION:
 #   Copies the task ARN to the clipboard
 #
-_copy_task_arn() {
+_aws_ecs_copy_task_arn() {
 	local task="${1:-}"
 
 	if [ -z "$task" ]; then
@@ -425,7 +425,7 @@ _aws_ecs_cluster_list_cmd() {
 	                       (.clusters[] | [.clusterName, .status, .runningTasksCount, .activeServicesCount] | @tsv)'
 
 	# Fetch and format ECS clusters (without gum spin - caller handles that)
-	_batch_describe_clusters "${list_args[@]}" |
+	_aws_ecs_batch_describe_clusters "${list_args[@]}" |
 		jq -r "$cluster_list_jq" | column -t -s $'\t'
 }
 
@@ -460,7 +460,7 @@ _aws_ecs_service_list_cmd() {
 	                       ([.[].services[]] | map([.serviceName, .status, .desiredCount, .runningCount, .pendingCount])) | .[] | @tsv'
 
 	# Fetch and format ECS services (without gum spin - caller handles that)
-	_batch_describe_services "$cluster" "${list_args[@]}" |
+	_aws_ecs_batch_describe_services "$cluster" "${list_args[@]}" |
 		jq -rs "$service_list_jq" | column -t -s $'\t'
 }
 
@@ -495,7 +495,7 @@ _aws_ecs_task_list_cmd() {
 											([.[].tasks[]] | map([.taskArn, .taskDefinitionArn, .desiredStatus, .healthStatus])) | .[] | @tsv'
 
 	# Fetch and format ECS tasks (without gum spin - caller handles that)
-	_batch_describe_tasks "$cluster" "${list_args[@]}" |
+	_aws_ecs_batch_describe_tasks "$cluster" "${list_args[@]}" |
 		jq -rs "$task_list_jq" | column -t -s $'\t'
 }
 
@@ -524,15 +524,15 @@ help-tasks)
 	;;
 batch-describe-clusters)
 	shift
-	_batch_describe_clusters "$@"
+	_aws_ecs_batch_describe_clusters "$@"
 	;;
 batch-describe-services)
 	shift
-	_batch_describe_services "$@"
+	_aws_ecs_batch_describe_services "$@"
 	;;
 batch-describe-tasks)
 	shift
-	_batch_describe_tasks "$@"
+	_aws_ecs_batch_describe_tasks "$@"
 	;;
 view-cluster)
 	shift
@@ -548,23 +548,23 @@ view-task)
 	;;
 copy-cluster-arn)
 	shift
-	_copy_cluster_arn "$@"
+	_aws_ecs_copy_cluster_arn "$@"
 	;;
 copy-cluster-name)
 	shift
-	_copy_cluster_name "$@"
+	_aws_ecs_copy_cluster_name "$@"
 	;;
 copy-service-arn)
 	shift
-	_copy_service_arn "$@"
+	_aws_ecs_copy_service_arn "$@"
 	;;
 copy-service-name)
 	shift
-	_copy_service_name "$@"
+	_aws_ecs_copy_service_name "$@"
 	;;
 copy-task-arn)
 	shift
-	_copy_task_arn "$@"
+	_aws_ecs_copy_task_arn "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'

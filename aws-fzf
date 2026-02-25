@@ -37,7 +37,7 @@ source "$_aws_fzf_source_dir/scripts/aws_sso.sh"
 #   Writes help text to stdout
 #
 _show_root_help() {
-    cat <<'EOF'
+	cat <<'EOF'
 aws fzf - Interactive fuzzy finder for AWS resources
 
 DESCRIPTION:
@@ -207,84 +207,84 @@ EOF
 #   Exit code from sub-command if applicable
 #
 main() {
-    local fzf_flags=()
-    local service=""
-    local service_args=()
+	local fzf_flags=()
+	local service=""
+	local service_args=()
 
-    # Parse arguments: everything before service = fzf flags, everything after = service args
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-        --help | -h | help)
-            _show_root_help
-            exit 0
-            ;;
-        lambda | param | secret | ecs | log | logs | s3 | rds | dsql | dynamodb | sso)
-            # Found the service, everything after this is service args
-            service="$1"
-            shift
-            service_args=("$@")
-            break
-            ;;
-        "")
-            _show_root_help
-            exit 0
-            ;;
-        *)
-            # Before service, collect as fzf flags
-            fzf_flags+=("$1")
-            shift
-            ;;
-        esac
-    done
+	# Parse arguments: everything before service = fzf flags, everything after = service args
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		--help | -h | help)
+			_show_root_help
+			exit 0
+			;;
+		lambda | param | secret | ecs | log | logs | s3 | rds | dsql | dynamodb | sso)
+			# Found the service, everything after this is service args
+			service="$1"
+			shift
+			service_args=("$@")
+			break
+			;;
+		"")
+			_show_root_help
+			exit 0
+			;;
+		*)
+			# Before service, collect as fzf flags
+			fzf_flags+=("$1")
+			shift
+			;;
+		esac
+	done
 
-    # Export fzf flags for aws_core.sh to use
-    if [[ ${#fzf_flags[@]} -gt 0 ]]; then
-        # Use printf %q to properly quote each element for safe eval
-        export FZF_AWS_FLAGS="$(printf '%q ' "${fzf_flags[@]}")"
-    fi
+	# Export fzf flags for aws_core.sh to use
+	if [[ ${#fzf_flags[@]} -gt 0 ]]; then
+		# Use printf %q to properly quote each element for safe eval
+		export FZF_AWS_FLAGS="$(printf '%q ' "${fzf_flags[@]}")"
+	fi
 
-    # Dispatch to service with remaining args
-    case $service in
-    lambda)
-        _aws_lambda_main "${service_args[@]}"
-        ;;
-    param)
-        _aws_param_main "${service_args[@]}"
-        ;;
-    secret)
-        _aws_secret_main "${service_args[@]}"
-        ;;
-    ecs)
-        _aws_ecs_main "${service_args[@]}"
-        ;;
-    log | logs)
-        _aws_log_main "${service_args[@]}"
-        ;;
-    s3)
-        _aws_s3_main "${service_args[@]}"
-        ;;
-    rds)
-        _aws_rds_main "${service_args[@]}"
-        ;;
-    dsql)
-        _aws_dsql_main "${service_args[@]}"
-        ;;
-    dynamodb)
-        _aws_dynamodb_main "${service_args[@]}"
-        ;;
-    sso)
-        _aws_sso_main "${service_args[@]}"
-        ;;
-    "")
-        _show_root_help
-        ;;
-    *)
-        gum log --level error "Unknown service '$service'"
-        gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql, dynamodb, sso"
-        gum log --level info "Run 'aws fzf --help' for detailed usage information"
-        exit 1
-        ;;
-    esac
+	# Dispatch to service with remaining args
+	case $service in
+	lambda)
+		_aws_lambda_main "${service_args[@]}"
+		;;
+	param)
+		_aws_param_main "${service_args[@]}"
+		;;
+	secret)
+		_aws_secret_main "${service_args[@]}"
+		;;
+	ecs)
+		_aws_ecs_main "${service_args[@]}"
+		;;
+	log | logs)
+		_aws_log_main "${service_args[@]}"
+		;;
+	s3)
+		_aws_s3_main "${service_args[@]}"
+		;;
+	rds)
+		_aws_rds_main "${service_args[@]}"
+		;;
+	dsql)
+		_aws_dsql_main "${service_args[@]}"
+		;;
+	dynamodb)
+		_aws_dynamodb_main "${service_args[@]}"
+		;;
+	sso)
+		_aws_sso_main "${service_args[@]}"
+		;;
+	"")
+		_show_root_help
+		;;
+	*)
+		gum log --level error "Unknown service '$service'"
+		gum log --level info "Supported services: secret, param, s3, ecs, lambda, logs, rds, dsql, dynamodb, sso"
+		gum log --level info "Run 'aws fzf --help' for detailed usage information"
+		exit 1
+		;;
+	esac
 }
 
 main "$@"

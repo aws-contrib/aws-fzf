@@ -140,13 +140,13 @@ _aws_sso_open() {
 
 	# Get SSO configuration from profile
 	local sso_url
-	sso_url=$(aws configure get sso_start_url --profile "$profile" 2>/dev/null)
+	sso_url=$(aws configure get sso_start_url --profile "$profile" 2>/dev/null) || true
 
 	local account_id
-	account_id=$(aws configure get sso_account_id --profile "$profile" 2>/dev/null)
+	account_id=$(aws configure get sso_account_id --profile "$profile" 2>/dev/null) || true
 
 	local role_name
-	role_name=$(aws configure get sso_role_name --profile "$profile" 2>/dev/null)
+	role_name=$(aws configure get sso_role_name --profile "$profile" 2>/dev/null) || true
 
 	if [ -z "$sso_url" ]; then
 		gum log --level error "SSO start URL not found for profile: $profile"
@@ -203,7 +203,7 @@ _aws_sso_copy_account_id() {
 	fi
 
 	local account_id
-	account_id=$(aws configure get sso_account_id --profile "$profile" 2>/dev/null)
+	account_id=$(aws configure get sso_account_id --profile "$profile" 2>/dev/null) || true
 
 	if [ -z "$account_id" ]; then
 		gum log --level error "Account ID not found for profile: $profile"

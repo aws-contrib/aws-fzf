@@ -21,7 +21,7 @@ _aws_log_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=scripts/aws_core.sh
 source "$_aws_log_cmd_source_dir/aws_core.sh"
 
-# _view_log_group()
+# _aws_log_view_group()
 #
 # Open CloudWatch log group in AWS Console
 #
@@ -33,7 +33,7 @@ source "$_aws_log_cmd_source_dir/aws_core.sh"
 #   via the AWS Console URL. Properly encodes special characters
 #   in log group names (e.g., /aws/lambda/function-name)
 #
-_view_log_group() {
+_aws_log_view_group() {
 	local log_group_name="${1:-}"
 
 	if [ -z "$log_group_name" ]; then
@@ -53,7 +53,7 @@ _view_log_group() {
 	_open_url "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_name}"
 }
 
-# _tail_log()
+# _aws_log_tail()
 #
 # Tail CloudWatch logs for a log group or specific stream
 #
@@ -67,7 +67,7 @@ _view_log_group() {
 #   - If stream-name is omitted: tails all streams in the log group
 #   Exit with Ctrl+C to stop tailing and return.
 #
-_tail_log() {
+_aws_log_tail() {
 	local log_tail_cmd=()
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
@@ -81,7 +81,7 @@ _tail_log() {
 	"${log_tail_cmd[@]}"
 }
 
-# _read_log()
+# _aws_log_read()
 #
 # List historical CloudWatch log events for a log group or specific stream
 #
@@ -99,7 +99,7 @@ _tail_log() {
 #   - If stream-name is omitted: searches all streams in the log group
 #   Output is piped through jq for formatting and paged using AWS_PAGER.
 #
-_read_log() {
+_aws_log_read() {
 	local log_tail_cmd=()
 	local log_group_name="${1:-}"
 	local log_stream_name="${2:-}"
@@ -137,7 +137,7 @@ _read_log() {
 	"${log_tail_cmd[@]}" | jq -r -f "$_aws_log_cmd_source_dir/aws_log.jq"
 }
 
-# _view_log_stream()
+# _aws_log_view_stream()
 #
 # Open CloudWatch log stream in AWS Console
 #
@@ -150,7 +150,7 @@ _read_log() {
 #   via the AWS Console URL. Properly encodes special characters
 #   in both log group and stream names.
 #
-_view_log_stream() {
+_aws_log_view_stream() {
 	local log_group_name="${1:-}"
 	local stream_name="${2:-}"
 
@@ -175,7 +175,7 @@ _view_log_stream() {
 	_open_url "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encoded_group}/log-events/${encoded_stream}"
 }
 
-# _copy_group_arn()
+# _aws_log_copy_group_arn()
 #
 # Copy log group ARN to clipboard
 #
@@ -185,7 +185,7 @@ _view_log_stream() {
 # DESCRIPTION:
 #   Constructs the log group ARN and copies it to the clipboard
 #
-_copy_group_arn() {
+_aws_log_copy_group_arn() {
 	local log_group="${1:-}"
 
 	if [ -z "$log_group" ]; then
@@ -203,7 +203,7 @@ _copy_group_arn() {
 	_copy_to_clipboard "$arn" "log group ARN"
 }
 
-# _copy_group_name()
+# _aws_log_copy_group_name()
 #
 # Copy log group name to clipboard
 #
@@ -213,7 +213,7 @@ _copy_group_arn() {
 # DESCRIPTION:
 #   Copies the log group name to the clipboard
 #
-_copy_group_name() {
+_aws_log_copy_group_name() {
 	local log_group="${1:-}"
 
 	if [ -z "$log_group" ]; then
@@ -224,7 +224,7 @@ _copy_group_name() {
 	_copy_to_clipboard "$log_group" "log group name"
 }
 
-# _copy_stream_name()
+# _aws_log_copy_stream_name()
 #
 # Copy log stream name to clipboard
 #
@@ -234,7 +234,7 @@ _copy_group_name() {
 # DESCRIPTION:
 #   Copies the log stream name to the clipboard
 #
-_copy_stream_name() {
+_aws_log_copy_stream_name() {
 	local stream="${1:-}"
 
 	if [ -z "$stream" ]; then
@@ -381,31 +381,31 @@ help-streams)
 	;;
 view-group)
 	shift
-	_view_log_group "$@"
+	_aws_log_view_group "$@"
 	;;
 view-stream)
 	shift
-	_view_log_stream "$@"
+	_aws_log_view_stream "$@"
 	;;
 tail-log)
 	shift
-	_tail_log "$@"
+	_aws_log_tail "$@"
 	;;
 read-log)
 	shift
-	_read_log "$@"
+	_aws_log_read "$@"
 	;;
 copy-group-arn)
 	shift
-	_copy_group_arn "$@"
+	_aws_log_copy_group_arn "$@"
 	;;
 copy-group-name)
 	shift
-	_copy_group_name "$@"
+	_aws_log_copy_group_name "$@"
 	;;
 copy-stream-name)
 	shift
-	_copy_stream_name "$@"
+	_aws_log_copy_stream_name "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'

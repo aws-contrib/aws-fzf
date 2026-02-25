@@ -24,37 +24,37 @@ source "$_aws_sso_source_dir/aws_core.sh"
 #   1 - Failure (no profiles found or error)
 #
 _aws_sso_profile_list() {
-    local profile_list
-    # Call the _cmd script to fetch and format SSO profiles
-    profile_list="$(
-        gum spin --title "Loading AWS SSO Profiles..." -- \
-            "$_aws_sso_source_dir/aws_sso_cmd.sh" list
-    )"
+	local profile_list
+	# Call the _cmd script to fetch and format SSO profiles
+	profile_list="$(
+		gum spin --title "Loading AWS SSO Profiles..." -- \
+			"$_aws_sso_source_dir/aws_sso_cmd.sh" list
+	)"
 
-    # Check if any SSO profiles were found
-    if [ -z "$profile_list" ]; then
-        gum log --level warn "No SSO profiles found in ~/.aws/config"
-        gum log --level info "SSO profiles must have 'sso_start_url' configured"
-        return 1
-    fi
+	# Check if any SSO profiles were found
+	if [ -z "$profile_list" ]; then
+		gum log --level warn "No SSO profiles found in ~/.aws/config"
+		gum log --level info "SSO profiles must have 'sso_start_url' configured"
+		return 1
+	fi
 
-    # Build fzf options with user-provided flags
-    _aws_fzf_options "SSO_PROFILE"
+	# Build fzf options with user-provided flags
+	_aws_fzf_options "SSO_PROFILE"
 
-    # Display in fzf with keybindings
-    # Note: enter returns just the profile name (first column) for script usage
-    echo "$profile_list" | fzf "${_fzf_options[@]}" \
-        --with-nth 1.. --accept-nth 1 \
-        --footer "$_fzf_icon SSO Profiles" \
-        --preview "$_aws_sso_source_dir/aws_sso_cmd.sh help" \
-        --bind "ctrl-r:reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
-        --bind "ctrl-o:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh open {1})" \
-        --bind "alt-enter:execute($_aws_sso_source_dir/aws_sso_cmd.sh login {1})+abort" \
-        --bind "alt-n:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-profile-name {1})" \
-        --bind "alt-a:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-account-id {1})" \
-        --bind "alt-x:execute($_aws_sso_source_dir/aws_sso_cmd.sh logout {1})+reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
-        --bind "alt-h:toggle-preview" |
-        awk '{print $1}'
+	# Display in fzf with keybindings
+	# Note: enter returns just the profile name (first column) for script usage
+	echo "$profile_list" | fzf "${_fzf_options[@]}" \
+		--with-nth 1.. --accept-nth 1 \
+		--footer "$_fzf_icon SSO Profiles" \
+		--preview "$_aws_sso_source_dir/aws_sso_cmd.sh help" \
+		--bind "ctrl-r:reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
+		--bind "ctrl-o:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh open {1})" \
+		--bind "alt-enter:execute($_aws_sso_source_dir/aws_sso_cmd.sh login {1})+abort" \
+		--bind "alt-n:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-profile-name {1})" \
+		--bind "alt-a:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-account-id {1})" \
+		--bind "alt-x:execute($_aws_sso_source_dir/aws_sso_cmd.sh logout {1})+reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
+		--bind "alt-h:toggle-preview" |
+		awk '{print $1}'
 }
 
 # _aws_sso_help()
@@ -62,7 +62,7 @@ _aws_sso_profile_list() {
 # Show SSO command help
 #
 _aws_sso_help() {
-    cat <<'EOF'
+	cat <<'EOF'
 aws fzf sso - Interactive SSO profile browser
 
 USAGE:
@@ -196,37 +196,37 @@ EOF
 #   1 - Unknown subcommand or error
 #
 _aws_sso_main() {
-    local resource="${1:-}"
-    local action="${2:-}"
+	local resource="${1:-}"
+	local action="${2:-}"
 
-    case $resource in
-    profile)
-        case $action in
-        list)
-            shift 2
-            _aws_sso_profile_list "$@"
-            ;;
-        --help | -h | help | "")
-            _aws_sso_help
-            ;;
-        *)
-            gum log --level error "Unknown SSO profile action '$action'"
-            gum log --level info "Supported: list"
-            gum log --level info "Run 'aws fzf sso --help' for usage"
-            return 1
-            ;;
-        esac
-        ;;
-    --help | -h | help | "")
-        _aws_sso_help
-        ;;
-    *)
-        gum log --level error "Unknown SSO resource '$resource'"
-        gum log --level info "Supported: profile"
-        gum log --level info "Run 'aws fzf sso --help' for usage"
-        return 1
-        ;;
-    esac
+	case $resource in
+	profile)
+		case $action in
+		list)
+			shift 2
+			_aws_sso_profile_list "$@"
+			;;
+		--help | -h | help | "")
+			_aws_sso_help
+			;;
+		*)
+			gum log --level error "Unknown SSO profile action '$action'"
+			gum log --level info "Supported: list"
+			gum log --level info "Run 'aws fzf sso --help' for usage"
+			return 1
+			;;
+		esac
+		;;
+	--help | -h | help | "")
+		_aws_sso_help
+		;;
+	*)
+		gum log --level error "Unknown SSO resource '$resource'"
+		gum log --level info "Supported: profile"
+		gum log --level info "Run 'aws fzf sso --help' for usage"
+		return 1
+		;;
+	esac
 }
 
 # ------------------------------------------------------------------------------
@@ -236,5 +236,5 @@ _aws_sso_main() {
 # This enables tmux integration and scripted usage.
 # ------------------------------------------------------------------------------
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    _aws_sso_main "$@"
+	_aws_sso_main "$@"
 fi

@@ -21,7 +21,7 @@ _aws_s3_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=scripts/aws_core.sh
 source "$_aws_s3_cmd_source_dir/aws_core.sh"
 
-# _view_bucket()
+# _aws_s3_view_bucket()
 #
 # Open S3 bucket in AWS Console
 #
@@ -32,7 +32,7 @@ source "$_aws_s3_cmd_source_dir/aws_core.sh"
 #   Opens the specified S3 bucket in the default web browser
 #   via the AWS Console URL
 #
-_view_bucket() {
+_aws_s3_view_bucket() {
 	local bucket="${1:-}"
 
 	if [ -z "$bucket" ]; then
@@ -46,7 +46,7 @@ _view_bucket() {
 	_open_url "https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}"
 }
 
-# _view_object()
+# _aws_s3_view_object()
 #
 # Open S3 object in AWS Console
 #
@@ -59,7 +59,7 @@ _view_bucket() {
 #   via the AWS Console URL.
 #   Handles special characters in object keys via URL encoding.
 #
-_view_object() {
+_aws_s3_view_object() {
 	local bucket="${1:-}"
 	local key="${2:-}"
 
@@ -77,7 +77,7 @@ _view_object() {
 	_open_url "https://s3.console.aws.amazon.com/s3/object/${bucket}?region=${region}&prefix=${encoded_key}"
 }
 
-# _copy_bucket_arn()
+# _aws_s3_copy_bucket_arn()
 #
 # Copy bucket ARN to clipboard
 #
@@ -87,7 +87,7 @@ _view_object() {
 # DESCRIPTION:
 #   Constructs the bucket ARN and copies it to the clipboard
 #
-_copy_bucket_arn() {
+_aws_s3_copy_bucket_arn() {
 	local bucket="${1:-}"
 
 	if [ -z "$bucket" ]; then
@@ -99,7 +99,7 @@ _copy_bucket_arn() {
 	_copy_to_clipboard "$arn" "bucket ARN"
 }
 
-# _copy_bucket_name()
+# _aws_s3_copy_bucket_name()
 #
 # Copy bucket name to clipboard
 #
@@ -109,7 +109,7 @@ _copy_bucket_arn() {
 # DESCRIPTION:
 #   Copies the bucket name to the clipboard
 #
-_copy_bucket_name() {
+_aws_s3_copy_bucket_name() {
 	local bucket="${1:-}"
 
 	if [ -z "$bucket" ]; then
@@ -120,7 +120,7 @@ _copy_bucket_name() {
 	_copy_to_clipboard "$bucket" "bucket name"
 }
 
-# _copy_object_arn()
+# _aws_s3_copy_object_arn()
 #
 # Copy object ARN to clipboard
 #
@@ -131,7 +131,7 @@ _copy_bucket_name() {
 # DESCRIPTION:
 #   Constructs the object ARN and copies it to the clipboard
 #
-_copy_object_arn() {
+_aws_s3_copy_object_arn() {
 	local bucket="${1:-}"
 	local key="${2:-}"
 
@@ -144,7 +144,7 @@ _copy_object_arn() {
 	_copy_to_clipboard "$arn" "object ARN"
 }
 
-# _copy_object_key()
+# _aws_s3_copy_object_key()
 #
 # Copy object key to clipboard
 #
@@ -154,7 +154,7 @@ _copy_object_arn() {
 # DESCRIPTION:
 #   Copies the object key to the clipboard
 #
-_copy_object_key() {
+_aws_s3_copy_object_key() {
 	local key="${1:-}"
 
 	if [ -z "$key" ]; then
@@ -297,27 +297,27 @@ help-objects)
 	;;
 view-bucket)
 	shift
-	_view_bucket "$@"
+	_aws_s3_view_bucket "$@"
 	;;
 view-object)
 	shift
-	_view_object "$@"
+	_aws_s3_view_object "$@"
 	;;
 copy-bucket-arn)
 	shift
-	_copy_bucket_arn "$@"
+	_aws_s3_copy_bucket_arn "$@"
 	;;
 copy-bucket-name)
 	shift
-	_copy_bucket_name "$@"
+	_aws_s3_copy_bucket_name "$@"
 	;;
 copy-object-arn)
 	shift
-	_copy_object_arn "$@"
+	_aws_s3_copy_object_arn "$@"
 	;;
 copy-object-key)
 	shift
-	_copy_object_key "$@"
+	_aws_s3_copy_object_key "$@"
 	;;
 --help | -h | help | "")
 	cat <<'EOF'
