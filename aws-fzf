@@ -4,6 +4,33 @@
 
 set -eo pipefail
 
+_check_dependencies() {
+	local missing=()
+
+	if ! command -v aws &>/dev/null; then
+		missing+=("aws     — https://docs.aws.amazon.com/cli/")
+	fi
+	if ! command -v fzf &>/dev/null; then
+		missing+=("fzf     — https://github.com/junegunn/fzf")
+	fi
+	if ! command -v jq &>/dev/null; then
+		missing+=("jq      — https://github.com/jqlang/jq")
+	fi
+	if ! command -v gum &>/dev/null; then
+		missing+=("gum     — https://github.com/charmbracelet/gum")
+	fi
+
+	if [[ ${#missing[@]} -gt 0 ]]; then
+		echo "aws-fzf: missing required dependencies:" >&2
+		for dep in "${missing[@]}"; do
+			echo "  $dep" >&2
+		done
+		exit 1
+	fi
+}
+
+_check_dependencies
+
 _aws_fzf_source_dir=$(dirname "${BASH_SOURCE[0]}")
 
 # Source command implementations
@@ -17,29 +44,6 @@ source "$_aws_fzf_source_dir/scripts/aws_rds.sh"
 source "$_aws_fzf_source_dir/scripts/aws_dsql.sh"
 source "$_aws_fzf_source_dir/scripts/aws_dynamodb.sh"
 source "$_aws_fzf_source_dir/scripts/aws_sso.sh"
-
-# _check_dependencies()
-#
-# Verify required external tools are available
-#
-# DESCRIPTION:
-#   Checks that all required dependencies (aws, fzf, jq, gum) are installed.
-#   Exits with an error if any are missing.
-#
-_check_dependencies() {
-	local missing=()
-	for cmd in aws fzf jq gum; do
-		if ! command -v "$cmd" >/dev/null 2>&1; then
-			missing+=("$cmd")
-		fi
-	done
-
-	if [ ${#missing[@]} -gt 0 ]; then
-		echo "Error: missing required dependencies: ${missing[*]}" >&2
-		echo "Install with: brew install awscli fzf jq gum" >&2
-		exit 1
-	fi
-}
 
 # _show_root_help()
 #
@@ -248,8 +252,6 @@ main() {
 	local fzf_flags=()
 	local service=""
 	local service_args=()
-
-	_check_dependencies
 
 	# Parse arguments: everything before service = fzf flags, everything after = service args
 	while [[ $# -gt 0 ]]; do
