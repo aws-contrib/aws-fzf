@@ -61,7 +61,7 @@ _aws_ecs_batch_describe_services() {
 
 	if [ -z "$cluster" ]; then
 		gum log --level error "Missing required parameter: cluster name"
-		gum log --level info "Usage: aws_ecs_cmd batch-describe-services <cluster-name> [options]"
+		gum log --level info "Usage: aws fzf ecs batch-describe-services <cluster-name> [options]"
 		gum log --level info "Run 'aws fzf ecs --help' for more information"
 		exit 1
 	fi
@@ -98,7 +98,7 @@ _aws_ecs_batch_describe_tasks() {
 
 	if [ -z "$cluster" ]; then
 		gum log --level error "Missing required parameter: cluster name"
-		gum log --level info "Usage: aws_ecs_cmd batch-describe-tasks <cluster-name> [options]"
+		gum log --level info "Usage: aws fzf ecs batch-describe-tasks <cluster-name> [options]"
 		gum log --level info "Run 'aws fzf ecs --help' for more information"
 		exit 1
 	fi
@@ -505,29 +505,29 @@ _aws_ecs_task_list_cmd() {
 #
 _aws_ecs_cmd_help() {
 	cat <<'EOF'
-aws_ecs_cmd - Batch processing and utility commands for ECS operations
+aws fzf ecs - Batch processing and utility commands for ECS operations
 
 LISTING:
-    aws_ecs_cmd list-clusters [aws-cli-args]
-    aws_ecs_cmd list-services <cluster> [aws-cli-args]
-    aws_ecs_cmd list-tasks <cluster> [aws-cli-args]
+    aws fzf ecs list-clusters [aws-cli-args]
+    aws fzf ecs list-services <cluster> [aws-cli-args]
+    aws fzf ecs list-tasks <cluster> [aws-cli-args]
 
 BATCH PROCESSING:
-    aws_ecs_cmd batch-describe-clusters [aws-cli-args]
-    aws_ecs_cmd batch-describe-services <cluster> [aws-cli-args]
-    aws_ecs_cmd batch-describe-tasks <cluster> [aws-cli-args]
+    aws fzf ecs batch-describe-clusters [aws-cli-args]
+    aws fzf ecs batch-describe-services <cluster> [aws-cli-args]
+    aws fzf ecs batch-describe-tasks <cluster> [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_ecs_cmd view-cluster <cluster-name>
-    aws_ecs_cmd view-service <cluster-name> <service-name>
-    aws_ecs_cmd view-task <cluster-name> <task-id>
+    aws fzf ecs view-cluster <cluster-name>
+    aws fzf ecs view-service <cluster-name> <service-name>
+    aws fzf ecs view-task <cluster-name> <task-id>
 
 CLIPBOARD OPERATIONS:
-    aws_ecs_cmd copy-cluster-arn <cluster-name>
-    aws_ecs_cmd copy-cluster-name <cluster-name>
-    aws_ecs_cmd copy-service-arn <cluster-name> <service-name>
-    aws_ecs_cmd copy-service-name <service-name>
-    aws_ecs_cmd copy-task-arn <task-arn>
+    aws fzf ecs copy-cluster-arn <cluster-name>
+    aws fzf ecs copy-cluster-name <cluster-name>
+    aws fzf ecs copy-service-arn <cluster-name> <service-name>
+    aws fzf ecs copy-service-name <service-name>
+    aws fzf ecs copy-task-arn <task-arn>
 
 DESCRIPTION:
     List commands fetch and format ECS resources for fzf display.
@@ -537,19 +537,19 @@ DESCRIPTION:
 
 EXAMPLES:
     # List resources (for fzf reload)
-    aws_ecs_cmd list-clusters --region us-east-1
-    aws_ecs_cmd list-services my-cluster
-    aws_ecs_cmd list-tasks my-cluster --desired-status RUNNING
+    aws fzf ecs list-clusters --region us-east-1
+    aws fzf ecs list-services my-cluster
+    aws fzf ecs list-tasks my-cluster --desired-status RUNNING
 
     # Batch processing
-    aws_ecs_cmd batch-describe-clusters --region us-east-1
-    aws_ecs_cmd batch-describe-services my-cluster
-    aws_ecs_cmd batch-describe-tasks my-cluster --desired-status RUNNING
+    aws fzf ecs batch-describe-clusters --region us-east-1
+    aws fzf ecs batch-describe-services my-cluster
+    aws fzf ecs batch-describe-tasks my-cluster --desired-status RUNNING
 
     # Console views
-    aws_ecs_cmd view-cluster my-cluster
-    aws_ecs_cmd view-service my-cluster my-service
-    aws_ecs_cmd view-task my-cluster abc123def456
+    aws fzf ecs view-cluster my-cluster
+    aws fzf ecs view-service my-cluster my-service
+    aws fzf ecs view-task my-cluster abc123def456
 
 EOF
 }
@@ -626,8 +626,8 @@ copy-task-arn)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_ecs_cmd {batch-describe-*|view-*} [args]"
-	gum log --level info "Run 'aws_ecs_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf ecs {batch-describe-*|view-*} [args]"
+	gum log --level info "Run 'aws fzf ecs --help' for more information"
 	exit 1
 	;;
 esac

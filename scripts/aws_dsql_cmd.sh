@@ -245,20 +245,20 @@ _aws_dsql_cluster_list_cmd() {
 #
 _aws_dsql_cmd_help() {
 	cat <<'EOF'
-aws_dsql_cmd - Utility commands for DSQL operations
+aws fzf dsql - Utility commands for DSQL operations
 
 LISTING:
-    aws_dsql_cmd list [aws-cli-args]
+    aws fzf dsql list [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_dsql_cmd view-cluster <cluster-identifier>
+    aws fzf dsql view-cluster <cluster-identifier>
 
 DATABASE CONNECTION:
-    aws_dsql_cmd connect-cluster <cluster-identifier>
+    aws fzf dsql connect-cluster <cluster-identifier>
 
 CLIPBOARD OPERATIONS:
-    aws_dsql_cmd copy-cluster-arn <cluster-identifier>
-    aws_dsql_cmd copy-cluster-name <cluster-identifier>
+    aws fzf dsql copy-cluster-arn <cluster-identifier>
+    aws fzf dsql copy-cluster-name <cluster-identifier>
 
 DESCRIPTION:
     list: Fetches and formats DSQL clusters for fzf display.
@@ -268,13 +268,13 @@ DESCRIPTION:
 
 EXAMPLES:
     # List clusters (for fzf reload)
-    aws_dsql_cmd list --region us-east-1
+    aws fzf dsql list --region us-east-1
 
     # Console views
-    aws_dsql_cmd view-cluster my-dsql-cluster
+    aws fzf dsql view-cluster my-dsql-cluster
 
     # Database connections
-    aws_dsql_cmd connect-cluster my-dsql-cluster
+    aws fzf dsql connect-cluster my-dsql-cluster
 
 EOF
 }
@@ -309,8 +309,8 @@ copy-cluster-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_dsql_cmd {list|view-*|connect-*|copy-*} [args]"
-	gum log --level info "Run 'aws_dsql_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf dsql {list|view-*|connect-*|copy-*} [args]"
+	gum log --level info "Run 'aws fzf dsql --help' for more information"
 	exit 1
 	;;
 esac

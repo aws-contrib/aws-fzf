@@ -552,25 +552,25 @@ _aws_rds_cluster_list_cmd() {
 #
 _aws_rds_cmd_help() {
 	cat <<'EOF'
-aws_rds_cmd - Utility commands for RDS operations
+aws fzf rds - Utility commands for RDS operations
 
 LISTING:
-    aws_rds_cmd list-instances [aws-cli-args]
-    aws_rds_cmd list-clusters [aws-cli-args]
+    aws fzf rds list-instances [aws-cli-args]
+    aws fzf rds list-clusters [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_rds_cmd view-instance <db-instance-identifier>
-    aws_rds_cmd view-cluster <db-cluster-identifier>
+    aws fzf rds view-instance <db-instance-identifier>
+    aws fzf rds view-cluster <db-cluster-identifier>
 
 DATABASE CONNECTION:
-    aws_rds_cmd connect-instance <db-instance-identifier>
-    aws_rds_cmd connect-cluster <db-cluster-identifier>
+    aws fzf rds connect-instance <db-instance-identifier>
+    aws fzf rds connect-cluster <db-cluster-identifier>
 
 CLIPBOARD OPERATIONS:
-    aws_rds_cmd copy-instance-arn <db-instance-identifier>
-    aws_rds_cmd copy-instance-name <db-instance-identifier>
-    aws_rds_cmd copy-cluster-arn <db-cluster-identifier>
-    aws_rds_cmd copy-cluster-name <db-cluster-identifier>
+    aws fzf rds copy-instance-arn <db-instance-identifier>
+    aws fzf rds copy-instance-name <db-instance-identifier>
+    aws fzf rds copy-cluster-arn <db-cluster-identifier>
+    aws fzf rds copy-cluster-name <db-cluster-identifier>
 
 DESCRIPTION:
     list-instances/list-clusters: Fetches and formats RDS resources for fzf display.
@@ -580,16 +580,16 @@ DESCRIPTION:
 
 EXAMPLES:
     # List resources (for fzf reload)
-    aws_rds_cmd list-instances --region us-east-1
-    aws_rds_cmd list-clusters
+    aws fzf rds list-instances --region us-east-1
+    aws fzf rds list-clusters
 
     # Console views
-    aws_rds_cmd view-instance my-database
-    aws_rds_cmd view-cluster my-aurora-cluster
+    aws fzf rds view-instance my-database
+    aws fzf rds view-cluster my-aurora-cluster
 
     # Database connections
-    aws_rds_cmd connect-instance my-postgres-db
-    aws_rds_cmd connect-cluster my-aurora-cluster
+    aws fzf rds connect-instance my-postgres-db
+    aws fzf rds connect-cluster my-aurora-cluster
 
 EOF
 }
@@ -647,8 +647,8 @@ copy-cluster-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_rds_cmd {list-*|view-*|connect-*|copy-*} [args]"
-	gum log --level info "Run 'aws_rds_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf rds {list-*|view-*|connect-*|copy-*} [args]"
+	gum log --level info "Run 'aws fzf rds --help' for more information"
 	exit 1
 	;;
 esac

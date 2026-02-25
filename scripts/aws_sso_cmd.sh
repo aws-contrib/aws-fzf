@@ -247,19 +247,19 @@ EOF
 #
 _aws_sso_cmd_help() {
 	cat <<'EOF'
-aws_sso_cmd - Utility commands for SSO operations
+aws fzf sso - Utility commands for SSO operations
 
 LISTING:
-    aws_sso_cmd list
+    aws fzf sso list
 
 SSO OPERATIONS:
-    aws_sso_cmd login <profile-name>
-    aws_sso_cmd logout <profile-name>
-    aws_sso_cmd open <profile-name>
+    aws fzf sso login <profile-name>
+    aws fzf sso logout <profile-name>
+    aws fzf sso open <profile-name>
 
 CLIPBOARD OPERATIONS:
-    aws_sso_cmd copy-profile-name <profile-name>
-    aws_sso_cmd copy-account-id <profile-name>
+    aws fzf sso copy-profile-name <profile-name>
+    aws fzf sso copy-account-id <profile-name>
 
 DESCRIPTION:
     Utility commands for AWS SSO operations.
@@ -273,20 +273,20 @@ DESCRIPTION:
 
 EXAMPLES:
     # List SSO profiles
-    aws_sso_cmd list
+    aws fzf sso list
 
     # Login to a profile
-    aws_sso_cmd login my-sso-profile
+    aws fzf sso login my-sso-profile
 
     # Logout from a profile
-    aws_sso_cmd logout my-sso-profile
+    aws fzf sso logout my-sso-profile
 
     # Open AWS console for profile
-    aws_sso_cmd open my-sso-profile
+    aws fzf sso open my-sso-profile
 
     # Clipboard operations
-    aws_sso_cmd copy-profile-name my-sso-profile
-    aws_sso_cmd copy-account-id my-sso-profile
+    aws fzf sso copy-profile-name my-sso-profile
+    aws fzf sso copy-account-id my-sso-profile
 
 EOF
 }
@@ -325,8 +325,8 @@ copy-account-id)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_sso_cmd {list|login|logout|open|copy-profile-name|copy-account-id} [args]"
-	gum log --level info "Run 'aws_sso_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf sso {list|login|logout|open|copy-profile-name|copy-account-id} [args]"
+	gum log --level info "Run 'aws fzf sso --help' for more information"
 	exit 1
 	;;
 esac

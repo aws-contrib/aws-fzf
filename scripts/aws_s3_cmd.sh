@@ -285,21 +285,21 @@ _aws_s3_object_list_cmd() {
 #
 _aws_s3_cmd_help() {
 	cat <<'EOF'
-aws_s3_cmd - Utility commands for S3 operations
+aws fzf s3 - Utility commands for S3 operations
 
 LISTING:
-    aws_s3_cmd list-buckets [aws-cli-args]
-    aws_s3_cmd list-objects <bucket-name> [aws-cli-args]
+    aws fzf s3 list-buckets [aws-cli-args]
+    aws fzf s3 list-objects <bucket-name> [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_s3_cmd view-bucket <bucket-name>
-    aws_s3_cmd view-object <bucket-name> <object-key>
+    aws fzf s3 view-bucket <bucket-name>
+    aws fzf s3 view-object <bucket-name> <object-key>
 
 CLIPBOARD OPERATIONS:
-    aws_s3_cmd copy-bucket-arn <bucket-name>
-    aws_s3_cmd copy-bucket-name <bucket-name>
-    aws_s3_cmd copy-object-arn <bucket-name> <object-key>
-    aws_s3_cmd copy-object-key <object-key>
+    aws fzf s3 copy-bucket-arn <bucket-name>
+    aws fzf s3 copy-bucket-name <bucket-name>
+    aws fzf s3 copy-object-arn <bucket-name> <object-key>
+    aws fzf s3 copy-object-key <object-key>
 
 DESCRIPTION:
     list-buckets/list-objects: Fetches and formats S3 resources for fzf display.
@@ -308,18 +308,18 @@ DESCRIPTION:
 
 EXAMPLES:
     # List resources (for fzf reload)
-    aws_s3_cmd list-buckets
-    aws_s3_cmd list-objects my-bucket --prefix logs/
+    aws fzf s3 list-buckets
+    aws fzf s3 list-objects my-bucket --prefix logs/
 
     # Console views
-    aws_s3_cmd view-bucket my-bucket
-    aws_s3_cmd view-object my-bucket path/to/file.txt
+    aws fzf s3 view-bucket my-bucket
+    aws fzf s3 view-object my-bucket path/to/file.txt
 
     # Clipboard operations
-    aws_s3_cmd copy-bucket-arn my-bucket
-    aws_s3_cmd copy-bucket-name my-bucket
-    aws_s3_cmd copy-object-arn my-bucket path/to/file.txt
-    aws_s3_cmd copy-object-key path/to/file.txt
+    aws fzf s3 copy-bucket-arn my-bucket
+    aws fzf s3 copy-bucket-name my-bucket
+    aws fzf s3 copy-object-arn my-bucket path/to/file.txt
+    aws fzf s3 copy-object-key path/to/file.txt
 
 EOF
 }
@@ -369,8 +369,8 @@ copy-object-key)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_s3_cmd {list-*|view-*|copy-*} [args]"
-	gum log --level info "Run 'aws_s3_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf s3 {list-*|view-*|copy-*} [args]"
+	gum log --level info "Run 'aws fzf s3 --help' for more information"
 	exit 1
 	;;
 esac

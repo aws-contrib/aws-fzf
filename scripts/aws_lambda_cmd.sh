@@ -160,17 +160,17 @@ _aws_lambda_list_cmd() {
 #
 _aws_lambda_cmd_help() {
 	cat <<'EOF'
-aws_lambda_cmd - Utility commands for Lambda operations
+aws fzf lambda - Utility commands for Lambda operations
 
 LISTING:
-    aws_lambda_cmd list [aws-cli-args]
+    aws fzf lambda list [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_lambda_cmd view-function <function-name>
+    aws fzf lambda view-function <function-name>
 
 CLIPBOARD OPERATIONS:
-    aws_lambda_cmd copy-arn <function-name>
-    aws_lambda_cmd copy-name <function-name>
+    aws fzf lambda copy-arn <function-name>
+    aws fzf lambda copy-name <function-name>
 
 DESCRIPTION:
     Utility commands for Lambda operations.
@@ -181,14 +181,14 @@ DESCRIPTION:
 
 EXAMPLES:
     # List functions (for fzf reload)
-    aws_lambda_cmd list --region us-east-1
+    aws fzf lambda list --region us-east-1
 
     # Console view
-    aws_lambda_cmd view-function my-function
+    aws fzf lambda view-function my-function
 
     # Clipboard operations
-    aws_lambda_cmd copy-arn my-function
-    aws_lambda_cmd copy-name my-function
+    aws fzf lambda copy-arn my-function
+    aws fzf lambda copy-name my-function
 
 EOF
 }
@@ -219,8 +219,8 @@ copy-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_lambda_cmd {list|view-function|copy-arn|copy-name} [args]"
-	gum log --level info "Run 'aws_lambda_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf lambda {list|view-function|copy-arn|copy-name} [args]"
+	gum log --level info "Run 'aws fzf lambda --help' for more information"
 	exit 1
 	;;
 esac

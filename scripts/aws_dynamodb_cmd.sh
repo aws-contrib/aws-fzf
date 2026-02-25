@@ -178,18 +178,18 @@ _aws_dynamodb_table_list_cmd() {
 #
 _aws_dynamodb_cmd_help() {
 	cat <<'EOF'
-aws_dynamodb_cmd - Utility commands for DynamoDB operations
+aws fzf dynamodb - Utility commands for DynamoDB operations
 
 LISTING:
-    aws_dynamodb_cmd list [aws-cli-args]
+    aws fzf dynamodb list [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_dynamodb_cmd view-table <table-name>
-    aws_dynamodb_cmd view-items <table-name>
+    aws fzf dynamodb view-table <table-name>
+    aws fzf dynamodb view-items <table-name>
 
 CLIPBOARD OPERATIONS:
-    aws_dynamodb_cmd copy-arn <table-name>
-    aws_dynamodb_cmd copy-name <table-name>
+    aws fzf dynamodb copy-arn <table-name>
+    aws fzf dynamodb copy-name <table-name>
 
 DESCRIPTION:
     list: Fetches and formats DynamoDB tables for fzf display.
@@ -203,15 +203,15 @@ DESCRIPTION:
 
 EXAMPLES:
     # List tables (for fzf reload)
-    aws_dynamodb_cmd list --region us-east-1
+    aws fzf dynamodb list --region us-east-1
 
     # Console views
-    aws_dynamodb_cmd view-table my-table
-    aws_dynamodb_cmd view-items my-table
+    aws fzf dynamodb view-table my-table
+    aws fzf dynamodb view-items my-table
 
     # Clipboard operations
-    aws_dynamodb_cmd copy-arn my-table
-    aws_dynamodb_cmd copy-name my-table
+    aws fzf dynamodb copy-arn my-table
+    aws fzf dynamodb copy-name my-table
 
 EOF
 }
@@ -246,8 +246,8 @@ copy-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_dynamodb_cmd {list|view-table|view-items|copy-arn|copy-name} [args]"
-	gum log --level info "Run 'aws_dynamodb_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf dynamodb {list|view-table|view-items|copy-arn|copy-name} [args]"
+	gum log --level info "Run 'aws fzf dynamodb --help' for more information"
 	exit 1
 	;;
 esac

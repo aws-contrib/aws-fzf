@@ -209,18 +209,18 @@ _aws_param_list_cmd() {
 #
 _aws_param_cmd_help() {
 	cat <<'EOF'
-aws_param_cmd - Utility commands for Parameter Store operations
+aws fzf param - Utility commands for Parameter Store operations
 
 LISTING:
-    aws_param_cmd list [aws-cli-args]
+    aws fzf param list [aws-cli-args]
 
 CONSOLE OPERATIONS:
-    aws_param_cmd view-parameter <parameter-name>
+    aws fzf param view-parameter <parameter-name>
 
 CLIPBOARD OPERATIONS:
-    aws_param_cmd copy-value <parameter-name>
-    aws_param_cmd copy-arn <parameter-name>
-    aws_param_cmd copy-name <parameter-name>
+    aws fzf param copy-value <parameter-name>
+    aws fzf param copy-arn <parameter-name>
+    aws fzf param copy-name <parameter-name>
 
 DESCRIPTION:
     Utility commands for Parameter Store operations.
@@ -232,17 +232,17 @@ DESCRIPTION:
 
 EXAMPLES:
     # List parameters (for fzf reload)
-    aws_param_cmd list --region us-east-1
+    aws fzf param list --region us-east-1
 
     # Copy parameter value to clipboard
-    aws_param_cmd copy-value /app/database/password
+    aws fzf param copy-value /app/database/password
 
     # Open in console
-    aws_param_cmd view-parameter /app/database/password
+    aws fzf param view-parameter /app/database/password
 
     # Copy identifiers
-    aws_param_cmd copy-arn /app/database/password
-    aws_param_cmd copy-name /app/database/password
+    aws fzf param copy-arn /app/database/password
+    aws fzf param copy-name /app/database/password
 
 EOF
 }
@@ -277,8 +277,8 @@ copy-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_param_cmd {list|copy-value|view-parameter|copy-arn|copy-name} [args]"
-	gum log --level info "Run 'aws_param_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf param {list|copy-value|view-parameter|copy-arn|copy-name} [args]"
+	gum log --level info "Run 'aws fzf param --help' for more information"
 	exit 1
 	;;
 esac

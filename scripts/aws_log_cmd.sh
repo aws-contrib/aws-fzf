@@ -369,24 +369,24 @@ EOF
 #
 _aws_log_cmd_help() {
 	cat <<'EOF'
-aws_log_cmd - CloudWatch Logs operations
+aws fzf logs - CloudWatch Logs operations
 
 LISTING:
-    aws_log_cmd list-groups [aws-cli-args]
-    aws_log_cmd list-streams <log-group-name> [aws-cli-args]
+    aws fzf logs list-groups [aws-cli-args]
+    aws fzf logs list-streams <log-group-name> [aws-cli-args]
 
 CONSOLE VIEWS:
-    aws_log_cmd view-group <log-group-name>
-    aws_log_cmd view-stream <log-group-name> <stream-name>
+    aws fzf logs view-group <log-group-name>
+    aws fzf logs view-stream <log-group-name> <stream-name>
 
 LOG OPERATIONS:
-    aws_log_cmd tail-log <log-group-name> [stream-name]
-    aws_log_cmd read-log <log-group-name> [stream-name]
+    aws fzf logs tail-log <log-group-name> [stream-name]
+    aws fzf logs read-log <log-group-name> [stream-name]
 
 CLIPBOARD OPERATIONS:
-    aws_log_cmd copy-group-arn <log-group-name>
-    aws_log_cmd copy-group-name <log-group-name>
-    aws_log_cmd copy-stream-name <stream-name>
+    aws fzf logs copy-group-arn <log-group-name>
+    aws fzf logs copy-group-name <log-group-name>
+    aws fzf logs copy-stream-name <stream-name>
 
 DESCRIPTION:
     List commands fetch and format CloudWatch Logs resources for fzf display.
@@ -457,8 +457,8 @@ copy-stream-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_log_cmd {list-groups|list-streams|view-group|view-stream|tail-log|read-log|copy-*} [args]"
-	gum log --level info "Run 'aws_log_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf logs {list-groups|list-streams|view-group|view-stream|tail-log|read-log|copy-*} [args]"
+	gum log --level info "Run 'aws fzf logs --help' for more information"
 	exit 1
 	;;
 esac

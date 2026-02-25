@@ -196,18 +196,18 @@ _aws_secret_list_cmd() {
 #
 _aws_secret_cmd_help() {
 	cat <<'EOF'
-aws_secret_cmd - Utility commands for Secrets Manager operations
+aws fzf secret - Utility commands for Secrets Manager operations
 
 LISTING:
-    aws_secret_cmd list [aws-cli-args]
+    aws fzf secret list [aws-cli-args]
 
 CONSOLE OPERATIONS:
-    aws_secret_cmd view-secret <secret-name>
+    aws fzf secret view-secret <secret-name>
 
 CLIPBOARD OPERATIONS:
-    aws_secret_cmd copy-value <secret-name>
-    aws_secret_cmd copy-arn <secret-name>
-    aws_secret_cmd copy-name <secret-name>
+    aws fzf secret copy-value <secret-name>
+    aws fzf secret copy-arn <secret-name>
+    aws fzf secret copy-name <secret-name>
 
 DESCRIPTION:
     Utility commands for Secrets Manager operations.
@@ -219,17 +219,17 @@ DESCRIPTION:
 
 EXAMPLES:
     # List secrets (for fzf reload)
-    aws_secret_cmd list --region us-east-1
+    aws fzf secret list --region us-east-1
 
     # Copy secret value to clipboard
-    aws_secret_cmd copy-value my-database-password
+    aws fzf secret copy-value my-database-password
 
     # Open in console
-    aws_secret_cmd view-secret my-database-password
+    aws fzf secret view-secret my-database-password
 
     # Copy identifiers
-    aws_secret_cmd copy-arn my-database-password
-    aws_secret_cmd copy-name my-database-password
+    aws fzf secret copy-arn my-database-password
+    aws fzf secret copy-name my-database-password
 
 EOF
 }
@@ -264,8 +264,8 @@ copy-name)
 	;;
 *)
 	gum log --level error "Unknown subcommand '${1:-}'"
-	gum log --level info "Usage: aws_secret_cmd {list|copy-value|view-secret|copy-arn|copy-name} [args]"
-	gum log --level info "Run 'aws_secret_cmd --help' for more information"
+	gum log --level info "Usage: aws fzf secret {list|copy-value|view-secret|copy-arn|copy-name} [args]"
+	gum log --level info "Run 'aws fzf secret --help' for more information"
 	exit 1
 	;;
 esac
