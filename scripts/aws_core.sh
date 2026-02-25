@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Source guard: prevent double-sourcing errors from readonly re-declaration
+[[ -n "${_AWS_FZF_CORE_SOURCED:-}" ]] && return 0
+_AWS_FZF_CORE_SOURCED=1
+
 # Fzf icon for AWS services
 readonly _fzf_icon=" "
 # Fzf field separator
@@ -55,9 +59,10 @@ _aws_fzf_options() {
 	)
 
 	# Add user-provided fzf flags (global)
+	# FZF_AWS_FLAGS is encoded with printf %q in main(), so use eval to decode it
 	if [[ -n "$FZF_AWS_FLAGS" ]]; then
 		local user_flags=()
-		read -ra user_flags <<<"$FZF_AWS_FLAGS"
+		eval "user_flags=($FZF_AWS_FLAGS)"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 
