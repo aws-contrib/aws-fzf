@@ -27,13 +27,20 @@ _aws_param_list() {
 	local describe_params_args=("$@")
 
 	local param_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format parameters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	param_list="$(
 		gum spin --title "Loading AWS System Manager Parameters..." -- \
 			"$_aws_param_source_dir/aws_param_cmd.sh" list "${describe_params_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list parameters (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any parameters were found
 	if [ -z "$param_list" ]; then

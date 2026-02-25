@@ -25,11 +25,18 @@ source "$_aws_sso_source_dir/aws_core.sh"
 #
 _aws_sso_profile_list() {
 	local profile_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format SSO profiles
 	profile_list="$(
 		gum spin --title "Loading AWS SSO Profiles..." -- \
 			"$_aws_sso_source_dir/aws_sso_cmd.sh" list
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list SSO profiles (exit code: $exit_code)"
+		gum log --level info "Check your AWS configuration"
+		return 1
+	fi
 
 	# Check if any SSO profiles were found
 	if [ -z "$profile_list" ]; then

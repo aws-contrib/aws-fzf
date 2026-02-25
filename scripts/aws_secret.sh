@@ -27,13 +27,20 @@ _aws_secret_list() {
 	local list_secrets_args=("$@")
 
 	local secrets_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format secrets
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	secrets_list="$(
 		gum spin --title "Loading AWS Secret Manager Secrets..." -- \
 			"$_aws_secret_source_dir/aws_secret_cmd.sh" list "${list_secrets_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list secrets (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any secrets were found
 	if [ -z "$secrets_list" ]; then

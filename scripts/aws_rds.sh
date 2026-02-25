@@ -27,13 +27,20 @@ _aws_rds_instance_list() {
 	local list_instances_args=("$@")
 
 	local instance_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format instances
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	instance_list="$(
 		gum spin --title "Loading AWS RDS Instances..." -- \
 			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-instances "${list_instances_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list RDS instances (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any instances were found
 	if [ -z "$instance_list" ]; then
@@ -80,13 +87,20 @@ _aws_rds_cluster_list() {
 	local list_clusters_args=("$@")
 
 	local cluster_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS RDS Clusters..." -- \
 			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-clusters "${list_clusters_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list RDS clusters (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any clusters were found
 	if [ -z "$cluster_list" ]; then

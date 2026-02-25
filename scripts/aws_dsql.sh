@@ -27,13 +27,20 @@ _aws_dsql_cluster_list() {
 	local list_clusters_args=("$@")
 
 	local cluster_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS DSQL Clusters..." -- \
 			"$_aws_dsql_source_dir/aws_dsql_cmd.sh" list "${list_clusters_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list DSQL clusters (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any clusters were found
 	if [ -z "$cluster_list" ]; then

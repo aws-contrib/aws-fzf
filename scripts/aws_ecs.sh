@@ -28,13 +28,20 @@ _aws_ecs_cluster_list() {
 	local list_clusters_args=("$@")
 
 	local cluster_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	cluster_list="$(
 		gum spin --title "Loading AWS ECS Clusters..." -- \
 			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-clusters "${list_clusters_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list ECS clusters (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any clusters were found
 	if [ -z "$cluster_list" ]; then
@@ -101,11 +108,18 @@ _aws_ecs_service_list() {
 	fi
 
 	local service_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format services
 	service_list="$(
 		gum spin --title "Loading AWS ECS Services from $cluster..." -- \
 			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-services "$cluster" "${list_services_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list ECS services (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	if [ -z "$service_list" ]; then
 		gum log --level warn "No services found in cluster '$cluster'"
@@ -171,11 +185,18 @@ _aws_ecs_task_list() {
 	fi
 
 	local task_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format tasks
 	task_list="$(
 		gum spin --title "Loading AWS ECS Tasks from $cluster..." -- \
 			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-tasks "$cluster" "${list_tasks_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list ECS tasks (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	if [ -z "$task_list" ]; then
 		gum log --level warn "No tasks found in cluster '$cluster'"

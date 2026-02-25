@@ -18,6 +18,29 @@ source "$_aws_fzf_source_dir/scripts/aws_dsql.sh"
 source "$_aws_fzf_source_dir/scripts/aws_dynamodb.sh"
 source "$_aws_fzf_source_dir/scripts/aws_sso.sh"
 
+# _check_dependencies()
+#
+# Verify required external tools are available
+#
+# DESCRIPTION:
+#   Checks that all required dependencies (aws, fzf, jq, gum) are installed.
+#   Exits with an error if any are missing.
+#
+_check_dependencies() {
+	local missing=()
+	for cmd in aws fzf jq gum; do
+		if ! command -v "$cmd" >/dev/null 2>&1; then
+			missing+=("$cmd")
+		fi
+	done
+
+	if [ ${#missing[@]} -gt 0 ]; then
+		echo "Error: missing required dependencies: ${missing[*]}" >&2
+		echo "Install with: brew install awscli fzf jq gum" >&2
+		exit 1
+	fi
+}
+
 # _show_root_help()
 #
 # Display help information for aws fzf
@@ -84,6 +107,21 @@ ENVIRONMENT VARIABLES:
         Global fzf flags (set automatically from CLI --flags)
 
     Precedence: Defaults < FZF_AWS_FLAGS < FZF_AWS_<SERVICE>_<RESOURCE>_OPTS
+
+    Service-specific variables:
+
+    FZF_AWS_LOG_HISTORY             Duration to look back for log reads (default: 1h)
+                                    Formats: 15m, 2h, 1d
+    FZF_AWS_LOG_LIMIT               Max events for log reads (default: 10000)
+    FZF_AWS_LOG_MAX_ITEMS           Max log streams to list (default: 1000)
+    FZF_AWS_S3_MAX_ITEMS            Max S3 objects to list (default: 1000)
+    FZF_AWS_DSQL_TOKEN_TTL          DSQL auth token TTL in seconds (default: 3600)
+
+    Other variables:
+
+    AWS_SSO_CONFIG_FILE             Override SSO JSON config file location
+                                    (default: ~/.aws/cli/fzf/config.json)
+    DEBUG                           Set to any value to enable debug tracing (set -x)
 
     Examples:
         # Different heights per command
@@ -211,11 +249,17 @@ main() {
 	local service=""
 	local service_args=()
 
+	_check_dependencies
+
 	# Parse arguments: everything before service = fzf flags, everything after = service args
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
 		--help | -h | help)
 			_show_root_help
+			exit 0
+			;;
+		--version | -V)
+			cat "$_aws_fzf_source_dir/version.txt"
 			exit 0
 			;;
 		lambda | param | secret | ecs | log | logs | s3 | rds | dsql | dynamodb | sso)

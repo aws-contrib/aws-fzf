@@ -40,13 +40,20 @@ _aws_s3_bucket_list() {
 	local list_buckets_args=("$@")
 
 	local bucket_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format buckets
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	bucket_list="$(
 		gum spin --title "Loading AWS S3 Buckets..." -- \
 			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-buckets "${list_buckets_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list S3 buckets (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	if [ -z "$bucket_list" ]; then
 		gum log --level warn "No S3 buckets found"
@@ -112,11 +119,18 @@ _aws_s3_object_list() {
 	fi
 
 	local object_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format objects
 	object_list="$(
 		gum spin --title "Loading AWS S3 Objects from $bucket..." -- \
 			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-objects "$bucket" "${list_objects_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list S3 objects (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	if [ -z "$object_list" ]; then
 		gum log --level warn "No objects found in bucket '$bucket'"
@@ -136,8 +150,8 @@ _aws_s3_object_list() {
 		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-objects" \
 		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-objects '$bucket' ${list_objects_args[*]})" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq . | gum pager)" \
-		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object $bucket {1})" \
-		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn $bucket {1})" \
+		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object '$bucket' {1})" \
+		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn '$bucket' {1})" \
 		--bind "alt-n:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})" \
 		--bind "alt-h:toggle-preview"
 }

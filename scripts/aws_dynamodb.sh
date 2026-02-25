@@ -27,13 +27,20 @@ _aws_dynamodb_table_list() {
 	local list_tables_args=("$@")
 
 	local table_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format tables
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	table_list="$(
 		gum spin --title "Loading AWS DynamoDB Tables..." -- \
 			"$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh" list "${list_tables_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list DynamoDB tables (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any tables were found
 	if [ -z "$table_list" ]; then

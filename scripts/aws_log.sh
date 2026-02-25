@@ -27,13 +27,20 @@ _aws_log_group_list() {
 	local list_groups_args=("$@")
 
 	local group_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format log groups
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	group_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Groups..." -- \
 			"$_aws_log_source_dir/aws_log_cmd.sh" list-groups "${list_groups_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list log groups (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any groups were found
 	if [ -z "$group_list" ]; then
@@ -102,11 +109,18 @@ _aws_log_stream_list() {
 	fi
 
 	local stream_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format log streams
 	stream_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Streams from $log_group_name..." -- \
 			"$_aws_log_source_dir/aws_log_cmd.sh" list-streams "$log_group_name" "${list_streams_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list log streams (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	if [ -z "$stream_list" ]; then
 		gum log --level warn "No log streams found in log group '$log_group_name'"
@@ -125,7 +139,7 @@ _aws_log_stream_list() {
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-streams" \
 		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-streams '$log_group_name' ${list_streams_args[*]})" \
-		--bind "enter:execute(aws logs describe-log-streams --log-group-name $log_group_name --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \
+		--bind "enter:execute(aws logs describe-log-streams --log-group-name '$log_group_name' --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log '$log_group_name' {1})" \

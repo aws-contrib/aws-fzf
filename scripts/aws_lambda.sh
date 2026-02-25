@@ -27,13 +27,20 @@ _aws_lambda_list() {
 	local list_functions_args=("$@")
 
 	local function_list
+	local exit_code=0
 	# Call the _cmd script to fetch and format functions
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
 	function_list="$(
 		gum spin --title "Loading AWS Lambda Functions..." -- \
 			"$_aws_lambda_source_dir/aws_lambda_cmd.sh" list "${list_functions_args[@]}"
-	)"
+	)" || exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		gum log --level error "Failed to list Lambda functions (exit code: $exit_code)"
+		gum log --level info "Check your AWS credentials and permissions"
+		return 1
+	fi
 
 	# Check if any functions were found
 	if [ -z "$function_list" ]; then

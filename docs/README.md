@@ -185,10 +185,15 @@ Override fzf options for specific commands using `FZF_AWS_<SERVICE>_<RESOURCE>_O
 
 #### Service-Specific Variables
 
-| Variable               | Description                                     | Default                         |
-| ---------------------- | ----------------------------------------------- | ------------------------------- |
-| `FZF_AWS_LOG_HISTORY`  | Duration to look back for log tailing            | `1h`                            |
-| `AWS_SSO_CONFIG_FILE`  | Override SSO JSON config file location            | `~/.aws/cli/fzf/config.json`   |
+| Variable                | Description                                     | Default                         |
+| ----------------------- | ----------------------------------------------- | ------------------------------- |
+| `FZF_AWS_LOG_HISTORY`   | Duration to look back for log reads              | `1h`                            |
+| `FZF_AWS_LOG_LIMIT`     | Max events returned by log reads                 | `10000`                         |
+| `FZF_AWS_LOG_MAX_ITEMS` | Max log streams to list                          | `1000`                          |
+| `FZF_AWS_S3_MAX_ITEMS`  | Max S3 objects to list per bucket                | `1000`                          |
+| `FZF_AWS_DSQL_TOKEN_TTL`| DSQL auth token TTL in seconds                   | `3600`                          |
+| `AWS_SSO_CONFIG_FILE`   | Override SSO JSON config file location            | `~/.aws/cli/fzf/config.json`   |
+| `DEBUG`                 | Enable debug tracing (`set -x`) when set          | (unset)                         |
 
 #### Precedence
 
