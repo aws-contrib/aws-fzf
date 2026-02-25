@@ -56,13 +56,8 @@ _aws_fzf_options() {
 
 	# Add user-provided fzf flags (global)
 	if [[ -n "$FZF_AWS_FLAGS" ]]; then
-		# Safely parse quoted string back to array
-		# Use eval with proper quoting to handle complex flags
 		local user_flags=()
-		eval "user_flags=($FZF_AWS_FLAGS)" 2>/dev/null || {
-			# Fallback to simple word splitting if eval fails
-			read -ra user_flags <<<"$FZF_AWS_FLAGS"
-		}
+		read -ra user_flags <<<"$FZF_AWS_FLAGS"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 
@@ -72,11 +67,7 @@ _aws_fzf_options() {
 		local cmd_flags="${!var_name}"
 		if [[ -n "$cmd_flags" ]]; then
 			local cmd_flags_array=()
-			# Use eval with proper quoting to handle complex flags
-			eval "cmd_flags_array=($cmd_flags)" 2>/dev/null || {
-				# Fallback to simple word splitting if eval fails
-				read -ra cmd_flags_array <<<"$cmd_flags"
-			}
+			read -ra cmd_flags_array <<<"$cmd_flags"
 			_fzf_options+=("${cmd_flags_array[@]}")
 		fi
 	fi
@@ -128,9 +119,13 @@ _get_aws_region() {
 #   String in format "account_id-region_id" (e.g., "123456789012-us-east-1")
 #   Returns "unknown-region" if STS call fails
 #
+_get_aws_account_id() {
+	aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
+}
+
 _get_aws_context() {
 	local account_id region
-	account_id=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
+	account_id=$(_get_aws_account_id)
 	region=$(_get_aws_region)
 	echo "${account_id}-${region}"
 }

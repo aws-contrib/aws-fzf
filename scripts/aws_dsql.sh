@@ -49,7 +49,7 @@ _aws_dsql_cluster_list() {
 
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
-		--with-nth=1.. --accept-nth 1 \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon DSQL Clusters $_fzf_split $aws_context" \
 		--preview "$_aws_dsql_source_dir/aws_dsql_cmd.sh help" \
 		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${list_clusters_args[*]})" \

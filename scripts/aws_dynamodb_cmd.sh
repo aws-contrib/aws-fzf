@@ -90,10 +90,7 @@ _aws_dynamodb_copy_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(
-		gum spin --title "Getting AWS Caller Identity..." -- \
-			aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
-	)
+	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:dynamodb:${region}:${account_id}:table/${table}"
 	_copy_to_clipboard "$arn" "table ARN"

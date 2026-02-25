@@ -38,9 +38,10 @@ _batch_describe_clusters() {
 	local args=("$@")
 
 	aws ecs list-clusters "${args[@]}" --output json |
-		jq -r '.clusterArns | _nwise(10) | @sh' |
-		while read -r batch; do
-			eval "aws ecs describe-clusters --clusters $batch --include STATISTICS --output json"
+		jq -r '[.clusterArns | _nwise(10)] | .[] | join(" ")' |
+		while IFS= read -r batch; do
+			read -ra arns <<<"$batch"
+			aws ecs describe-clusters --clusters "${arns[@]}" --include STATISTICS --output json
 		done
 }
 
@@ -69,9 +70,10 @@ _batch_describe_services() {
 	local args=("$@")
 
 	if ! aws ecs list-services --cluster "$cluster" "${args[@]}" --output json |
-		jq -r '.serviceArns | _nwise(10) | @sh' |
-		while read -r batch; do
-			eval "aws ecs describe-services --cluster '$cluster' --services $batch --output json"
+		jq -r '[.serviceArns | _nwise(10)] | .[] | join(" ")' |
+		while IFS= read -r batch; do
+			read -ra arns <<<"$batch"
+			aws ecs describe-services --cluster "$cluster" --services "${arns[@]}" --output json
 		done; then
 		gum log --level error "Failed to fetch services for cluster: $cluster"
 		gum log --level info "Check that the cluster exists and you have permissions"
@@ -105,9 +107,10 @@ _batch_describe_tasks() {
 	local args=("$@")
 
 	if ! aws ecs list-tasks --cluster "$cluster" "${args[@]}" --output json |
-		jq -r '.taskArns | _nwise(10) | @sh' |
-		while read -r batch; do
-			eval "aws ecs describe-tasks --cluster '$cluster' --tasks $batch --output json"
+		jq -r '[.taskArns | _nwise(10)] | .[] | join(" ")' |
+		while IFS= read -r batch; do
+			read -ra arns <<<"$batch"
+			aws ecs describe-tasks --cluster "$cluster" --tasks "${arns[@]}" --output json
 		done; then
 		gum log --level error "Failed to fetch tasks for cluster: $cluster"
 		gum log --level info "Check that the cluster exists and you have permissions"
@@ -220,10 +223,7 @@ _copy_cluster_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(
-		gum spin --title "Getting AWS Caller Identity..." -- \
-			aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
-	)
+	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:ecs:${region}:${account_id}:cluster/${cluster}"
 	_copy_to_clipboard "$arn" "cluster ARN"
@@ -272,10 +272,7 @@ _copy_service_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(
-		gum spin --title "Getting AWS Caller Identity..." -- \
-			aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
-	)
+	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:ecs:${region}:${account_id}:service/${cluster}/${service}"
 	_copy_to_clipboard "$arn" "service ARN"

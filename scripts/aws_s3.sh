@@ -21,8 +21,6 @@ source "$_aws_s3_source_dir/aws_core.sh"
 #   - gum
 #   - Utility functions from utils/ (clipboard)
 
-_aws_s3_source_dir=$(dirname "${BASH_SOURCE[0]}")
-
 # _aws_s3_bucket_list()
 #
 # Interactive fuzzy finder for S3 buckets

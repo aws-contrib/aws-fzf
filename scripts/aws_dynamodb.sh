@@ -49,7 +49,7 @@ _aws_dynamodb_table_list() {
 
 	# Display in fzf with keybindings
 	echo "$table_list" | fzf "${_fzf_options[@]}" \
-		--with-nth=1.. --accept-nth 1 \
+		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon DynamoDB Tables $_fzf_split $aws_context" \
 		--preview "$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh help" \
 		--bind "ctrl-r:reload($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh list ${list_tables_args[*]})" \

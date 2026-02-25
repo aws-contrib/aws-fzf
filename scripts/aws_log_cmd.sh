@@ -195,9 +195,7 @@ _copy_group_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(
-		aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
-	)
+	account_id=$(_get_aws_account_id)
 
 	local arn="arn:aws:logs:${region}:${account_id}:log-group:${log_group}:*"
 	_copy_to_clipboard "$arn" "log group ARN"

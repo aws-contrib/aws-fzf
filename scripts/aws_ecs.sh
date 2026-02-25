@@ -124,9 +124,9 @@ _aws_ecs_service_list() {
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-services" \
 		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-services '$cluster' ${list_services_args[*]})" \
-		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service $cluster {1})" \
-		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster $cluster --service-name {1})" \
-		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn $cluster {1})" \
+		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service '$cluster' {1})" \
+		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster '$cluster' --service-name {1})" \
+		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn '$cluster' {1})" \
 		--bind "alt-n:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
@@ -194,8 +194,8 @@ _aws_ecs_task_list() {
 		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-tasks" \
 		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks '$cluster' ${list_tasks_args[*]})" \
-		--bind "enter:execute(aws ecs describe-tasks --cluster $cluster --tasks {1} | jq . | gum pager)" \
-		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task $cluster {1})" \
+		--bind "enter:execute(aws ecs describe-tasks --cluster '$cluster' --tasks {1} | jq . | gum pager)" \
+		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task '$cluster' {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})" \
 		--bind "alt-h:toggle-preview"
 }

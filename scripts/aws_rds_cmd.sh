@@ -94,15 +94,12 @@ _aws_rds_connect_instance() {
 
 	# Get instance details
 	local instance_info
-	instance_info=$(
+	if ! instance_info=$(
 		gum spin --title "Getting AWS RDS Instance Details..." -- \
 			aws rds describe-db-instances \
 			--db-instance-identifier "$instance" \
 			--output json 2>&1
-	)
-
-	# shellcheck disable=SC2181
-	if [ $? -ne 0 ]; then
+	); then
 		gum log --level error "Failed to describe instance: $instance"
 		gum log --level info "Check that the instance exists and you have permissions"
 		gum log --level info "Required IAM permissions: rds:DescribeDBInstances"
@@ -123,6 +120,13 @@ _aws_rds_connect_instance() {
 		gum log --level error "Instance endpoint not available"
 		gum log --level info "The instance may not be ready or in 'available' state"
 		gum log --level info "Check instance status with: aws rds describe-db-instances --db-instance-identifier $instance"
+		exit 1
+	fi
+
+	# Check for valid port and username
+	if [ -z "$port" ] || [ "$port" = "null" ] || [ -z "$username" ] || [ "$username" = "null" ]; then
+		gum log --level error "Could not determine connection details (port or username)"
+		gum log --level info "Check instance status: aws rds describe-db-instances --db-instance-identifier $instance"
 		exit 1
 	fi
 
@@ -160,17 +164,14 @@ _aws_rds_connect_instance() {
 	region=$(_get_aws_region)
 
 	local token
-	token=$(
+	if ! token=$(
 		gum spin --title "Generating IAM Auth Token..." -- \
 			aws rds generate-db-auth-token \
 			--hostname "$endpoint" \
 			--port "$port" \
 			--username "$username" \
 			--region "$region" 2>&1
-	)
-
-	# shellcheck disable=SC2181
-	if [ $? -ne 0 ]; then
+	); then
 		gum log --level error "Failed to generate IAM auth token"
 		gum log --level info "Check your AWS credentials and IAM permissions"
 		gum log --level info "Required IAM permissions: rds-db:connect"
@@ -214,15 +215,12 @@ _aws_rds_connect_cluster() {
 
 	# Get cluster details
 	local cluster_info
-	cluster_info=$(
+	if ! cluster_info=$(
 		gum spin --title "Getting AWS RDS Cluster Details..." -- \
 			aws rds describe-db-clusters \
 			--db-cluster-identifier "$cluster" \
 			--output json 2>&1
-	)
-
-	# shellcheck disable=SC2181
-	if [ $? -ne 0 ]; then
+	); then
 		gum log --level error "Failed to describe cluster: $cluster"
 		gum log --level info "Check that the cluster exists and you have permissions"
 		gum log --level info "Required IAM permissions: rds:DescribeDBClusters"
@@ -243,6 +241,13 @@ _aws_rds_connect_cluster() {
 		gum log --level error "Cluster endpoint not available"
 		gum log --level info "The cluster may not be ready or in 'available' state"
 		gum log --level info "Check cluster status with: aws rds describe-db-clusters --db-cluster-identifier $cluster"
+		exit 1
+	fi
+
+	# Check for valid port and username
+	if [ -z "$port" ] || [ "$port" = "null" ] || [ -z "$username" ] || [ "$username" = "null" ]; then
+		gum log --level error "Could not determine connection details (port or username)"
+		gum log --level info "Check cluster status: aws rds describe-db-clusters --db-cluster-identifier $cluster"
 		exit 1
 	fi
 
@@ -279,17 +284,14 @@ _aws_rds_connect_cluster() {
 	region=$(_get_aws_region)
 
 	local token
-	token=$(
+	if ! token=$(
 		gum spin --title "Generating IAM Auth Token..." -- \
 			aws rds generate-db-auth-token \
 			--hostname "$endpoint" \
 			--port "$port" \
 			--username "$username" \
 			--region "$region" 2>&1
-	)
-
-	# shellcheck disable=SC2181
-	if [ $? -ne 0 ]; then
+	); then
 		gum log --level error "Failed to generate IAM auth token"
 		gum log --level info "Check your AWS credentials and IAM permissions"
 		gum log --level info "Required IAM permissions: rds-db:connect"

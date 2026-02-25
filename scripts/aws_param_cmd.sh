@@ -119,10 +119,7 @@ _aws_param_copy_arn() {
 
 	local region account_id
 	region=$(_get_aws_region)
-	account_id=$(
-		gum spin --title "Getting AWS Caller Identity..." -- \
-			aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
-	)
+	account_id=$(_get_aws_account_id)
 
 	# Remove leading slash if present for ARN construction
 	local param_path="${param_name#/}"

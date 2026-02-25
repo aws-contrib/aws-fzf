@@ -50,11 +50,11 @@ _aws_sso_profile_list_cmd() {
 
 	# Determine config source
 	# Priority: AWS_SSO_CONFIG_FILE env var -> ~/.aws/cli/fzf/config.json -> ~/.aws/config (via Python)
-	local json_config="${AWS_SSO_CONFIG_FILE:-$HOME/.aws/cli/fzf/config.json}"
+	local config="${AWS_SSO_CONFIG_FILE:-$HOME/.aws/cli/fzf/config.json}"
 
-	if [ -f "$json_config" ]; then
+	if [ -f "$config" ] && [ -r "$config" ]; then
 		# JSON config exists - read directly
-		cat "$json_config" | jq -r "$profile_list_jq" | column -t -s $'\t'
+		cat "$config" | jq -r "$profile_list_jq" | column -t -s $'\t'
 	else
 		# No JSON config - parse AWS config via Python script
 		"$_aws_sso_cmd_source_dir/aws_sso.py" |
