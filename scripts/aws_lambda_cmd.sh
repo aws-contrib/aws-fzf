@@ -175,7 +175,7 @@ copy-name)
 	shift
 	_aws_lambda_copy_name "$@"
 	;;
---help | -h | help | "")
+--help | -h | "")
 	cat <<'EOF'
 aws_lambda_cmd - Utility commands for Lambda operations
 

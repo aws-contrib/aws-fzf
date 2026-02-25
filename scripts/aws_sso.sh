@@ -41,11 +41,14 @@ _aws_sso_profile_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "SSO_PROFILE"
 
+	local aws_context
+	aws_context=$(_get_aws_context)
+
 	# Display in fzf with keybindings
 	# Note: enter returns just the profile name (first column) for script usage
 	echo "$profile_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
-		--footer "$_fzf_icon SSO Profiles" \
+		--footer "$_fzf_icon SSO Profiles $_fzf_split $aws_context" \
 		--preview "$_aws_sso_source_dir/aws_sso_cmd.sh help" \
 		--bind "ctrl-r:reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
 		--bind "ctrl-o:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh open {1})" \

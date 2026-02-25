@@ -124,7 +124,7 @@ _aws_log_read() {
 		--log-group-name "$log_group_name"
 		--start-time "$log_start_time"
 		--end-time "$log_end_time"
-		--limit 10000
+		--limit "${FZF_AWS_LOG_LIMIT:-10000}"
 		--output json
 	)
 
@@ -302,7 +302,7 @@ _aws_log_stream_list_cmd() {
 	                      (.logStreams[] | [.logStreamName, (.lastEventTimestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), (.lastIngestionTime / 1000 | strftime("%Y-%m-%d %H:%M:%S"))] | @tsv)'
 
 	# Fetch and format CloudWatch log streams (without gum spin - caller handles that)
-	aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items 1000 "${list_args[@]}" --output json |
+	aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items "${FZF_AWS_LOG_MAX_ITEMS:-1000}" "${list_args[@]}" --output json |
 		jq -r "$stream_list_jq" | column -t -s $'\t'
 }
 

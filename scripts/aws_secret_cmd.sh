@@ -215,7 +215,7 @@ copy-name)
 	shift
 	_aws_secret_copy_name "$@"
 	;;
---help | -h | help | "")
+--help | -h | "")
 	cat <<'EOF'
 aws_secret_cmd - Utility commands for Secrets Manager operations
 

@@ -228,7 +228,7 @@ copy-name)
 	shift
 	_aws_param_copy_name "$@"
 	;;
---help | -h | help | "")
+--help | -h | "")
 	cat <<'EOF'
 aws_param_cmd - Utility commands for Parameter Store operations
 

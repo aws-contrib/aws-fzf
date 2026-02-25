@@ -109,7 +109,7 @@ _aws_dsql_connect_cluster() {
 		gum spin --title "Generating IAM Auth Token..." -- \
 			aws dsql generate-db-connect-admin-auth-token \
 			--region "$region" \
-			--expires-in 3600 \
+			--expires-in "${FZF_AWS_DSQL_TOKEN_TTL:-3600}" \
 			--hostname "$endpoint"
 	) || true
 
@@ -264,7 +264,7 @@ copy-cluster-name)
 	shift
 	_aws_dsql_copy_cluster_name "$@"
 	;;
---help | -h | help | "")
+--help | -h | "")
 	cat <<'EOF'
 aws_dsql_cmd - Utility commands for DSQL operations
 

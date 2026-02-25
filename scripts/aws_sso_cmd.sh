@@ -54,7 +54,7 @@ _aws_sso_profile_list_cmd() {
 
 	if [ -f "$config" ] && [ -r "$config" ]; then
 		# JSON config exists - read directly
-		cat "$config" | jq -r "$profile_list_jq" | column -t -s $'\t'
+		jq -r "$profile_list_jq" "$config" | column -t -s $'\t'
 	else
 		# No JSON config - parse AWS config via Python script
 		"$_aws_sso_cmd_source_dir/aws_sso.py" |
@@ -270,7 +270,7 @@ copy-account-id)
 	shift
 	_aws_sso_copy_account_id "$@"
 	;;
---help | -h | help | "")
+--help | -h | "")
 	cat <<'EOF'
 aws_sso_cmd - Utility commands for SSO operations
 

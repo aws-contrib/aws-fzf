@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # Fzf icon for AWS services
-_fzf_icon=" "
+readonly _fzf_icon=" "
 # Fzf field separator
-_fzf_split="·"
+readonly _fzf_split="·"
 # _aws_fzf_options()
 #
 # Build fzf options array with user-provided flags

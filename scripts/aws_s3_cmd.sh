@@ -275,7 +275,7 @@ _aws_s3_object_list_cmd() {
 	                      ([.Contents[]? // []] | map([.Key, .Size, .StorageClass, (.LastModified[0:19] | gsub("T"; " "))])) | .[] | @tsv'
 
 	# Fetch and format S3 objects (without gum spin - caller handles that)
-	aws s3api list-objects-v2 --bucket "$bucket" --max-items 1000 "${list_args[@]}" --output json |
+	aws s3api list-objects-v2 --bucket "$bucket" --max-items "${FZF_AWS_S3_MAX_ITEMS:-1000}" "${list_args[@]}" --output json |
 		jq -r "$object_list_jq" | column -t -s $'\t'
 }
 

@@ -197,7 +197,7 @@ copy-name)
 	shift
 	_aws_dynamodb_copy_name "$@"
 	;;
---help | -h | help | "")
+--help | -h | "")
 	cat <<'EOF'
 aws_dynamodb_cmd - Utility commands for DynamoDB operations
 
