@@ -72,7 +72,7 @@ _aws_fzf_options() {
 		local cmd_flags="${!var_name}"
 		if [[ -n "$cmd_flags" ]]; then
 			local cmd_flags_array=()
-			read -ra cmd_flags_array <<<"$cmd_flags"
+			eval "cmd_flags_array=($cmd_flags)"
 			_fzf_options+=("${cmd_flags_array[@]}")
 		fi
 	fi
