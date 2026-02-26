@@ -63,6 +63,7 @@ def parse_sso_profiles(config_file=None):
             'sso_region': config[section].get('sso_region', None),
             'sso_start_url': config[section].get('sso_start_url', None),
             'name': config[section].get('name', None),
+            'type': config[section].get('type', None),
         }
 
         sso_profiles.append(sso_profile)
