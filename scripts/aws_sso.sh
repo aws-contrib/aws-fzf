@@ -55,7 +55,7 @@ _aws_sso_profile_list() {
         --footer "$_fzf_icon SSO Profiles" \
         --preview "$_aws_sso_source_dir/aws_sso_cmd.sh preview" \
         --bind "ctrl-r:reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
-        --bind "ctrl-o:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh open {1})" \
+        --bind "ctrl-o:execute($_aws_sso_source_dir/aws_sso_cmd.sh open {1})+abort" \
         --bind "alt-enter:execute($_aws_sso_source_dir/aws_sso_cmd.sh login {1})+abort" \
         --bind "alt-n:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-profile-name {1})" \
         --bind "alt-a:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-account-id {1})" \
@@ -83,7 +83,7 @@ KEYBOARD SHORTCUTS:
     enter       Return selected profile name (default fzf behavior)
     alt-enter   Login to selected profile (opens browser for SSO, then exits fzf)
     ctrl-r      Reload the profile list
-    ctrl-o      Open AWS console in browser (bypasses account selection)
+    ctrl-o      Open AWS console in browser and exit (bypasses account selection)
     alt-n       Copy profile name to clipboard
     alt-a       Copy account ID to clipboard
     alt-x       Logout from selected profile (then reload list)
