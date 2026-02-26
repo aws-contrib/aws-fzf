@@ -138,25 +138,8 @@ EXAMPLES:
     aws fzf --height 50% sso profile list
 
 CONFIGURATION:
-    SSO profiles can be configured in two ways:
-
-    1. JSON Configuration (Preferred):
-       Create ~/.aws/cli/fzf/config.json with the following format:
-
-       {
-         "profiles": [
-           {
-             "profile": "my-sso-profile",
-             "sso_account_id": "123456789012",
-             "sso_role_name": "AdministratorAccess",
-             "sso_region": "us-east-1",
-             "sso_start_url": "https://my-org.awsapps.com/start"
-           }
-         ]
-       }
-
-    2. AWS Config (Fallback):
-       If JSON config is not found, profiles are read from ~/.aws/config:
+    SSO profiles are read from ~/.aws/config. Any profile with
+    'sso_start_url' configured is discovered automatically:
 
        [profile my-sso-profile]
        sso_start_url = https://my-org.awsapps.com/start
@@ -165,9 +148,6 @@ CONFIGURATION:
        sso_role_name = AdministratorAccess
 
 ENVIRONMENT VARIABLES:
-    AWS_SSO_CONFIG_FILE    Override JSON config file location
-                           (default: ~/.aws/cli/fzf/config.json)
-
     AWS_CONFIG_FILE        Override AWS config file location
                            (default: ~/.aws/config)
 

@@ -48,18 +48,8 @@ _aws_sso_profile_list_cmd() {
 	local profile_list_jq='(["PROFILE", "ACCOUNT", "ROLE", "REGION", "SSO_URL"] | @tsv),
 	                       (.profiles[] | [.profile, (.sso_account_id // "N/A"), (.sso_role_name // "N/A"), (.sso_region // "N/A"), .sso_start_url] | @tsv)'
 
-	# Determine config source
-	# Priority: AWS_SSO_CONFIG_FILE env var -> ~/.aws/cli/fzf/config.json -> ~/.aws/config (via Python)
-	local config="${AWS_SSO_CONFIG_FILE:-$HOME/.aws/cli/fzf/config.json}"
-
-	if [ -f "$config" ] && [ -r "$config" ]; then
-		# JSON config exists - read directly
-		jq -r "$profile_list_jq" "$config" | column -t -s $'\t'
-	else
-		# No JSON config - parse AWS config via Python script
-		"$_aws_sso_cmd_source_dir/aws_sso.py" |
-			jq -r "$profile_list_jq" | column -t -s $'\t'
-	fi
+	"$_aws_sso_cmd_source_dir/aws_sso.py" |
+		jq -r "$profile_list_jq" | column -t -s $'\t'
 }
 
 # _aws_sso_login()

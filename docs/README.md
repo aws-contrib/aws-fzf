@@ -184,7 +184,6 @@ Override fzf options for specific commands using `FZF_AWS_<SERVICE>_<RESOURCE>_O
 | `FZF_AWS_LOG_MAX_ITEMS` | Max log streams to list                          | `1000`                          |
 | `FZF_AWS_S3_MAX_ITEMS`  | Max S3 objects to list per bucket                | `1000`                          |
 | `FZF_AWS_DSQL_TOKEN_TTL`| DSQL auth token TTL in seconds                   | `3600`                          |
-| `AWS_SSO_CONFIG_FILE`   | Override SSO JSON config file location            | `~/.aws/cli/fzf/config.json`   |
 | `DEBUG`                 | Enable debug tracing (`set -x`) when set          | (unset)                         |
 
 #### Precedence
@@ -920,32 +919,7 @@ aws fzf sso profile list --region us-east-1
 
 #### Configuration
 
-SSO profiles can be configured in two ways:
-
-**JSON config file** (`~/.aws/cli/fzf/config.json`):
-
-```json
-{
-  "profiles": [
-    {
-      "profile": "dev",
-      "sso_account_id": "123456789012",
-      "sso_role_name": "DeveloperAccess",
-      "sso_region": "us-east-1",
-      "sso_start_url": "https://my-org.awsapps.com/start"
-    },
-    {
-      "profile": "prod",
-      "sso_account_id": "987654321098",
-      "sso_role_name": "ReadOnlyAccess",
-      "sso_region": "us-east-1",
-      "sso_start_url": "https://my-org.awsapps.com/start"
-    }
-  ]
-}
-```
-
-Override the config file location with the `AWS_SSO_CONFIG_FILE` environment variable.
+SSO profiles are read from `~/.aws/config`. Any profile with `sso_start_url` configured is discovered automatically:
 
 **AWS CLI config** (`~/.aws/config`):
 
