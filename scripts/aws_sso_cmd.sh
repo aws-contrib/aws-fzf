@@ -43,13 +43,8 @@ source "$_aws_sso_cmd_source_dir/aws_core.sh"
 #   formats output for fzf consumption.
 #
 _aws_sso_profile_list_cmd() {
-	# Define jq formatting (consistent with other aws-fzf commands)
-	# Using snake_case field names to match AWS config conventions
-	local profile_list_jq='(["PROFILE", "NAME", "TYPE", "ACCOUNT", "ROLE", "REGION"] | @tsv),
-	                       (.profiles[] | [.profile, (.name // "NONE"), (.type // "NONE"), (.sso_account_id // "N/A"), (.sso_role_name // "N/A"), (.sso_region // "N/A")] | @tsv)'
-
-	"$_aws_sso_cmd_source_dir/aws_sso.py" |
-		jq -r "$profile_list_jq" | column -t -s $'\t'
+	local config_file="${AWS_CONFIG_FILE:-$HOME/.aws/config}"
+	awk -f "$_aws_sso_cmd_source_dir/aws_sso.awk" "$config_file" | column -t -s $'\t'
 }
 
 # _aws_sso_login()
