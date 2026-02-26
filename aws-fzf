@@ -289,7 +289,7 @@ main() {
 
 	# Export fzf flags for aws_core.sh to use
 	if [[ ${#fzf_flags[@]} -gt 0 ]]; then
-		export FZF_AWS_FLAGS="${fzf_flags[*]}"
+		export FZF_AWS_FLAGS="$(printf '%q ' "${fzf_flags[@]}")"
 	fi
 
 	# Dispatch to service with remaining args

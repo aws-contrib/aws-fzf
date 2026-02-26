@@ -62,7 +62,7 @@ _aws_fzf_options() {
 	# Add user-provided fzf flags (global)
 	if [[ -n "${FZF_AWS_FLAGS:-}" ]]; then
 		local user_flags=()
-		read -ra user_flags <<<"$FZF_AWS_FLAGS"
+		eval "user_flags=($FZF_AWS_FLAGS)"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 
