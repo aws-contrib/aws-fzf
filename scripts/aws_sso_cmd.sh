@@ -133,6 +133,9 @@ _aws_sso_open() {
 	local role_name
 	role_name=$(aws configure get sso_role_name --profile "$profile" 2>/dev/null) || true
 
+	local region
+	region=$(aws configure get region --profile "$profile" 2>/dev/null) || true
+
 	if [ -z "$sso_url" ]; then
 		gum log --level error "SSO start URL not found for profile: $profile"
 		exit 1
@@ -144,7 +147,7 @@ _aws_sso_open() {
 	fi
 
 	# Construct console URL with account and role to bypass account selection
-	local console_url="${sso_url}#/console?account_id=${account_id}&role_name=${role_name}"
+	local console_url="${sso_url}#/console?account_id=${account_id}&region=${region}&role_name=${role_name}"
 	_open_url "$console_url"
 }
 
