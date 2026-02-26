@@ -285,7 +285,7 @@ list)
 	shift
 	_aws_dsql_cluster_list_cmd "$@"
 	;;
-help)
+--preview-help)
 	_aws_dsql_help_interactive
 	;;
 view-cluster)

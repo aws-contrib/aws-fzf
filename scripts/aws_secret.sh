@@ -58,7 +58,7 @@ _aws_secret_list() {
 	echo "$secrets_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Secret Manager Secrets $_fzf_split $aws_context" \
-		--preview "$_aws_secret_source_dir/aws_secret_cmd.sh help" \
+		--preview "$_aws_secret_source_dir/aws_secret_cmd.sh --preview-help" \
 		--bind "ctrl-r:reload($_aws_secret_source_dir/aws_secret_cmd.sh list ${list_secrets_args[*]})" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \

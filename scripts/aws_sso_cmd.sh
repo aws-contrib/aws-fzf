@@ -287,7 +287,7 @@ list)
 	shift
 	_aws_sso_profile_list_cmd "$@"
 	;;
-help)
+--preview-help)
 	_aws_sso_help_interactive
 	;;
 login)

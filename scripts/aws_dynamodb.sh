@@ -58,7 +58,7 @@ _aws_dynamodb_table_list() {
 	echo "$table_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon DynamoDB Tables $_fzf_split $aws_context" \
-		--preview "$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh help" \
+		--preview "$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh --preview-help" \
 		--bind "ctrl-r:reload($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh list ${list_tables_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "alt-enter:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \

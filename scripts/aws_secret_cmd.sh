@@ -240,7 +240,7 @@ list)
 	shift
 	_aws_secret_list_cmd "$@"
 	;;
-help)
+--preview-help)
 	_aws_secret_help_interactive
 	;;
 copy-value)

@@ -58,7 +58,7 @@ _aws_lambda_list() {
 	echo "$function_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
-		--preview "$_aws_lambda_source_dir/aws_lambda_cmd.sh help" \
+		--preview "$_aws_lambda_source_dir/aws_lambda_cmd.sh --preview-help" \
 		--bind "ctrl-r:reload($_aws_lambda_source_dir/aws_lambda_cmd.sh list ${list_functions_args[*]})" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
