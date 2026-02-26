@@ -222,7 +222,7 @@ list)
 	shift
 	_aws_dynamodb_table_list_cmd "$@"
 	;;
---preview-help)
+preview)
 	_aws_dynamodb_help_interactive
 	;;
 view-table)

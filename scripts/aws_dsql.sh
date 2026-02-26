@@ -58,7 +58,7 @@ _aws_dsql_cluster_list() {
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon DSQL Clusters $_fzf_split $aws_context" \
-		--preview "$_aws_dsql_source_dir/aws_dsql_cmd.sh --preview-help" \
+		--preview "$_aws_dsql_source_dir/aws_dsql_cmd.sh preview" \
 		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${list_clusters_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq . | gum pager)" \

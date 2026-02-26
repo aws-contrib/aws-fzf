@@ -199,7 +199,7 @@ list)
 	shift
 	_aws_lambda_list_cmd "$@"
 	;;
---preview-help)
+preview)
 	_aws_lambda_help_interactive
 	;;
 view-function)

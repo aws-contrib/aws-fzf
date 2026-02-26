@@ -56,7 +56,7 @@ _aws_sso_profile_list() {
 	echo "$profile_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon SSO Profiles $_fzf_split $aws_context" \
-		--preview "$_aws_sso_source_dir/aws_sso_cmd.sh --preview-help" \
+		--preview "$_aws_sso_source_dir/aws_sso_cmd.sh preview" \
 		--bind "ctrl-r:reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
 		--bind "ctrl-o:execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh open {1})" \
 		--bind "alt-enter:execute($_aws_sso_source_dir/aws_sso_cmd.sh login {1})+abort" \

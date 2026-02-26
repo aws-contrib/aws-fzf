@@ -253,7 +253,7 @@ list)
 	shift
 	_aws_param_list_cmd "$@"
 	;;
---preview-help)
+preview)
 	_aws_param_help_interactive
 	;;
 copy-value)
