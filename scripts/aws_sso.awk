@@ -42,8 +42,8 @@ profile != "" && /=/ {
 # Extra params after the space are local variables (idiomatic awk)
 function flush(    n, t, a, r, g) {
 	if (profile != "" && sso_url != "") {
-		n = (name    != "") ? name    : "NONE"
-		t = (type    != "") ? type    : "NONE"
+		n = (name    != "") ? name    : "N/A"
+		t = (type    != "") ? type    : "N/A"
 		a = (account != "") ? account : "N/A"
 		r = (role    != "") ? role    : "N/A"
 		g = (region  != "") ? region  : "N/A"
