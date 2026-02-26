@@ -33,7 +33,7 @@ profile != "" && /=/ {
 	if (k == "sso_start_url")  sso_url = v
 	if (k == "sso_account_id") account  = v
 	if (k == "sso_role_name")  role     = v
-	if (k == "sso_region")     region   = v
+	if (k == "region")         region   = v
 	if (k == "name")           name     = v
 	if (k == "type")           type     = v
 }
