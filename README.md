@@ -8,7 +8,7 @@ An interactive terminal UI for AWS that lets you quickly discover, inspect, and 
 ## Prerequisites
 
 - [AWS CLI](https://docs.aws.amazon.com/cli/) (`aws`) — `brew install awscli`
-- [Fzf](https://github.com/junegunn/fzf) (`fzf`) — `brew install fzf`
+- [Fzf](https://github.com/junegunn/fzf) (`fzf >= 0.58.0`) — `brew install fzf`
 - [Jq](https://github.com/jqlang/jq) (`jq`) — `brew install jq`
 - [Gum](https://github.com/charmbracelet/gum) (`gum`) — `brew install gum`
 

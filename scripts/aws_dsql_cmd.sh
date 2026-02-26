@@ -304,7 +304,7 @@ copy-cluster-name)
 	shift
 	_aws_dsql_copy_cluster_name "$@"
 	;;
---help | -h | "")
+--help | -h | help | "")
 	_aws_dsql_cmd_help
 	;;
 *)

@@ -492,7 +492,7 @@ _aws_ecs_task_list_cmd() {
 
 	# Task list jq formatting
 	local task_list_jq='[["ARN", "DEFINITION", "DESIRED STATUS", "ACTUAL STATUS"]] +
-											([.[].tasks[]] | map([.taskArn, .taskDefinitionArn, .desiredStatus, .healthStatus])) | .[] | @tsv'
+											([.[].tasks[]] | map([.taskArn, .taskDefinitionArn, .desiredStatus, .lastStatus])) | .[] | @tsv'
 
 	# Fetch and format ECS tasks (without gum spin - caller handles that)
 	_aws_ecs_batch_describe_tasks "$cluster" "${list_args[@]}" |

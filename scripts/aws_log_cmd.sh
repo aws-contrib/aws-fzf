@@ -116,8 +116,10 @@ _aws_log_read() {
 		exit 1
 	fi
 
-	log_end_time=$(date +%s)000
-	log_start_time=$((($(date +%s) - seconds) * 1000))
+	local now
+	now=$(date +%s)
+	log_end_time=$((now))000
+	log_start_time=$(((now - seconds) * 1000))
 
 	log_tail_cmd=(
 		aws logs filter-log-events
@@ -133,8 +135,8 @@ _aws_log_read() {
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	# Execute command and pipe through jq
-	"${log_tail_cmd[@]}" | jq -r -f "$_aws_log_cmd_source_dir/aws_log.jq"
+	# Execute command and pipe through jq and pager
+	"${log_tail_cmd[@]}" | jq -r -f "$_aws_log_cmd_source_dir/aws_log.jq" | gum pager
 }
 
 # _aws_log_view_stream()
@@ -299,7 +301,7 @@ _aws_log_stream_list_cmd() {
 
 	# Define jq formatting for stream list
 	local stream_list_jq='(["NAME", "LAST EVENT", "INGESTED"] | @tsv),
-	                      (.logStreams[] | [.logStreamName, (.lastEventTimestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), (.lastIngestionTime / 1000 | strftime("%Y-%m-%d %H:%M:%S"))] | @tsv)'
+	                      (.logStreams[] | [.logStreamName, (if .lastEventTimestamp then (.lastEventTimestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")) else "N/A" end), (if .lastIngestionTime then (.lastIngestionTime / 1000 | strftime("%Y-%m-%d %H:%M:%S")) else "N/A" end)] | @tsv)'
 
 	# Fetch and format CloudWatch log streams (without gum spin - caller handles that)
 	aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items "${FZF_AWS_LOG_MAX_ITEMS:-1000}" "${list_args[@]}" --output json |
@@ -323,7 +325,6 @@ _aws_log_group_help_interactive() {
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
-| **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-enter`** | List streams |
 | **`alt-t`** | Tail logs |

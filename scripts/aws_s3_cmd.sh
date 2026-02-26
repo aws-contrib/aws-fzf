@@ -72,7 +72,7 @@ _aws_s3_view_object() {
 	region=$(_get_aws_region)
 
 	local encoded_key
-	encoded_key=$(echo "$key" | jq -sRr @uri)
+	encoded_key=$(printf '%s' "$key" | jq -sRr @uri)
 
 	_open_url "https://s3.console.aws.amazon.com/s3/object/${bucket}?region=${region}&prefix=${encoded_key}"
 }
@@ -272,7 +272,7 @@ _aws_s3_object_list_cmd() {
 
 	# Define jq formatting for object list
 	local object_list_jq='[["KEY", "SIZE", "STORAGE CLASS", "MODIFIED"]] +
-	                      ([.Contents[]? // []] | map([.Key, .Size, .StorageClass, (.LastModified[0:19] | gsub("T"; " "))])) | .[] | @tsv'
+	                      ([.Contents[]?] | map([.Key, .Size, .StorageClass, (.LastModified[0:19] | gsub("T"; " "))])) | .[] | @tsv'
 
 	# Fetch and format S3 objects (without gum spin - caller handles that)
 	aws s3api list-objects-v2 --bucket "$bucket" --max-items "${FZF_AWS_S3_MAX_ITEMS:-1000}" "${list_args[@]}" --output json |

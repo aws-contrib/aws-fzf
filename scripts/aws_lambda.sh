@@ -62,8 +62,8 @@ _aws_lambda_list() {
 		--bind "ctrl-r:reload($_aws_lambda_source_dir/aws_lambda_cmd.sh list ${list_functions_args[*]})" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
-		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})+abort" \
-		--bind "alt-l:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})+abort" \
+		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})" \
+		--bind "alt-l:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})" \
 		--bind "alt-a:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-arn {1})" \
 		--bind "alt-n:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-name {1})" \
 		--bind "alt-h:toggle-preview"
@@ -93,6 +93,7 @@ KEYBOARD SHORTCUTS:
         enter       Show function details (configuration, code, etc.)
         ctrl-o      Open function in AWS Console
         alt-t       Tail function logs from CloudWatch
+        alt-l       View historical logs from CloudWatch
         alt-a       Copy function ARN to clipboard
         alt-n       Copy function name to clipboard
 

@@ -241,7 +241,7 @@ copy-name)
 	shift
 	_aws_dynamodb_copy_name "$@"
 	;;
---help | -h | "")
+--help | -h | help | "")
 	_aws_dynamodb_cmd_help
 	;;
 *)

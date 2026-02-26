@@ -272,7 +272,7 @@ copy-name)
 	shift
 	_aws_param_copy_name "$@"
 	;;
---help | -h | "")
+--help | -h | help | "")
 	_aws_param_cmd_help
 	;;
 *)

@@ -310,7 +310,7 @@ copy-account-id)
 	shift
 	_aws_sso_copy_account_id "$@"
 	;;
---help | -h | "")
+--help | -h | help | "")
 	_aws_sso_cmd_help
 	;;
 *)

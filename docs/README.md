@@ -30,7 +30,7 @@ Install dependencies:
 
 ```bash
 # macOS
-brew install awscli fzf jq gum
+brew install awscli fzf jq gum  # fzf >= 0.58.0 required
 
 # Linux
 # See respective project documentation for installation
@@ -307,6 +307,7 @@ Additional service-specific keybindings are documented below.
 | `enter`  | Show function configuration     |
 | `ctrl-o` | Open function in AWS Console    |
 | `alt-t`  | Tail function logs in real-time |
+| `alt-l`  | Read historical logs            |
 | `alt-a`  | Copy function ARN to clipboard  |
 | `alt-n`  | Copy function name to clipboard |
 
@@ -318,6 +319,7 @@ Additional service-specific keybindings are documented below.
 | ----------- | -------------------------------- |
 | `ctrl-o`    | Open log group in AWS Console    |
 | `alt-t`     | Tail all streams in log group    |
+| `alt-l`     | Read historical logs             |
 | `alt-enter` | List streams in log group        |
 | `alt-a`     | Copy log group ARN to clipboard  |
 | `alt-n`     | Copy log group name to clipboard |
@@ -329,6 +331,7 @@ Additional service-specific keybindings are documented below.
 | `enter`  | View stream metadata              |
 | `ctrl-o` | Open log stream in AWS Console    |
 | `alt-t`  | Tail logs from this stream        |
+| `alt-l`  | Read historical logs from stream  |
 | `alt-a`  | Copy log stream ARN to clipboard  |
 | `alt-n`  | Copy log stream name to clipboard |
 

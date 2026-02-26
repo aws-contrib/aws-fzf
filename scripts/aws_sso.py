@@ -5,9 +5,6 @@ aws_sso.py - Fast AWS SSO profile parser
 Parses ~/.aws/config to extract SSO profiles and their metadata.
 Much faster than calling 'aws configure get' multiple times per profile.
 Outputs JSON for consumption by jq (consistent with other aws-fzf commands).
-
-Note: For JSON config support, use bash to cat the JSON file directly.
-This script only handles AWS config file parsing.
 """
 
 import configparser

@@ -259,7 +259,7 @@ copy-name)
 	shift
 	_aws_secret_copy_name "$@"
 	;;
---help | -h | "")
+--help | -h | help | "")
 	_aws_secret_cmd_help
 	;;
 *)

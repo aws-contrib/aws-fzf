@@ -120,7 +120,7 @@ _aws_lambda_help_interactive() {
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-t`** | Tail logs |
-| **`alt-l`** | View logs |
+| **`alt-l`** | Read logs |
 | **`alt-a`** | Copy ARN |
 | **`alt-n`** | Copy name |
 | **`alt-h`** | Toggle help |
@@ -214,7 +214,7 @@ copy-name)
 	shift
 	_aws_lambda_copy_name "$@"
 	;;
---help | -h | "")
+--help | -h | help | "")
 	_aws_lambda_cmd_help
 	;;
 *)

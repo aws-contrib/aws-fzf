@@ -11,7 +11,13 @@ _check_dependencies() {
 		missing+=("aws     — https://docs.aws.amazon.com/cli/")
 	fi
 	if ! command -v fzf &>/dev/null; then
-		missing+=("fzf     — https://github.com/junegunn/fzf")
+		missing+=("fzf >= 0.58.0 — https://github.com/junegunn/fzf")
+	else
+		local fzf_version
+		fzf_version=$(fzf --version | awk '{print $1}')
+		if [[ "$(printf '%s\n' "0.58.0" "$fzf_version" | sort -V | head -n1)" != "0.58.0" ]]; then
+			missing+=("fzf >= 0.58.0 (found $fzf_version) — https://github.com/junegunn/fzf")
+		fi
 	fi
 	if ! command -v jq &>/dev/null; then
 		missing+=("jq      — https://github.com/jqlang/jq")
@@ -123,8 +129,6 @@ ENVIRONMENT VARIABLES:
 
     Other variables:
 
-    AWS_SSO_CONFIG_FILE             Override SSO JSON config file location
-                                    (default: ~/.aws/cli/fzf/config.json)
     DEBUG                           Set to any value to enable debug tracing (set -x)
 
     Examples:
@@ -219,7 +223,7 @@ EXAMPLES:
     aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
 
 DEPENDENCIES:
-    Required: aws, fzf, jq, gum
+    Required: aws, fzf (>= 0.58.0), jq, gum
     Optional: pbcopy/xclip/xsel/wl-copy (for clipboard support)
 
 SEE ALSO:
@@ -285,8 +289,7 @@ main() {
 
 	# Export fzf flags for aws_core.sh to use
 	if [[ ${#fzf_flags[@]} -gt 0 ]]; then
-		# Use printf %q to properly quote each element for safe eval
-		export FZF_AWS_FLAGS="$(printf '%q ' "${fzf_flags[@]}")"
+		export FZF_AWS_FLAGS="${fzf_flags[*]}"
 	fi
 
 	# Dispatch to service with remaining args

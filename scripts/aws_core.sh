@@ -8,6 +8,7 @@ _AWS_FZF_CORE_SOURCED=1
 readonly _fzf_icon=" "
 # Fzf field separator
 readonly _fzf_split="·"
+
 # _aws_fzf_options()
 #
 # Build fzf options array with user-provided flags
@@ -59,10 +60,9 @@ _aws_fzf_options() {
 	)
 
 	# Add user-provided fzf flags (global)
-	# FZF_AWS_FLAGS is encoded with printf %q in main(), so use eval to decode it
-	if [[ -n "$FZF_AWS_FLAGS" ]]; then
+	if [[ -n "${FZF_AWS_FLAGS:-}" ]]; then
 		local user_flags=()
-		eval "user_flags=($FZF_AWS_FLAGS)"
+		read -ra user_flags <<<"$FZF_AWS_FLAGS"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 
