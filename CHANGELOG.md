@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.0](https://github.com/aws-contrib/aws-fzf/compare/v0.2.0...v0.3.0) (2026-02-27)
+
+
+### Features
+
+* add region parameter to aws sso console url ([26947c6](https://github.com/aws-contrib/aws-fzf/commit/26947c6f8bf3c00275cc11018e21d970f2198da9))
+* add type field to sso profile list output ([7646b9c](https://github.com/aws-contrib/aws-fzf/commit/7646b9c96c6f2396345f6e9aa5f45a44ef7a0516))
+* replace sso_url with name field in sso profile list ([5e47649](https://github.com/aws-contrib/aws-fzf/commit/5e47649bd65f964e23aadd9cd0053688bdee0ad0))
+
+
+### Bug Fixes
+
+* add source guard and fix FZF_AWS_FLAGS parsing ([aa438bb](https://github.com/aws-contrib/aws-fzf/commit/aa438bb3b06fd00505e7982a6cfc4f593190e8c7))
+* correct aws sso region parameter name ([27f645f](https://github.com/aws-contrib/aws-fzf/commit/27f645fdd407831be9a8f25b56e943b8a2b63d9d))
+* make ctrl-o binding abort fzf after opening console ([9df0f63](https://github.com/aws-contrib/aws-fzf/commit/9df0f63af4c2547dd0b2a2874df5045aae3f533f))
+* properly escape and parse FZF_AWS_FLAGS environment variable ([676f361](https://github.com/aws-contrib/aws-fzf/commit/676f3618badcf8f95074c6d93f34397b23bc28f5))
+* replace "NONE" with "N/A" for consistency in aws_sso.awk ([0fe8faf](https://github.com/aws-contrib/aws-fzf/commit/0fe8fafece9ba9b8ce8ffdbbffb7f3dbbbc524dd))
+* replace read builtin with eval for robust flag parsing ([c125760](https://github.com/aws-contrib/aws-fzf/commit/c12576033717372fc2b147169f769d93c21ae00d))
+* resolve help)/--help) conflict in cmd files ([29927d8](https://github.com/aws-contrib/aws-fzf/commit/29927d863821223f0fa66004044bbc897088071b))
+* separate FZF_AWS_FLAGS declaration from assignment ([36879ee](https://github.com/aws-contrib/aws-fzf/commit/36879eeb4fa8b8baf1deb176702212a974970912))
+
 ## [0.2.0](https://github.com/aws-contrib/aws-fzf/compare/v0.1.0...v0.2.0) (2026-02-25)
 
 
