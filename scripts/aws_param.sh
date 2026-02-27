@@ -8,7 +8,7 @@ _aws_param_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_param_source_dir/aws_core.sh"
 
-# _aws_param_list()
+# _aws_aws_param_list()
 #
 # Interactive fuzzy finder for parameters
 #
@@ -23,17 +23,17 @@ source "$_aws_param_source_dir/aws_core.sh"
 #   0 - Success
 #   1 - Failure
 #
-_aws_param_list() {
-	local describe_params_args=("$@")
+_aws_aws_param_list() {
+	local aws_param_args=("$@")
 
-	local param_list
+	local aws_param_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format parameters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	param_list="$(
+	aws_param_list="$(
 		gum spin --title "Loading AWS System Manager Parameters..." -- \
-			"$_aws_param_source_dir/aws_param_cmd.sh" list "${describe_params_args[@]}"
+			"$_aws_param_source_dir/aws_param_cmd.sh" list "${aws_param_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -43,7 +43,7 @@ _aws_param_list() {
 	fi
 
 	# Check if any parameters were found
-	if [ -z "$param_list" ]; then
+	if [ -z "$aws_param_list" ]; then
 		gum log --level warn "No parameters found"
 		return 1
 	fi
@@ -57,12 +57,12 @@ _aws_param_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_param_source_dir/aws_param_cmd.sh list"
-	if [[ ${#describe_params_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${describe_params_args[@]}")"
+	if [[ ${#aws_param_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_param_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$param_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
 		--preview "$_aws_param_source_dir/aws_param_cmd.sh preview" \
@@ -169,7 +169,7 @@ _aws_param_main() {
 
 	case $subcommand in
 	list)
-		_aws_param_list "$@"
+		_aws_aws_param_list "$@"
 		;;
 	--help | -h | help | "")
 		_aws_param_help

@@ -8,7 +8,7 @@ _aws_log_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_log_source_dir/aws_core.sh"
 
-# _aws_log_group_list()
+# _aws_log_aws_log_group_list()
 #
 # Interactive fuzzy finder for CloudWatch log groups
 #
@@ -23,17 +23,17 @@ source "$_aws_log_source_dir/aws_core.sh"
 #   0 - Success
 #   1 - Failure
 #
-_aws_log_group_list() {
-	local list_groups_args=("$@")
+_aws_log_aws_log_group_list() {
+	local aws_log_group_args=("$@")
 
-	local group_list
+	local aws_log_group_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format log groups
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	group_list="$(
+	aws_log_group_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Groups..." -- \
-			"$_aws_log_source_dir/aws_log_cmd.sh" list-groups "${list_groups_args[@]}"
+			"$_aws_log_source_dir/aws_log_cmd.sh" list-groups "${aws_log_group_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -43,7 +43,7 @@ _aws_log_group_list() {
 	fi
 
 	# Check if any groups were found
-	if [ -z "$group_list" ]; then
+	if [ -z "$aws_log_group_list" ]; then
 		gum log --level warn "No log groups found"
 		return 1
 	fi
@@ -57,12 +57,12 @@ _aws_log_group_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_log_source_dir/aws_log_cmd.sh list-groups"
-	if [[ ${#list_groups_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_groups_args[@]}")"
+	if [[ ${#aws_log_group_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_log_group_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$group_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_log_group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context" \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-groups" \
@@ -76,7 +76,7 @@ _aws_log_group_list() {
 		--bind "alt-h:toggle-preview"
 }
 
-# _aws_log_stream_list()
+# _aws_log_aws_log_stream_list()
 #
 # Interactive fuzzy finder for CloudWatch log streams in a log group
 #
@@ -92,9 +92,9 @@ _aws_log_group_list() {
 #   0 - Success
 #   1 - Failure or missing log group name parameter
 #
-_aws_log_stream_list() {
+_aws_log_aws_log_stream_list() {
 	local log_group_name
-	local list_streams_args=()
+	local aws_log_stream_args=()
 	# Extract log group name from arguments
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
@@ -103,7 +103,7 @@ _aws_log_stream_list() {
 			shift 2
 			;;
 		*)
-			list_streams_args+=("$1")
+			aws_log_stream_args+=("$1")
 			shift
 			;;
 		esac
@@ -115,12 +115,12 @@ _aws_log_stream_list() {
 		return 1
 	fi
 
-	local stream_list
+	local aws_log_stream_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format log streams
-	stream_list="$(
+	aws_log_stream_list="$(
 		gum spin --title "Loading AWS CloudWatch Log Streams from $log_group_name..." -- \
-			"$_aws_log_source_dir/aws_log_cmd.sh" list-streams "$log_group_name" "${list_streams_args[@]}"
+			"$_aws_log_source_dir/aws_log_cmd.sh" list-streams "$log_group_name" "${aws_log_stream_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -129,7 +129,7 @@ _aws_log_stream_list() {
 		return 1
 	fi
 
-	if [ -z "$stream_list" ]; then
+	if [ -z "$aws_log_stream_list" ]; then
 		gum log --level warn "No log streams found in log group '$log_group_name'"
 		return 1
 	fi
@@ -143,12 +143,12 @@ _aws_log_stream_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_log_source_dir/aws_log_cmd.sh list-streams $(printf '%q' "$log_group_name")"
-	if [[ ${#list_streams_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_streams_args[@]}")"
+	if [[ ${#aws_log_stream_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_log_stream_args[@]}")"
 	fi
 
 	# Display stream list with keybindings
-	echo "$stream_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_log_stream_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-streams" \
@@ -271,7 +271,7 @@ _aws_log_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_log_group_list "$@"
+			_aws_log_aws_log_group_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_log_help
@@ -289,7 +289,7 @@ _aws_log_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_log_stream_list "$@"
+			_aws_log_aws_log_stream_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_log_help

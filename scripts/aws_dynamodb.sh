@@ -8,7 +8,7 @@ _aws_dynamodb_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_dynamodb_source_dir/aws_core.sh"
 
-# _aws_dynamodb_table_list()
+# _aws_dynamodb_aws_dynamodb_table_list()
 #
 # Interactive fuzzy finder for DynamoDB tables
 #
@@ -23,17 +23,17 @@ source "$_aws_dynamodb_source_dir/aws_core.sh"
 #   0 - Success
 #   1 - Failure
 #
-_aws_dynamodb_table_list() {
-	local list_tables_args=("$@")
+_aws_dynamodb_aws_dynamodb_table_list() {
+	local aws_dynamodb_table_args=("$@")
 
-	local table_list
+	local aws_dynamodb_table_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format tables
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	table_list="$(
+	aws_dynamodb_table_list="$(
 		gum spin --title "Loading AWS DynamoDB Tables..." -- \
-			"$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh" list "${list_tables_args[@]}"
+			"$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh" list "${aws_dynamodb_table_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -43,7 +43,7 @@ _aws_dynamodb_table_list() {
 	fi
 
 	# Check if any tables were found
-	if [ -z "$table_list" ]; then
+	if [ -z "$aws_dynamodb_table_list" ]; then
 		gum log --level warn "No DynamoDB tables found"
 		return 1
 	fi
@@ -55,11 +55,11 @@ _aws_dynamodb_table_list() {
 	_aws_fzf_options "DYNAMODB_TABLE"
 
 	# Display in fzf with keybindings
-	echo "$table_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_dynamodb_table_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon DynamoDB Tables $_fzf_split $aws_context" \
 		--preview "$_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh preview" \
-		--bind "ctrl-r:reload($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh list ${list_tables_args[*]})" \
+		--bind "ctrl-r:reload($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh list ${aws_dynamodb_table_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "alt-enter:execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
 		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq . | gum pager)" \
@@ -166,7 +166,7 @@ _aws_dynamodb_main() {
 		shift
 		case $action in
 		list)
-			_aws_dynamodb_table_list "$@"
+			_aws_dynamodb_aws_dynamodb_table_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_dynamodb_help

@@ -21,7 +21,7 @@ source "$_aws_s3_source_dir/aws_core.sh"
 #   - gum
 #   - Utility functions from aws_core.sh (clipboard)
 
-# _aws_s3_bucket_list()
+# _aws_s3_aws_s3_bucket_list()
 #
 # Interactive fuzzy finder for S3 buckets
 #
@@ -36,17 +36,17 @@ source "$_aws_s3_source_dir/aws_core.sh"
 #   0 - Success
 #   1 - Failure (no buckets found or AWS CLI error)
 #
-_aws_s3_bucket_list() {
-	local list_buckets_args=("$@")
+_aws_s3_aws_s3_bucket_list() {
+	local aws_s3_bucket_args=("$@")
 
-	local bucket_list
+	local aws_s3_bucket_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format buckets
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	bucket_list="$(
+	aws_s3_bucket_list="$(
 		gum spin --title "Loading AWS S3 Buckets..." -- \
-			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-buckets "${list_buckets_args[@]}"
+			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-buckets "${aws_s3_bucket_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -55,7 +55,7 @@ _aws_s3_bucket_list() {
 		return 1
 	fi
 
-	if [ -z "$bucket_list" ]; then
+	if [ -z "$aws_s3_bucket_list" ]; then
 		gum log --level warn "No S3 buckets found"
 		return 1
 	fi
@@ -69,12 +69,12 @@ _aws_s3_bucket_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_s3_source_dir/aws_s3_cmd.sh list-buckets"
-	if [[ ${#list_buckets_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_buckets_args[@]}")"
+	if [[ ${#aws_s3_bucket_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_s3_bucket_args[@]}")"
 	fi
 
 	# Display in fzf with bindings
-	echo "$bucket_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_s3_bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Buckets $_fzf_split $aws_context" \
 		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-buckets" \
@@ -86,7 +86,7 @@ _aws_s3_bucket_list() {
 		--bind "alt-h:toggle-preview"
 }
 
-# _aws_s3_object_list()
+# _aws_s3_aws_s3_object_list()
 #
 # Interactive fuzzy finder for S3 objects in a bucket
 #
@@ -102,9 +102,9 @@ _aws_s3_bucket_list() {
 #   0 - Success
 #   1 - Failure or missing bucket parameter
 #
-_aws_s3_object_list() {
+_aws_s3_aws_s3_object_list() {
 	local bucket
-	local list_objects_args=()
+	local aws_s3_object_args=()
 	# Extract bucket name from arguments
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
@@ -113,7 +113,7 @@ _aws_s3_object_list() {
 			shift 2
 			;;
 		*)
-			list_objects_args+=("$1")
+			aws_s3_object_args+=("$1")
 			shift
 			;;
 		esac
@@ -125,12 +125,12 @@ _aws_s3_object_list() {
 		return 1
 	fi
 
-	local object_list
+	local aws_s3_object_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format objects
-	object_list="$(
+	aws_s3_object_list="$(
 		gum spin --title "Loading AWS S3 Objects from $bucket..." -- \
-			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-objects "$bucket" "${list_objects_args[@]}"
+			"$_aws_s3_source_dir/aws_s3_cmd.sh" list-objects "$bucket" "${aws_s3_object_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -139,7 +139,7 @@ _aws_s3_object_list() {
 		return 1
 	fi
 
-	if [ -z "$object_list" ]; then
+	if [ -z "$aws_s3_object_list" ]; then
 		gum log --level warn "No objects found in bucket '$bucket'"
 		return 1
 	fi
@@ -153,12 +153,12 @@ _aws_s3_object_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_s3_source_dir/aws_s3_cmd.sh list-objects $(printf '%q' "$bucket")"
-	if [[ ${#list_objects_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_objects_args[@]}")"
+	if [[ ${#aws_s3_object_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_s3_object_args[@]}")"
 	fi
 
 	# Display object list with keybindings
-	echo "$object_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_s3_object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket" \
 		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-objects" \
@@ -264,7 +264,7 @@ _aws_s3_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_s3_bucket_list "$@"
+			_aws_s3_aws_s3_bucket_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_s3_help
@@ -282,7 +282,7 @@ _aws_s3_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_s3_object_list "$@"
+			_aws_s3_aws_s3_object_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_s3_help

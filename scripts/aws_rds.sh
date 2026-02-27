@@ -24,16 +24,16 @@ source "$_aws_rds_source_dir/aws_core.sh"
 #   1 - Failure
 #
 _aws_rds_instance_list() {
-	local list_instances_args=("$@")
+	local aws_rds_instance_args=("$@")
 
-	local instance_list
+	local aws_rds_instance_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format instances
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	instance_list="$(
+	aws_rds_instance_list="$(
 		gum spin --title "Loading AWS RDS Instances..." -- \
-			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-instances "${list_instances_args[@]}"
+			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-instances "${aws_rds_instance_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -43,7 +43,7 @@ _aws_rds_instance_list() {
 	fi
 
 	# Check if any instances were found
-	if [ -z "$instance_list" ]; then
+	if [ -z "$aws_rds_instance_list" ]; then
 		gum log --level warn "No RDS instances found"
 		return 1
 	fi
@@ -57,12 +57,12 @@ _aws_rds_instance_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_rds_source_dir/aws_rds_cmd.sh list-instances"
-	if [[ ${#list_instances_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_instances_args[@]}")"
+	if [[ ${#aws_rds_instance_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_rds_instance_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$instance_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_rds_instance_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Instances $_fzf_split $aws_context" \
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-instances" \
@@ -75,7 +75,7 @@ _aws_rds_instance_list() {
 		--bind "alt-h:toggle-preview"
 }
 
-# _aws_rds_cluster_list()
+# _aws_rds_aws_rds_cluster_list()
 #
 # Interactive fuzzy finder for RDS DB clusters (Aurora)
 #
@@ -90,17 +90,17 @@ _aws_rds_instance_list() {
 #   0 - Success
 #   1 - Failure
 #
-_aws_rds_cluster_list() {
-	local list_clusters_args=("$@")
+_aws_rds_aws_rds_cluster_list() {
+	local aws_rds_cluster_args=("$@")
 
-	local cluster_list
+	local aws_rds_cluster_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	cluster_list="$(
+	aws_rds_cluster_list="$(
 		gum spin --title "Loading AWS RDS Clusters..." -- \
-			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-clusters "${list_clusters_args[@]}"
+			"$_aws_rds_source_dir/aws_rds_cmd.sh" list-clusters "${aws_rds_cluster_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -110,7 +110,7 @@ _aws_rds_cluster_list() {
 	fi
 
 	# Check if any clusters were found
-	if [ -z "$cluster_list" ]; then
+	if [ -z "$aws_rds_cluster_list" ]; then
 		gum log --level warn "No RDS clusters found"
 		return 1
 	fi
@@ -124,12 +124,12 @@ _aws_rds_cluster_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_rds_source_dir/aws_rds_cmd.sh list-clusters"
-	if [[ ${#list_clusters_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_clusters_args[@]}")"
+	if [[ ${#aws_rds_cluster_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_rds_cluster_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_rds_cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Clusters $_fzf_split $aws_context" \
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-clusters" \
@@ -265,7 +265,7 @@ _aws_rds_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_rds_cluster_list "$@"
+			_aws_rds_aws_rds_cluster_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_rds_help

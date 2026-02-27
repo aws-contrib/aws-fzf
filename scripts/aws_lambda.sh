@@ -36,16 +36,16 @@ source "$_aws_lambda_source_dir/aws_core.sh"
 #   1 - Failure
 #
 _aws_lambda_list() {
-	local list_functions_args=("$@")
+	local aws_lambda_args=("$@")
 
-	local function_list
+	local aws_lambda_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format functions
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	function_list="$(
+	aws_lambda_list="$(
 		gum spin --title "Loading AWS Lambda Functions..." -- \
-			"$_aws_lambda_source_dir/aws_lambda_cmd.sh" list "${list_functions_args[@]}"
+			"$_aws_lambda_source_dir/aws_lambda_cmd.sh" list "${aws_lambda_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -55,7 +55,7 @@ _aws_lambda_list() {
 	fi
 
 	# Check if any functions were found
-	if [ -z "$function_list" ]; then
+	if [ -z "$aws_lambda_list" ]; then
 		gum log --level warn "No Lambda functions found"
 		return 1
 	fi
@@ -69,12 +69,12 @@ _aws_lambda_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_lambda_source_dir/aws_lambda_cmd.sh list"
-	if [[ ${#list_functions_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_functions_args[@]}")"
+	if [[ ${#aws_lambda_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_lambda_args[@]}")"
 	fi
 
 	# Display in fzf with keybindings
-	echo "$function_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_lambda_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
 		--preview "$_aws_lambda_source_dir/aws_lambda_cmd.sh preview" \

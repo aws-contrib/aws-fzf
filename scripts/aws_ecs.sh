@@ -38,16 +38,16 @@ source "$_aws_ecs_source_dir/aws_core.sh"
 #   1 - Failure
 #
 _aws_ecs_cluster_list() {
-	local list_clusters_args=("$@")
+	local aws_ecs_cluster_args=("$@")
 
-	local cluster_list
+	local aws_ecs_cluster_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	cluster_list="$(
+	aws_ecs_cluster_list="$(
 		gum spin --title "Loading AWS ECS Clusters..." -- \
-			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-clusters "${list_clusters_args[@]}"
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-clusters "${aws_ecs_cluster_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -57,7 +57,7 @@ _aws_ecs_cluster_list() {
 	fi
 
 	# Check if any clusters were found
-	if [ -z "$cluster_list" ]; then
+	if [ -z "$aws_ecs_cluster_list" ]; then
 		gum log --level warn "No clusters found"
 		return 1
 	fi
@@ -71,12 +71,12 @@ _aws_ecs_cluster_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters"
-	if [[ ${#list_clusters_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_clusters_args[@]}")"
+	if [[ ${#aws_ecs_cluster_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_ecs_cluster_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
-	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_ecs_cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Clusters $_fzf_split $aws_context" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-clusters" \
@@ -88,7 +88,7 @@ _aws_ecs_cluster_list() {
 		--bind "alt-h:toggle-preview"
 }
 
-# _aws_ecs_service_list()
+# _aws_ecs_aws_ecs_service_list()
 #
 # Interactive fuzzy finder for ECS services in a cluster
 #
@@ -104,9 +104,9 @@ _aws_ecs_cluster_list() {
 #   0 - Success
 #   1 - Failure or missing cluster parameter
 #
-_aws_ecs_service_list() {
+_aws_ecs_aws_ecs_service_list() {
 	local cluster
-	local list_services_args=()
+	local aws_ecs_service_args=()
 	# Extract cluster name from arguments
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
@@ -115,7 +115,7 @@ _aws_ecs_service_list() {
 			shift 2
 			;;
 		*)
-			list_services_args+=("$1")
+			aws_ecs_service_args+=("$1")
 			shift
 			;;
 		esac
@@ -127,12 +127,12 @@ _aws_ecs_service_list() {
 		return 1
 	fi
 
-	local service_list
+	local aws_ecs_service_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format services
-	service_list="$(
+	aws_ecs_service_list="$(
 		gum spin --title "Loading AWS ECS Services from $cluster..." -- \
-			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-services "$cluster" "${list_services_args[@]}"
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-services "$cluster" "${aws_ecs_service_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -141,7 +141,7 @@ _aws_ecs_service_list() {
 		return 1
 	fi
 
-	if [ -z "$service_list" ]; then
+	if [ -z "$aws_ecs_service_list" ]; then
 		gum log --level warn "No services found in cluster '$cluster'"
 		return 1
 	fi
@@ -155,12 +155,12 @@ _aws_ecs_service_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-services $(printf '%q' "$cluster")"
-	if [[ ${#list_services_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_services_args[@]}")"
+	if [[ ${#aws_ecs_service_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_ecs_service_args[@]}")"
 	fi
 
 	# Display service list with keybindings
-	echo "$service_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_ecs_service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-services" \
@@ -172,7 +172,7 @@ _aws_ecs_service_list() {
 		--bind "alt-h:toggle-preview"
 }
 
-# _aws_ecs_task_list()
+# _aws_ecs_aws_ecs_task_list()
 #
 # Interactive fuzzy finder for ECS tasks in a cluster
 #
@@ -188,9 +188,9 @@ _aws_ecs_service_list() {
 #   0 - Success
 #   1 - Failure or missing cluster parameter
 #
-_aws_ecs_task_list() {
+_aws_ecs_aws_ecs_task_list() {
 	local cluster
-	local list_tasks_args=()
+	local aws_ecs_task_args=()
 	# Extract cluster name from arguments
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
@@ -199,7 +199,7 @@ _aws_ecs_task_list() {
 			shift 2
 			;;
 		*)
-			list_tasks_args+=("$1")
+			aws_ecs_task_args+=("$1")
 			shift
 			;;
 		esac
@@ -211,12 +211,12 @@ _aws_ecs_task_list() {
 		return 1
 	fi
 
-	local task_list
+	local aws_ecs_task_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format tasks
-	task_list="$(
+	aws_ecs_task_list="$(
 		gum spin --title "Loading AWS ECS Tasks from $cluster..." -- \
-			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-tasks "$cluster" "${list_tasks_args[@]}"
+			"$_aws_ecs_source_dir/aws_ecs_cmd.sh" list-tasks "$cluster" "${aws_ecs_task_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -225,7 +225,7 @@ _aws_ecs_task_list() {
 		return 1
 	fi
 
-	if [ -z "$task_list" ]; then
+	if [ -z "$aws_ecs_task_list" ]; then
 		gum log --level warn "No tasks found in cluster '$cluster'"
 		return 1
 	fi
@@ -239,12 +239,12 @@ _aws_ecs_task_list() {
 	# Pre-build reload command with properly quoted args
 	local reload_cmd
 	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks $(printf '%q' "$cluster")"
-	if [[ ${#list_tasks_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${list_tasks_args[@]}")"
+	if [[ ${#aws_ecs_task_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${aws_ecs_task_args[@]}")"
 	fi
 
 	# Display task IDs with on-demand preview
-	echo "$task_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_ecs_task_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-tasks" \
@@ -375,7 +375,7 @@ _aws_ecs_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_ecs_service_list "$@"
+			_aws_ecs_aws_ecs_service_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_ecs_help
@@ -393,7 +393,7 @@ _aws_ecs_main() {
 		shift || true
 		case $action in
 		list)
-			_aws_ecs_task_list "$@"
+			_aws_ecs_aws_ecs_task_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_ecs_help

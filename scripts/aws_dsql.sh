@@ -8,7 +8,7 @@ _aws_dsql_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_dsql_source_dir/aws_core.sh"
 
-# _aws_dsql_cluster_list()
+# _aws_dsql_aws_dsql_cluster_list()
 #
 # Interactive fuzzy finder for DSQL clusters
 #
@@ -23,17 +23,17 @@ source "$_aws_dsql_source_dir/aws_core.sh"
 #   0 - Success
 #   1 - Failure
 #
-_aws_dsql_cluster_list() {
-	local list_clusters_args=("$@")
+_aws_dsql_aws_dsql_cluster_list() {
+	local aws_dsql_cluster_args=("$@")
 
-	local cluster_list
+	local aws_dsql_cluster_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format clusters
 	# shellcheck disable=SC2086
 	# shellcheck disable=SC2128
-	cluster_list="$(
+	aws_dsql_cluster_list="$(
 		gum spin --title "Loading AWS DSQL Clusters..." -- \
-			"$_aws_dsql_source_dir/aws_dsql_cmd.sh" list "${list_clusters_args[@]}"
+			"$_aws_dsql_source_dir/aws_dsql_cmd.sh" list "${aws_dsql_cluster_args[@]}"
 	)" || exit_code=$?
 
 	if [ $exit_code -ne 0 ]; then
@@ -43,7 +43,7 @@ _aws_dsql_cluster_list() {
 	fi
 
 	# Check if any clusters were found
-	if [ -z "$cluster_list" ]; then
+	if [ -z "$aws_dsql_cluster_list" ]; then
 		gum log --level warn "No DSQL clusters found"
 		return 1
 	fi
@@ -55,11 +55,11 @@ _aws_dsql_cluster_list() {
 	_aws_fzf_options "DSQL_CLUSTER"
 
 	# Display in fzf with full keybindings
-	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_dsql_cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon DSQL Clusters $_fzf_split $aws_context" \
 		--preview "$_aws_dsql_source_dir/aws_dsql_cmd.sh preview" \
-		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${list_clusters_args[*]})" \
+		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${aws_dsql_cluster_args[*]})" \
 		--bind "ctrl-o:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})" \
@@ -167,7 +167,7 @@ _aws_dsql_main() {
 		shift
 		case $action in
 		list)
-			_aws_dsql_cluster_list "$@"
+			_aws_dsql_aws_dsql_cluster_list "$@"
 			;;
 		--help | -h | help | "")
 			_aws_dsql_help

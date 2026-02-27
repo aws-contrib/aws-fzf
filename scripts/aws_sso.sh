@@ -24,10 +24,10 @@ source "$_aws_sso_source_dir/aws_core.sh"
 #   1 - Failure (no profiles found or error)
 #
 _aws_sso_profile_list() {
-	local profile_list
+	local aws_sso_profile_list
 	local exit_code=0
 	# Call the _cmd script to fetch and format SSO profiles
-	profile_list="$(
+	aws_sso_profile_list="$(
 		gum spin --title "Loading AWS SSO Profiles..." -- \
 			"$_aws_sso_source_dir/aws_sso_cmd.sh" list
 	)" || exit_code=$?
@@ -39,7 +39,7 @@ _aws_sso_profile_list() {
 	fi
 
 	# Check if any SSO profiles were found
-	if [ -z "$profile_list" ]; then
+	if [ -z "$aws_sso_profile_list" ]; then
 		gum log --level warn "No SSO profiles found in ~/.aws/config"
 		gum log --level info "SSO profiles must have 'sso_start_url' configured"
 		return 1
@@ -53,7 +53,7 @@ _aws_sso_profile_list() {
 
 	# Display in fzf with keybindings
 	# Note: enter returns just the profile name (first column) for script usage
-	echo "$profile_list" | fzf "${_fzf_options[@]}" \
+	echo "$aws_sso_profile_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon SSO Profiles $_fzf_split $aws_context" \
 		--preview "$_aws_sso_source_dir/aws_sso_cmd.sh preview" \
