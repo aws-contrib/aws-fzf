@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_lambda_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_lambda_source_dir/aws_core.sh"
+
+# aws_lambda.sh - Lambda browsing for aws fzf
+#
+# This file is sourced by the main aws fzf script and provides
+# Lambda function listing with interactive functionality.
+#
+# Dependencies from main aws fzf:
+#   - $_aws_fzf_source_dir (source directory path)
+#   - aws CLI
+#   - fzf
+#   - jq
+#   - gum
 
 # _aws_lambda_list()
 #
@@ -54,12 +66,19 @@ _aws_lambda_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "LAMBDA"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_lambda_source_dir/aws_lambda_cmd.sh list"
+	if [[ ${#list_functions_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_functions_args[@]}")"
+	fi
+
 	# Display in fzf with keybindings
 	echo "$function_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
 		--preview "$_aws_lambda_source_dir/aws_lambda_cmd.sh preview" \
-		--bind "ctrl-r:reload($_aws_lambda_source_dir/aws_lambda_cmd.sh list ${list_functions_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})" \
@@ -129,18 +148,6 @@ SEE ALSO:
 EOF
 }
 
-# aws_lambda.sh - Lambda browsing for aws fzf
-#
-# This file is sourced by the main aws fzf script and provides
-# Lambda function listing with interactive functionality.
-#
-# Dependencies from main aws fzf:
-#   - $_aws_fzf_source_dir (source directory path)
-#   - aws CLI
-#   - fzf
-#   - jq
-#   - gum
-
 # _aws_lambda_main()
 #
 # Handle lambda subcommands
@@ -158,8 +165,8 @@ EOF
 #   1 - Unknown subcommand or error
 #
 _aws_lambda_main() {
-	local subcommand="$1"
-	shift
+	local subcommand="${1:-}"
+	shift || true
 
 	case $subcommand in
 	list)

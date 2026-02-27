@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 # aws_dynamodb_cmd - Utility helper for DynamoDB operations
 #

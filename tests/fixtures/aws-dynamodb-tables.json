@@ -1,0 +1,6 @@
+{
+  "TableNames": [
+    "orders-table",
+    "users-table"
+  ]
+}

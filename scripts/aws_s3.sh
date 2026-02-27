@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_s3_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -66,12 +66,19 @@ _aws_s3_bucket_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "S3_BUCKET"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_s3_source_dir/aws_s3_cmd.sh list-buckets"
+	if [[ ${#list_buckets_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_buckets_args[@]}")"
+	fi
+
 	# Display in fzf with bindings
 	echo "$bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Buckets $_fzf_split $aws_context" \
 		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-buckets" \
-		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-buckets ${list_buckets_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
 		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
@@ -143,12 +150,19 @@ _aws_s3_object_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "S3_OBJECT"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_s3_source_dir/aws_s3_cmd.sh list-objects $(printf '%q' "$bucket")"
+	if [[ ${#list_objects_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_objects_args[@]}")"
+	fi
+
 	# Display object list with keybindings
 	echo "$object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket" \
 		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-objects" \
-		--bind "ctrl-r:reload($_aws_s3_source_dir/aws_s3_cmd.sh list-objects '$bucket' ${list_objects_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object '$bucket' {1})" \
 		--bind "alt-a:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn '$bucket' {1})" \
@@ -241,13 +255,13 @@ EOF
 #   1 - Unknown resource/action or error
 #
 _aws_s3_main() {
-	local resource="$1"
-	shift
+	local resource="${1:-}"
+	shift || true
 
 	case $resource in
 	bucket)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_s3_bucket_list "$@"
@@ -264,8 +278,8 @@ _aws_s3_main() {
 		esac
 		;;
 	object)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_s3_object_list "$@"

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 # aws_log_cmd - Console view operations for CloudWatch Logs
 #
@@ -128,6 +128,7 @@ _aws_log_read() {
 		--end-time "$log_end_time"
 		--limit "${FZF_AWS_LOG_LIMIT:-10000}"
 		--output json
+		--no-cli-pager
 	)
 
 	# Add log stream name if provided

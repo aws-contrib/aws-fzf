@@ -1,0 +1,12 @@
+{
+  "Buckets": [
+    {
+      "Name": "my-app-data",
+      "CreationDate": "2024-01-15T10:30:00Z"
+    },
+    {
+      "Name": "my-app-logs",
+      "CreationDate": "2024-02-20T08:00:00Z"
+    }
+  ]
+}

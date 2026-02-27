@@ -1,0 +1,14 @@
+{
+  "logStreams": [
+    {
+      "logStreamName": "2024/01/15/[$LATEST]abc123def456",
+      "lastEventTimestamp": 1705315800000,
+      "lastIngestionTime": 1705315810000
+    },
+    {
+      "logStreamName": "2024/01/14/[$LATEST]xyz789",
+      "lastEventTimestamp": 1705229400000,
+      "lastIngestionTime": 1705229410000
+    }
+  ]
+}

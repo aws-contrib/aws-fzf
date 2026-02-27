@@ -1,0 +1,11 @@
+{
+  "DBInstances": [
+    {
+      "DBInstanceIdentifier": "my-postgres-db",
+      "Engine": "postgres",
+      "DBInstanceStatus": "available",
+      "DBInstanceClass": "db.t3.medium",
+      "DBInstanceArn": "arn:aws:rds:us-east-1:123456789012:db:my-postgres-db"
+    }
+  ]
+}

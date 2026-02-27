@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_ecs_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_ecs_source_dir/aws_core.sh"
+
+# aws_ecs.sh - ECS cluster/service/task browsing for aws fzf
+#
+# This file is sourced by the main aws fzf script and provides
+# ECS cluster, service, and task listing with interactive functionality.
+#
+# Dependencies from main aws fzf:
+#   - $_aws_fzf_source_dir (source directory path)
+#   - aws CLI
+#   - fzf
+#   - jq
+#   - gum
+#   - Utility functions from aws_core.sh (clipboard, console_url)
 
 # _aws_ecs_cluster_list()
 #
@@ -55,12 +68,19 @@ _aws_ecs_cluster_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "ECS_CLUSTER"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters"
+	if [[ ${#list_clusters_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_clusters_args[@]}")"
+	fi
+
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Clusters $_fzf_split $aws_context" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-clusters" \
-		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters ${list_clusters_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-arn {1})" \
@@ -132,12 +152,19 @@ _aws_ecs_service_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "ECS_SERVICE"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-services $(printf '%q' "$cluster")"
+	if [[ ${#list_services_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_services_args[@]}")"
+	fi
+
 	# Display service list with keybindings
 	echo "$service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-services" \
-		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-services '$cluster' ${list_services_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service '$cluster' {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster '$cluster' --service-name {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn '$cluster' {1})" \
@@ -209,12 +236,19 @@ _aws_ecs_task_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "ECS_TASK"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks $(printf '%q' "$cluster")"
+	if [[ ${#list_tasks_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_tasks_args[@]}")"
+	fi
+
 	# Display task IDs with on-demand preview
 	echo "$task_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-tasks" \
-		--bind "ctrl-r:reload($_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks '$cluster' ${list_tasks_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster '$cluster' --tasks {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task '$cluster' {1})" \
 		--bind "alt-a:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})" \
@@ -296,19 +330,6 @@ SEE ALSO:
 EOF
 }
 
-# aws_ecs.sh - ECS cluster/service/task browsing for aws fzf
-#
-# This file is sourced by the main aws fzf script and provides
-# ECS cluster, service, and task listing with interactive functionality.
-#
-# Dependencies from main aws fzf:
-#   - $_aws_fzf_source_dir (source directory path)
-#   - aws CLI
-#   - fzf
-#   - jq
-#   - gum
-#   - Utility functions from aws_core.sh (clipboard, console_url)
-
 # _aws_ecs_main()
 #
 # Handle ecs resource and action routing
@@ -327,13 +348,13 @@ EOF
 #   1 - Unknown resource/action or error
 #
 _aws_ecs_main() {
-	local resource="$1"
-	shift
+	local resource="${1:-}"
+	shift || true
 
 	case $resource in
 	cluster)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_ecs_cluster_list "$@"
@@ -350,8 +371,8 @@ _aws_ecs_main() {
 		esac
 		;;
 	service)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_ecs_service_list "$@"
@@ -368,8 +389,8 @@ _aws_ecs_main() {
 		esac
 		;;
 	task)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_ecs_task_list "$@"

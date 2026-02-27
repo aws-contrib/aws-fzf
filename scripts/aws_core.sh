@@ -4,10 +4,19 @@
 [[ -n "${_AWS_FZF_CORE_SOURCED:-}" ]] && return 0
 _AWS_FZF_CORE_SOURCED=1
 
+set -euo pipefail
+
 # Fzf icon for AWS services
-readonly _fzf_icon=" "
+_fzf_icon=" "
 # Fzf field separator
-readonly _fzf_split="·"
+_fzf_split="·"
+
+# Tmux-aware execute: use execute-silent in tmux to avoid freezing fzf window
+if [[ -n "${TMUX:-}" ]]; then
+	_fzf_execute="execute-silent"
+else
+	_fzf_execute="execute"
+fi
 
 # _aws_fzf_options()
 #
@@ -62,7 +71,7 @@ _aws_fzf_options() {
 	# Add user-provided fzf flags (global)
 	if [[ -n "${FZF_AWS_FLAGS:-}" ]]; then
 		local user_flags=()
-		eval "user_flags=($FZF_AWS_FLAGS)"
+		read -ra user_flags <<<"$FZF_AWS_FLAGS"
 		_fzf_options+=("${user_flags[@]}")
 	fi
 
@@ -72,7 +81,7 @@ _aws_fzf_options() {
 		local cmd_flags="${!var_name}"
 		if [[ -n "$cmd_flags" ]]; then
 			local cmd_flags_array=()
-			eval "cmd_flags_array=($cmd_flags)"
+			read -ra cmd_flags_array <<<"$cmd_flags"
 			_fzf_options+=("${cmd_flags_array[@]}")
 		fi
 	fi

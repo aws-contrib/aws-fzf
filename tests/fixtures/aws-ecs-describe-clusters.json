@@ -1,0 +1,10 @@
+{
+  "clusters": [
+    {
+      "clusterName": "my-cluster",
+      "status": "ACTIVE",
+      "runningTasksCount": 2,
+      "activeServicesCount": 5
+    }
+  ]
+}

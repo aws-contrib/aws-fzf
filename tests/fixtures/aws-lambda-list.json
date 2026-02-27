@@ -1,0 +1,14 @@
+{
+  "Functions": [
+    {
+      "FunctionName": "my-function",
+      "Runtime": "python3.12",
+      "LastModified": "2024-01-15T10:30:00.000+0000"
+    },
+    {
+      "FunctionName": "another-function",
+      "Runtime": "nodejs20.x",
+      "LastModified": "2024-02-20T08:00:00.000+0000"
+    }
+  ]
+}

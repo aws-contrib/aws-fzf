@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 # aws_param_cmd - Utility helper for Parameter Store operations
 #
@@ -22,7 +22,7 @@ _aws_param_cmd_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=scripts/aws_core.sh
 source "$_aws_param_cmd_source_dir/aws_core.sh"
 
-# _aws_params_copy_value()
+# _aws_param_copy_value()
 #
 # Copy parameter value to clipboard
 #
@@ -33,7 +33,7 @@ source "$_aws_param_cmd_source_dir/aws_core.sh"
 #   Retrieves a parameter value from Parameter Store and copies to clipboard.
 #   More secure than displaying - value goes to clipboard, not terminal.
 #
-_aws_params_copy_value() {
+_aws_param_copy_value() {
 	local param_name="${1:-}"
 
 	if [ -z "$param_name" ]; then
@@ -70,7 +70,7 @@ _aws_params_copy_value() {
 	_copy_to_clipboard "$param_value" "parameter value"
 }
 
-# _aws_params_view_parameter()
+# _aws_param_view_parameter()
 #
 # Open parameter in AWS Console
 #
@@ -81,7 +81,7 @@ _aws_params_copy_value() {
 #   Opens the specified parameter in the default web browser
 #   via the AWS Console URL
 #
-_aws_params_view_parameter() {
+_aws_param_view_parameter() {
 	local param_name="${1:-}"
 
 	if [ -z "$param_name" ]; then
@@ -258,11 +258,11 @@ preview)
 	;;
 copy-value)
 	shift
-	_aws_params_copy_value "$@"
+	_aws_param_copy_value "$@"
 	;;
 view-parameter)
 	shift
-	_aws_params_view_parameter "$@"
+	_aws_param_view_parameter "$@"
 	;;
 copy-arn)
 	shift

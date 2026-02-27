@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_log_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -54,12 +54,19 @@ _aws_log_group_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "LOGS_GROUP"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_log_source_dir/aws_log_cmd.sh list-groups"
+	if [[ ${#list_groups_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_groups_args[@]}")"
+	fi
+
 	# Display in fzf with full keybindings
 	echo "$group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context" \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-groups" \
-		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-groups ${list_groups_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log {1})" \
@@ -133,12 +140,19 @@ _aws_log_stream_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "LOGS_STREAM"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_log_source_dir/aws_log_cmd.sh list-streams $(printf '%q' "$log_group_name")"
+	if [[ ${#list_streams_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_streams_args[@]}")"
+	fi
+
 	# Display stream list with keybindings
 	echo "$stream_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-streams" \
-		--bind "ctrl-r:reload($_aws_log_source_dir/aws_log_cmd.sh list-streams '$log_group_name' ${list_streams_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name '$log_group_name' --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
@@ -248,13 +262,13 @@ EOF
 #   1 - Unknown resource/action or error
 #
 _aws_log_main() {
-	local resource="$1"
-	shift
+	local resource="${1:-}"
+	shift || true
 
 	case $resource in
 	group)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_log_group_list "$@"
@@ -271,8 +285,8 @@ _aws_log_main() {
 		esac
 		;;
 	stream)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_log_stream_list "$@"

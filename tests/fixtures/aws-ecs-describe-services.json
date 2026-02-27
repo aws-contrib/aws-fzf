@@ -1,0 +1,11 @@
+{
+  "services": [
+    {
+      "serviceName": "my-service",
+      "status": "ACTIVE",
+      "desiredCount": 2,
+      "runningCount": 2,
+      "pendingCount": 0
+    }
+  ]
+}

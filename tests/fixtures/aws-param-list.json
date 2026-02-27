@@ -1,0 +1,16 @@
+{
+  "Parameters": [
+    {
+      "Name": "/app/db/password",
+      "Type": "SecureString",
+      "Version": 3,
+      "LastModifiedDate": "2024-01-15T10:30:00Z"
+    },
+    {
+      "Name": "/app/api/key",
+      "Type": "String",
+      "Version": 1,
+      "LastModifiedDate": "2024-02-20T08:00:00Z"
+    }
+  ]
+}

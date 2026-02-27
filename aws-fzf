@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _check_dependencies() {
 	local missing=()
+
+	if [[ "${BASH_VERSINFO[0]}" -lt 4 ]]; then
+		echo "aws-fzf: requires Bash 4.0+ (found ${BASH_VERSION})" >&2
+		echo "  macOS: brew install bash" >&2
+		exit 1
+	fi
 
 	if ! command -v aws &>/dev/null; then
 		missing+=("aws     — https://docs.aws.amazon.com/cli/")
@@ -287,11 +293,13 @@ main() {
 		esac
 	done
 
-	# Export fzf flags for aws_core.sh to use
+	# Export fzf flags for aws_core.sh to use (clear if none, to avoid stale values)
 	if [[ ${#fzf_flags[@]} -gt 0 ]]; then
-		export FZF_AWS_FLAGS
 		FZF_AWS_FLAGS="$(printf '%q ' "${fzf_flags[@]}")"
+	else
+		FZF_AWS_FLAGS=""
 	fi
+	export FZF_AWS_FLAGS
 
 	# Dispatch to service with remaining args
 	case $service in

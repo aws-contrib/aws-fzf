@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_param_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -54,12 +54,19 @@ _aws_param_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "PARAM"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_param_source_dir/aws_param_cmd.sh list"
+	if [[ ${#describe_params_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${describe_params_args[@]}")"
+	fi
+
 	# Display in fzf with full keybindings
 	echo "$param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
 		--preview "$_aws_param_source_dir/aws_param_cmd.sh preview" \
-		--bind "ctrl-r:reload($_aws_param_source_dir/aws_param_cmd.sh list ${describe_params_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
@@ -157,8 +164,8 @@ EOF
 #   1 - Unknown subcommand or error
 #
 _aws_param_main() {
-	local subcommand="$1"
-	shift
+	local subcommand="${1:-}"
+	shift || true
 
 	case $subcommand in
 	list)

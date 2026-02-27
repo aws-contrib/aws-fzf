@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_rds_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
@@ -54,12 +54,19 @@ _aws_rds_instance_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "RDS_INSTANCE"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_rds_source_dir/aws_rds_cmd.sh list-instances"
+	if [[ ${#list_instances_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_instances_args[@]}")"
+	fi
+
 	# Display in fzf with full keybindings
 	echo "$instance_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Instances $_fzf_split $aws_context" \
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-instances" \
-		--bind "ctrl-r:reload($_aws_rds_source_dir/aws_rds_cmd.sh list-instances ${list_instances_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})" \
@@ -114,12 +121,19 @@ _aws_rds_cluster_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "RDS_CLUSTER"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_rds_source_dir/aws_rds_cmd.sh list-clusters"
+	if [[ ${#list_clusters_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_clusters_args[@]}")"
+	fi
+
 	# Display in fzf with full keybindings
 	echo "$cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Clusters $_fzf_split $aws_context" \
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-clusters" \
-		--bind "ctrl-r:reload($_aws_rds_source_dir/aws_rds_cmd.sh list-clusters ${list_clusters_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})" \
@@ -224,13 +238,13 @@ EOF
 #   1 - Unknown resource/action or error
 #
 _aws_rds_main() {
-	local resource="$1"
-	shift
+	local resource="${1:-}"
+	shift || true
 
 	case $resource in
 	instance)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_rds_instance_list "$@"
@@ -247,8 +261,8 @@ _aws_rds_main() {
 		esac
 		;;
 	cluster)
-		local action="$1"
-		shift
+		local action="${1:-}"
+		shift || true
 		case $action in
 		list)
 			_aws_rds_cluster_list "$@"

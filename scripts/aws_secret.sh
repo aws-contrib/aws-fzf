@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 _aws_secret_source_dir=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=aws_core.sh
 source "$_aws_secret_source_dir/aws_core.sh"
+
+# aws_secret.sh - Secrets Manager browsing for aws fzf
+#
+# This file is sourced by the main aws fzf script and provides
+# Secrets Manager listing with interactive functionality.
+#
+# Dependencies from main aws fzf:
+#   - $_aws_fzf_source_dir (source directory path)
+#   - aws CLI
+#   - fzf
+#   - jq
+#   - gum
+#   - Utility functions from aws_core.sh (clipboard, console_url)
 
 # _aws_secret_list()
 #
@@ -54,12 +67,19 @@ _aws_secret_list() {
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "SECRET"
 
+	# Pre-build reload command with properly quoted args
+	local reload_cmd
+	reload_cmd="$_aws_secret_source_dir/aws_secret_cmd.sh list"
+	if [[ ${#list_secrets_args[@]} -gt 0 ]]; then
+		reload_cmd+="$(printf ' %q' "${list_secrets_args[@]}")"
+	fi
+
 	# Display in fzf with full keybindings
 	echo "$secrets_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon Secret Manager Secrets $_fzf_split $aws_context" \
 		--preview "$_aws_secret_source_dir/aws_secret_cmd.sh preview" \
-		--bind "ctrl-r:reload($_aws_secret_source_dir/aws_secret_cmd.sh list ${list_secrets_args[*]})" \
+		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "alt-a:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
@@ -121,19 +141,6 @@ SEE ALSO:
 EOF
 }
 
-# aws_secret.sh - Secrets Manager browsing for aws fzf
-#
-# This file is sourced by the main aws fzf script and provides
-# Secrets Manager listing with interactive functionality.
-#
-# Dependencies from main aws fzf:
-#   - $_aws_fzf_source_dir (source directory path)
-#   - aws CLI
-#   - fzf
-#   - jq
-#   - gum
-#   - Utility functions from aws_core.sh (clipboard, console_url)
-
 # _aws_secret_main()
 #
 # Handle secrets subcommands
@@ -151,8 +158,8 @@ EOF
 #   1 - Unknown subcommand or error
 #
 _aws_secret_main() {
-	local subcommand="$1"
-	shift
+	local subcommand="${1:-}"
+	shift || true
 
 	case $subcommand in
 	list)

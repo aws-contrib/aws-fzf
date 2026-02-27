@@ -1,0 +1,14 @@
+{
+  "DBClusters": [
+    {
+      "DBClusterIdentifier": "my-aurora-cluster",
+      "Engine": "aurora-postgresql",
+      "Status": "available",
+      "DBClusterMembers": [
+        {"DBInstanceIdentifier": "my-aurora-cluster-instance-1"},
+        {"DBInstanceIdentifier": "my-aurora-cluster-instance-2"}
+      ],
+      "DBClusterArn": "arn:aws:rds:us-east-1:123456789012:cluster:my-aurora-cluster"
+    }
+  ]
+}

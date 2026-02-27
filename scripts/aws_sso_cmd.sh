@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -z "$DEBUG" ] || set -x
+[ -z "${DEBUG:-}" ] || set -x
 
-set -eo pipefail
+set -euo pipefail
 
 # aws_sso_cmd - Utility helper for SSO operations
 #
@@ -35,7 +35,7 @@ source "$_aws_sso_cmd_source_dir/aws_core.sh"
 #
 # OUTPUT:
 #   Tab-separated formatted list with header
-#   Format: PROFILE  ACCOUNT  ROLE  REGION  SSO_URL
+#   Format: PROFILE  NAME  TYPE  ACCOUNT  ROLE  REGION
 #
 # DESCRIPTION:
 #   Discovers AWS SSO profiles from ~/.aws/config by parsing profiles
@@ -251,8 +251,8 @@ CLIPBOARD OPERATIONS:
 
 DESCRIPTION:
     Utility commands for AWS SSO operations.
-    list discovers SSO profiles by parsing ~/.aws/config (via Python script)
-         and formats them for fzf display using jq (consistent with other commands).
+    list discovers SSO profiles by parsing ~/.aws/config directly
+         and formats them for fzf display (consistent with other commands).
     login authenticates to an SSO profile.
     logout ends the SSO session for a profile.
     open opens the AWS console directly for the profile (bypasses account selection).

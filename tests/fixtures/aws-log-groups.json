@@ -1,0 +1,15 @@
+{
+  "logGroups": [
+    {
+      "logGroupName": "/aws/lambda/my-function",
+      "retentionInDays": 30,
+      "storedBytes": 10240,
+      "creationTime": 1705315800000
+    },
+    {
+      "logGroupName": "/aws/ecs/my-cluster",
+      "storedBytes": 204800,
+      "creationTime": 1705315800000
+    }
+  ]
+}
