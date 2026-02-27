@@ -144,6 +144,26 @@ MOCK
 	[ "$status" -eq 0 ]
 }
 
+@test "_aws_fzf_options: preserves quoted --bind value with spaces as single token (FZF_AWS_FLAGS)" {
+	run bash -c "
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		export FZF_AWS_FLAGS=\"--bind 'alt-I:execute(aws s3 ls {1} | less)'\"
+		_aws_fzf_options
+		printf '%s\n' \"\${_fzf_options[@]}\" | grep -qx -- 'alt-I:execute(aws s3 ls {1} | less)'
+	"
+	[ "$status" -eq 0 ]
+}
+
+@test "_aws_fzf_options: preserves quoted --bind value with spaces as single token (FZF_AWS_SECRET_OPTS)" {
+	run bash -c "
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		export FZF_AWS_SECRET_OPTS=\"--bind 'alt-I:execute(aws secretsmanager get-secret-value --secret-id {1} | less)'\"
+		_aws_fzf_options SECRET
+		printf '%s\n' \"\${_fzf_options[@]}\" | grep -qx -- 'alt-I:execute(aws secretsmanager get-secret-value --secret-id {1} | less)'
+	"
+	[ "$status" -eq 0 ]
+}
+
 # ---------------------------------------------------------------------------
 # _copy_to_clipboard
 # ---------------------------------------------------------------------------

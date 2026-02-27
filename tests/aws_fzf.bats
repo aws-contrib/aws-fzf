@@ -55,13 +55,13 @@ run_aws_fzf() {
 @test "prints the version number for --version" {
 	run_aws_fzf --version
 	[ "$status" -eq 0 ]
-	[[ "$output" =~ "0.2.0" ]]
+	[[ "$output" =~ "0.3.0" ]]
 }
 
 @test "prints the version number for -V" {
 	run_aws_fzf -V
 	[ "$status" -eq 0 ]
-	[[ "$output" =~ "0.2.0" ]]
+	[[ "$output" =~ "0.3.0" ]]
 }
 
 # ---------------------------------------------------------------------------
