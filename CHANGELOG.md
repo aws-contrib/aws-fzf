@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/aws-contrib/aws-fzf/compare/v0.3.0...v0.3.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* revert read -ra to eval for proper quote handling in fzf options ([46e3b9c](https://github.com/aws-contrib/aws-fzf/commit/46e3b9c530fdf0df3ba4c9914732cf3f0671cf1a))
+
 ## [0.3.0](https://github.com/aws-contrib/aws-fzf/compare/v0.2.0...v0.3.0) (2026-02-27)
 
 
