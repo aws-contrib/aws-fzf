@@ -78,7 +78,7 @@ _aws_fzf_options() {
 	# Add per-command fzf options (highest precedence)
 	if [[ -n "$command_id" ]]; then
 		local var_name="FZF_AWS_${command_id}_OPTS"
-		local cmd_flags="${!var_name}"
+		local cmd_flags="${!var_name:-}"
 		if [[ -n "$cmd_flags" ]]; then
 			local cmd_flags_array=()
 			eval "cmd_flags_array=($cmd_flags)"
