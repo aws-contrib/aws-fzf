@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/aws-contrib/aws-fzf/compare/v0.3.1...v0.3.2) (2026-02-28)
+
+
+### Bug Fixes
+
+* add default value syntax to indirect variable expansion ([499c9c8](https://github.com/aws-contrib/aws-fzf/commit/499c9c87b1ec7418dfe4b5377be519d091ead6d0))
+
 ## [0.3.1](https://github.com/aws-contrib/aws-fzf/compare/v0.3.0...v0.3.1) (2026-02-27)
 
 
