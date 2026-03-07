@@ -55,10 +55,10 @@ _aws_log_aws_log_group_list() {
 	_aws_fzf_options "LOGS_GROUP"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_log_source_dir/aws_log_cmd.sh list-groups"
+	local aws_log_group_list_reload
+	aws_log_group_list_reload="$_aws_log_source_dir/aws_log_cmd.sh list-groups"
 	if [[ ${#aws_log_group_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_log_group_args[@]}")"
+		aws_log_group_list_reload+="$(printf ' %q' "${aws_log_group_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
@@ -67,7 +67,7 @@ _aws_log_aws_log_group_list() {
 		--footer "$_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh preview-help-groups" \
-		--bind "ctrl-r:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_log_group_list_reload)" \
 		--bind "load:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
@@ -143,10 +143,10 @@ _aws_log_aws_log_stream_list() {
 	_aws_fzf_options "LOGS_STREAM"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_log_source_dir/aws_log_cmd.sh list-streams $(printf '%q' "$log_group_name")"
+	local aws_log_stream_list_reload
+	aws_log_stream_list_reload="$_aws_log_source_dir/aws_log_cmd.sh list-streams $(printf '%q' "$log_group_name")"
 	if [[ ${#aws_log_stream_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_log_stream_args[@]}")"
+		aws_log_stream_list_reload+="$(printf ' %q' "${aws_log_stream_args[@]}")"
 	fi
 
 	# Display stream list with keybindings
@@ -155,7 +155,7 @@ _aws_log_aws_log_stream_list() {
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_log_source_dir/aws_log_cmd.sh preview-help-streams" \
-		--bind "ctrl-r:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Reloading...)+reload($aws_log_stream_list_reload)" \
 		--bind "load:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name)" \
 		--bind "ctrl-o:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Opening in console...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name '$log_group_name' --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \

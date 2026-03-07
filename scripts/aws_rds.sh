@@ -55,10 +55,10 @@ _aws_rds_instance_list() {
 	_aws_fzf_options "RDS_INSTANCE"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_rds_source_dir/aws_rds_cmd.sh list-instances"
+	local aws_rds_instance_list_reload
+	aws_rds_instance_list_reload="$_aws_rds_source_dir/aws_rds_cmd.sh list-instances"
 	if [[ ${#aws_rds_instance_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_rds_instance_args[@]}")"
+		aws_rds_instance_list_reload+="$(printf ' %q' "${aws_rds_instance_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
@@ -67,7 +67,7 @@ _aws_rds_instance_list() {
 		--footer "$_fzf_icon RDS Instances $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh preview-help-instances" \
-		--bind "ctrl-r:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_rds_instance_list_reload)" \
 		--bind "load:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq . | gum pager)" \
@@ -124,10 +124,10 @@ _aws_rds_aws_rds_cluster_list() {
 	_aws_fzf_options "RDS_CLUSTER"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_rds_source_dir/aws_rds_cmd.sh list-clusters"
+	local aws_rds_cluster_list_reload
+	aws_rds_cluster_list_reload="$_aws_rds_source_dir/aws_rds_cmd.sh list-clusters"
 	if [[ ${#aws_rds_cluster_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_rds_cluster_args[@]}")"
+		aws_rds_cluster_list_reload+="$(printf ' %q' "${aws_rds_cluster_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
@@ -136,7 +136,7 @@ _aws_rds_aws_rds_cluster_list() {
 		--footer "$_fzf_icon RDS Clusters $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh preview-help-clusters" \
-		--bind "ctrl-r:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_rds_cluster_list_reload)" \
 		--bind "load:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq . | gum pager)" \

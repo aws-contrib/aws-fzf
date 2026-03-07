@@ -55,10 +55,10 @@ _aws_aws_param_list() {
 	_aws_fzf_options "PARAM"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_param_source_dir/aws_param_cmd.sh list"
+	local aws_param_list_reload
+	aws_param_list_reload="$_aws_param_source_dir/aws_param_cmd.sh list"
 	if [[ ${#aws_param_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_param_args[@]}")"
+		aws_param_list_reload+="$(printf ' %q' "${aws_param_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
@@ -67,7 +67,7 @@ _aws_aws_param_list() {
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_param_source_dir/aws_param_cmd.sh preview-help" \
-		--bind "ctrl-r:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_param_list_reload)" \
 		--bind "load:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq . | gum pager)" \

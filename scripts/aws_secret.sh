@@ -68,10 +68,10 @@ _aws_secret_list() {
 	_aws_fzf_options "SECRET"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_secret_source_dir/aws_secret_cmd.sh list"
+	local aws_secret_list_reload
+	aws_secret_list_reload="$_aws_secret_source_dir/aws_secret_cmd.sh list"
 	if [[ ${#aws_secret_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_secret_args[@]}")"
+		aws_secret_list_reload+="$(printf ' %q' "${aws_secret_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
@@ -80,7 +80,7 @@ _aws_secret_list() {
 		--footer "$_fzf_icon Secret Manager Secrets $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_secret_source_dir/aws_secret_cmd.sh preview-help" \
-		--bind "ctrl-r:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_secret_list_reload)" \
 		--bind "load:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq . | gum pager)" \

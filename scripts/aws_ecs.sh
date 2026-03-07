@@ -69,10 +69,10 @@ _aws_ecs_cluster_list() {
 	_aws_fzf_options "ECS_CLUSTER"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters"
+	local aws_ecs_cluster_list_reload
+	aws_ecs_cluster_list_reload="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-clusters"
 	if [[ ${#aws_ecs_cluster_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_ecs_cluster_args[@]}")"
+		aws_ecs_cluster_list_reload+="$(printf ' %q' "${aws_ecs_cluster_args[@]}")"
 	fi
 
 	# Display in fzf with full keybindings
@@ -81,7 +81,7 @@ _aws_ecs_cluster_list() {
 		--footer "$_fzf_icon ECS Clusters $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh preview-help-clusters" \
-		--bind "ctrl-r:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_ecs_cluster_list_reload)" \
 		--bind "load:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
@@ -155,10 +155,10 @@ _aws_ecs_aws_ecs_service_list() {
 	_aws_fzf_options "ECS_SERVICE"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-services $(printf '%q' "$cluster")"
+	local aws_ecs_service_list_reload
+	aws_ecs_service_list_reload="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-services $(printf '%q' "$cluster")"
 	if [[ ${#aws_ecs_service_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_ecs_service_args[@]}")"
+		aws_ecs_service_list_reload+="$(printf ' %q' "${aws_ecs_service_args[@]}")"
 	fi
 
 	# Display service list with keybindings
@@ -167,7 +167,7 @@ _aws_ecs_aws_ecs_service_list() {
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh preview-help-services" \
-		--bind "ctrl-r:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Reloading...)+reload($aws_ecs_service_list_reload)" \
 		--bind "load:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster)" \
 		--bind "ctrl-o:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Opening in console...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service '$cluster' {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster '$cluster' --service-name {1})" \
@@ -241,10 +241,10 @@ _aws_ecs_aws_ecs_task_list() {
 	_aws_fzf_options "ECS_TASK"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks $(printf '%q' "$cluster")"
+	local aws_ecs_task_list_reload
+	aws_ecs_task_list_reload="$_aws_ecs_source_dir/aws_ecs_cmd.sh list-tasks $(printf '%q' "$cluster")"
 	if [[ ${#aws_ecs_task_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_ecs_task_args[@]}")"
+		aws_ecs_task_list_reload+="$(printf ' %q' "${aws_ecs_task_args[@]}")"
 	fi
 
 	# Display task IDs with on-demand preview
@@ -253,7 +253,7 @@ _aws_ecs_aws_ecs_task_list() {
 		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh preview-help-tasks" \
-		--bind "ctrl-r:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Reloading...)+reload($aws_ecs_task_list_reload)" \
 		--bind "load:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster)" \
 		--bind "ctrl-o:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Opening in console...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task '$cluster' {1})" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster '$cluster' --tasks {1} | jq . | gum pager)" \

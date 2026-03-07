@@ -67,10 +67,10 @@ _aws_lambda_list() {
 	_aws_fzf_options "LAMBDA"
 
 	# Pre-build reload command with properly quoted args
-	local reload_cmd
-	reload_cmd="$_aws_lambda_source_dir/aws_lambda_cmd.sh list"
+	local aws_lambda_list_reload
+	aws_lambda_list_reload="$_aws_lambda_source_dir/aws_lambda_cmd.sh list"
 	if [[ ${#aws_lambda_args[@]} -gt 0 ]]; then
-		reload_cmd+="$(printf ' %q' "${aws_lambda_args[@]}")"
+		aws_lambda_list_reload+="$(printf ' %q' "${aws_lambda_args[@]}")"
 	fi
 
 	# Display in fzf with keybindings
@@ -79,7 +79,7 @@ _aws_lambda_list() {
 		--footer "$_fzf_icon Lambda Functions $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_lambda_source_dir/aws_lambda_cmd.sh preview-help" \
-		--bind "ctrl-r:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Reloading...)+reload($aws_lambda_list_reload)" \
 		--bind "load:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh view-function {1})" \
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq . | gum pager)" \
