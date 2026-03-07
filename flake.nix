@@ -28,7 +28,8 @@
 
           installPhase = ''
             mkdir -p $out/share/aws-fzf $out/bin
-            cp -r * $out/share/aws-fzf/
+            cp aws-fzf version.txt $out/share/aws-fzf/
+            cp -r scripts $out/share/aws-fzf/
             chmod +x $out/share/aws-fzf/aws-fzf
             makeWrapper $out/share/aws-fzf/aws-fzf $out/bin/aws-fzf \
               --prefix PATH : ${pkgs.lib.makeBinPath runtimeDeps}
