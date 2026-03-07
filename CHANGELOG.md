@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/aws-contrib/aws-fzf/compare/v0.4.0...v0.4.1) (2026-03-07)
+
+
+### Bug Fixes
+
+* exclude tests from Nix package installPhase ([1ae2c34](https://github.com/aws-contrib/aws-fzf/commit/1ae2c3455e8e0f6b88f3548c92f3ee9896f8ea30))
+
 ## [0.4.0](https://github.com/aws-contrib/aws-fzf/compare/v0.3.1...v0.4.0) (2026-03-07)
 
 
