@@ -509,7 +509,7 @@ _aws_rds_instance_list_cmd() {
 
 	# Fetch and format RDS instances (without gum spin - caller handles that)
 	aws rds describe-db-instances "${list_args[@]}" --output json |
-		jq -r "$instance_list_jq" | column -t -s $'\t'
+		jq -r "$instance_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_rds_cluster_list_cmd()
@@ -535,7 +535,7 @@ _aws_rds_cluster_list_cmd() {
 
 	# Fetch and format RDS clusters (without gum spin - caller handles that)
 	aws rds describe-db-clusters "${list_args[@]}" --output json |
-		jq -r "$cluster_list_jq" | column -t -s $'\t'
+		jq -r "$cluster_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_rds_cmd_help()

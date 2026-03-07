@@ -414,7 +414,7 @@ _aws_ecs_cluster_list_cmd() {
 
 	# Fetch and format ECS clusters (without gum spin - caller handles that)
 	_aws_ecs_batch_describe_clusters "${list_args[@]}" |
-		jq -r "$cluster_list_jq" | column -t -s $'\t'
+		jq -r "$cluster_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_ecs_service_list_cmd()
@@ -449,7 +449,7 @@ _aws_ecs_service_list_cmd() {
 
 	# Fetch and format ECS services (without gum spin - caller handles that)
 	_aws_ecs_batch_describe_services "$cluster" "${list_args[@]}" |
-		jq -rs "$service_list_jq" | column -t -s $'\t'
+		jq -rs "$service_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_ecs_task_list_cmd()
@@ -484,7 +484,7 @@ _aws_ecs_task_list_cmd() {
 
 	# Fetch and format ECS tasks (without gum spin - caller handles that)
 	_aws_ecs_batch_describe_tasks "$cluster" "${list_args[@]}" |
-		jq -rs "$task_list_jq" | column -t -s $'\t'
+		jq -rs "$task_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_ecs_cmd_help()

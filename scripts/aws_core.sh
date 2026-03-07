@@ -6,6 +6,9 @@ _AWS_FZF_CORE_SOURCED=1
 
 set -euo pipefail
 
+# Force ANSI color output even when stdout is not a TTY (e.g. command substitution, fzf reload)
+export CLICOLOR_FORCE=1
+
 # Fzf icon for AWS services
 _fzf_icon=" "
 # Fzf field separator
@@ -101,6 +104,52 @@ _aws_fzf_options() {
 #   _open_url()                 - Open URL in default browser (cross-platform)
 #   _copy_to_clipboard()        - Copy text to clipboard (cross-platform)
 #   _parse_duration()           - Parse duration string into seconds
+
+# _colorize_status()
+#
+# Colorize known AWS status/state values in tabular output
+#
+# DESCRIPTION:
+#   Reads lines from stdin and applies ANSI color codes to known AWS status
+#   values. Skips the header line (line 1). Designed to be piped after
+#   `column -t` so that column alignment is not disturbed.
+#
+#   Color scheme:
+#     Green  - healthy/running:     available, ACTIVE, RUNNING
+#     Red    - stopped/failed:      stopped, STOPPED, INACTIVE, failed
+#     Yellow - transitional:        creating, modifying, PENDING, DRAINING,
+#                                   PROVISIONING, DEPROVISIONING, starting,
+#                                   stopping, STOPPING, deleting, upgrading,
+#                                   maintenance, rebooting
+#
+# USAGE:
+#   jq -r "$query" | column -t -s $'\t' | _colorize_status
+#
+_colorize_status() {
+	sed \
+		-e $'2,$s/available/\033[32mavailable\033[0m/g' \
+		-e $'2,$s/ACTIVE/\033[32mACTIVE\033[0m/g' \
+		-e $'2,$s/RUNNING/\033[32mRUNNING\033[0m/g' \
+		-e $'2,$s/stopped/\033[31mstopped\033[0m/g' \
+		-e $'2,$s/STOPPED/\033[31mSTOPPED\033[0m/g' \
+		-e $'2,$s/INACTIVE/\033[31mINACTIVE\033[0m/g' \
+		-e $'2,$s/failed/\033[31mfailed\033[0m/g' \
+		-e $'2,$s/creating/\033[33mcreating\033[0m/g' \
+		-e $'2,$s/CREATING/\033[33mCREATING\033[0m/g' \
+		-e $'2,$s/modifying/\033[33mmodifying\033[0m/g' \
+		-e $'2,$s/PENDING/\033[33mPENDING\033[0m/g' \
+		-e $'2,$s/pending/\033[33mpending\033[0m/g' \
+		-e $'2,$s/DRAINING/\033[33mDRAINING\033[0m/g' \
+		-e $'2,$s/PROVISIONING/\033[33mPROVISIONING\033[0m/g' \
+		-e $'2,$s/DEPROVISIONING/\033[33mDEPROVISIONING\033[0m/g' \
+		-e $'2,$s/starting/\033[33mstarting\033[0m/g' \
+		-e $'2,$s/stopping/\033[33mstopping\033[0m/g' \
+		-e $'2,$s/STOPPING/\033[33mSTOPPING\033[0m/g' \
+		-e $'2,$s/deleting/\033[33mdeleting\033[0m/g' \
+		-e $'2,$s/upgrading/\033[33mupgrading\033[0m/g' \
+		-e $'2,$s/maintenance/\033[33mmaintenance\033[0m/g' \
+		-e $'2,$s/rebooting/\033[33mrebooting\033[0m/g'
+}
 
 # _get_aws_region()
 #

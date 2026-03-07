@@ -232,7 +232,7 @@ _aws_dsql_cluster_list_cmd() {
 
 	# Fetch and format DSQL clusters (without gum spin - caller handles that)
 	aws dsql list-clusters "${list_args[@]}" --output json |
-		jq -r "$cluster_list_jq" | column -t -s $'\t'
+		jq -r "$cluster_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_dsql_cmd_help()

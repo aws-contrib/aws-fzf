@@ -271,7 +271,7 @@ _aws_log_group_list_cmd() {
 
 	# Fetch and format CloudWatch log groups (without gum spin - caller handles that)
 	aws logs describe-log-groups "${list_args[@]}" --output json |
-		jq -r "$group_list_jq" | column -t -s $'\t'
+		jq -r "$group_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_log_stream_list_cmd()
@@ -306,7 +306,7 @@ _aws_log_stream_list_cmd() {
 
 	# Fetch and format CloudWatch log streams (without gum spin - caller handles that)
 	aws logs describe-log-streams --log-group-name "$log_group_name" --order-by LastEventTime --descending --max-items "${FZF_AWS_LOG_MAX_ITEMS:-1000}" "${list_args[@]}" --output json |
-		jq -r "$stream_list_jq" | column -t -s $'\t'
+		jq -r "$stream_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_log_group_preview_help()

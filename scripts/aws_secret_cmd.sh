@@ -183,7 +183,7 @@ _aws_secret_list_cmd() {
 
 	# Fetch and format secrets (without gum spin - caller handles that)
 	aws secretsmanager list-secrets "${list_args[@]}" --output json |
-		jq -r "$secrets_list_jq" | column -t -s $'\t'
+		jq -r "$secrets_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_secret_cmd_help()

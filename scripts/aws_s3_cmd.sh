@@ -233,7 +233,7 @@ _aws_s3_bucket_list_cmd() {
 
 	# Fetch and format S3 buckets (without gum spin - caller handles that)
 	aws s3api list-buckets "${list_args[@]}" --output json |
-		jq -r "$bucket_list_jq" | column -t -s $'\t'
+		jq -r "$bucket_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_s3_object_list_cmd()
@@ -268,7 +268,7 @@ _aws_s3_object_list_cmd() {
 
 	# Fetch and format S3 objects (without gum spin - caller handles that)
 	aws s3api list-objects-v2 --bucket "$bucket" --max-items "${FZF_AWS_S3_MAX_ITEMS:-1000}" "${list_args[@]}" --output json |
-		jq -r "$object_list_jq" | column -t -s $'\t'
+		jq -r "$object_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_s3_cmd_help()

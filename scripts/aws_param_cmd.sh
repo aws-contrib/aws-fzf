@@ -196,7 +196,7 @@ _aws_param_list_cmd() {
 
 	# Fetch and format parameters (without gum spin - caller handles that)
 	aws ssm describe-parameters "${list_args[@]}" --output json |
-		jq -r "$param_list_jq" | column -t -s $'\t'
+		jq -r "$param_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_param_cmd_help()

@@ -165,7 +165,7 @@ _aws_dynamodb_table_list_cmd() {
 
 	# Fetch and format DynamoDB tables (without gum spin - caller handles that)
 	aws dynamodb list-tables "${list_args[@]}" --output json |
-		jq -r "$table_list_jq" | column -t -s $'\t'
+		jq -r "$table_list_jq" | column -t -s $'\t' | _colorize_status
 }
 
 # _aws_dynamodb_cmd_help()
