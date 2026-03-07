@@ -127,28 +127,29 @@ _aws_fzf_options() {
 #
 _colorize_status() {
 	sed \
-		-e $'2,$s/available/\033[32mavailable\033[0m/g' \
-		-e $'2,$s/ACTIVE/\033[32mACTIVE\033[0m/g' \
-		-e $'2,$s/RUNNING/\033[32mRUNNING\033[0m/g' \
-		-e $'2,$s/stopped/\033[31mstopped\033[0m/g' \
-		-e $'2,$s/STOPPED/\033[31mSTOPPED\033[0m/g' \
-		-e $'2,$s/INACTIVE/\033[31mINACTIVE\033[0m/g' \
-		-e $'2,$s/failed/\033[31mfailed\033[0m/g' \
-		-e $'2,$s/creating/\033[33mcreating\033[0m/g' \
-		-e $'2,$s/CREATING/\033[33mCREATING\033[0m/g' \
-		-e $'2,$s/modifying/\033[33mmodifying\033[0m/g' \
-		-e $'2,$s/PENDING/\033[33mPENDING\033[0m/g' \
-		-e $'2,$s/pending/\033[33mpending\033[0m/g' \
-		-e $'2,$s/DRAINING/\033[33mDRAINING\033[0m/g' \
-		-e $'2,$s/PROVISIONING/\033[33mPROVISIONING\033[0m/g' \
-		-e $'2,$s/DEPROVISIONING/\033[33mDEPROVISIONING\033[0m/g' \
-		-e $'2,$s/starting/\033[33mstarting\033[0m/g' \
-		-e $'2,$s/stopping/\033[33mstopping\033[0m/g' \
-		-e $'2,$s/STOPPING/\033[33mSTOPPING\033[0m/g' \
-		-e $'2,$s/deleting/\033[33mdeleting\033[0m/g' \
-		-e $'2,$s/upgrading/\033[33mupgrading\033[0m/g' \
-		-e $'2,$s/maintenance/\033[33mmaintenance\033[0m/g' \
-		-e $'2,$s/rebooting/\033[33mrebooting\033[0m/g'
+		-e '2,$s/available/{{ Foreground "2" "available" }}/g' \
+		-e '2,$s/ACTIVE/{{ Foreground "2" "ACTIVE" }}/g' \
+		-e '2,$s/RUNNING/{{ Foreground "2" "RUNNING" }}/g' \
+		-e '2,$s/stopped/{{ Foreground "1" "stopped" }}/g' \
+		-e '2,$s/STOPPED/{{ Foreground "1" "STOPPED" }}/g' \
+		-e '2,$s/INACTIVE/{{ Foreground "1" "INACTIVE" }}/g' \
+		-e '2,$s/failed/{{ Foreground "1" "failed" }}/g' \
+		-e '2,$s/creating/{{ Foreground "3" "creating" }}/g' \
+		-e '2,$s/CREATING/{{ Foreground "3" "CREATING" }}/g' \
+		-e '2,$s/modifying/{{ Foreground "3" "modifying" }}/g' \
+		-e '2,$s/PENDING/{{ Foreground "3" "PENDING" }}/g' \
+		-e '2,$s/pending/{{ Foreground "3" "pending" }}/g' \
+		-e '2,$s/DRAINING/{{ Foreground "3" "DRAINING" }}/g' \
+		-e '2,$s/PROVISIONING/{{ Foreground "3" "PROVISIONING" }}/g' \
+		-e '2,$s/DEPROVISIONING/{{ Foreground "3" "DEPROVISIONING" }}/g' \
+		-e '2,$s/starting/{{ Foreground "3" "starting" }}/g' \
+		-e '2,$s/stopping/{{ Foreground "3" "stopping" }}/g' \
+		-e '2,$s/STOPPING/{{ Foreground "3" "STOPPING" }}/g' \
+		-e '2,$s/deleting/{{ Foreground "3" "deleting" }}/g' \
+		-e '2,$s/upgrading/{{ Foreground "3" "upgrading" }}/g' \
+		-e '2,$s/maintenance/{{ Foreground "3" "maintenance" }}/g' \
+		-e '2,$s/rebooting/{{ Foreground "3" "rebooting" }}/g' |
+		gum format --type=template
 }
 
 # _get_aws_region()
