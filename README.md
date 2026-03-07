@@ -15,6 +15,37 @@ An interactive terminal UI for AWS that lets you quickly discover, inspect, and 
 
 ## Installation
 
+### Nix
+
+Run directly without installing:
+
+```bash
+nix run github:aws-contrib/aws-fzf -- secret list
+```
+
+Install into your profile:
+
+```bash
+nix profile install github:aws-contrib/aws-fzf
+```
+
+Or add to your NixOS / nix-darwin / home-manager flake:
+
+```nix
+inputs.aws-fzf.url = "github:aws-contrib/aws-fzf";
+# then in packages / home.packages:
+inputs.aws-fzf.packages.${system}.default
+```
+
+Add the following to `~/.aws/cli/alias` (create the file if it doesn't exist):
+
+```ini
+[toplevel]
+fzf = !aws-fzf
+```
+
+### Manual
+
 ```bash
 git clone https://github.com/aws-contrib/aws-fzf.git
 ```
