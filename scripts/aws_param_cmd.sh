@@ -150,7 +150,7 @@ _aws_param_copy_name() {
 	_copy_to_clipboard "$param" "parameter name"
 }
 
-# _aws_param_help_interactive()
+# _aws_param_preview_help()
 #
 # Display interactive help for parameter commands
 #
@@ -158,12 +158,8 @@ _aws_param_copy_name() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_param_help_interactive() {
+_aws_param_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -253,8 +249,8 @@ list)
 	shift
 	_aws_param_list_cmd "$@"
 	;;
-preview)
-	_aws_param_help_interactive
+preview-help)
+	_aws_param_preview_help
 	;;
 copy-value)
 	shift

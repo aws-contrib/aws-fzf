@@ -79,7 +79,8 @@ _aws_ecs_cluster_list() {
 	echo "$aws_ecs_cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Clusters $_fzf_split $aws_context" \
-		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-clusters" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh preview-help-clusters" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
@@ -163,7 +164,8 @@ _aws_ecs_aws_ecs_service_list() {
 	echo "$aws_ecs_service_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster" \
-		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-services" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh preview-help-services" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service '$cluster' {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster '$cluster' --service-name {1})" \
@@ -247,7 +249,8 @@ _aws_ecs_aws_ecs_task_list() {
 	echo "$aws_ecs_task_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster" \
-		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh help-tasks" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_ecs_source_dir/aws_ecs_cmd.sh preview-help-tasks" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster '$cluster' --tasks {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task '$cluster' {1})" \

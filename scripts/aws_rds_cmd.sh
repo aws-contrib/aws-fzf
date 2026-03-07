@@ -440,7 +440,7 @@ _aws_rds_copy_cluster_name() {
 	_copy_to_clipboard "$cluster" "cluster identifier"
 }
 
-# _aws_rds_instance_help_interactive()
+# _aws_rds_instance_preview_help()
 #
 # Display interactive help for RDS instance commands
 #
@@ -448,12 +448,8 @@ _aws_rds_copy_cluster_name() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_rds_instance_help_interactive() {
+_aws_rds_instance_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -467,7 +463,7 @@ _aws_rds_instance_help_interactive() {
 EOF
 }
 
-# _aws_rds_cluster_help_interactive()
+# _aws_rds_cluster_preview_help()
 #
 # Display interactive help for RDS cluster commands
 #
@@ -475,12 +471,8 @@ EOF
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_rds_cluster_help_interactive() {
+_aws_rds_cluster_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -604,11 +596,11 @@ list-clusters)
 	shift
 	_aws_rds_cluster_list_cmd "$@"
 	;;
-help-instances)
-	_aws_rds_instance_help_interactive
+preview-help-instances)
+	_aws_rds_instance_preview_help
 	;;
-help-clusters)
-	_aws_rds_cluster_help_interactive
+preview-help-clusters)
+	_aws_rds_cluster_preview_help
 	;;
 view-instance)
 	shift

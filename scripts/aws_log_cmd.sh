@@ -309,7 +309,7 @@ _aws_log_stream_list_cmd() {
 		jq -r "$stream_list_jq" | column -t -s $'\t'
 }
 
-# _aws_log_group_help_interactive()
+# _aws_log_group_preview_help()
 #
 # Display interactive help for log group commands
 #
@@ -317,12 +317,8 @@ _aws_log_stream_list_cmd() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_log_group_help_interactive() {
+_aws_log_group_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -337,7 +333,7 @@ _aws_log_group_help_interactive() {
 EOF
 }
 
-# _aws_log_stream_help_interactive()
+# _aws_log_stream_preview_help()
 #
 # Display interactive help for log stream commands
 #
@@ -345,12 +341,8 @@ EOF
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_log_stream_help_interactive() {
+_aws_log_stream_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -416,15 +408,15 @@ list-groups)
 	shift
 	_aws_log_group_list_cmd "$@"
 	;;
-help-groups)
-	_aws_log_group_help_interactive
+preview-help-groups)
+	_aws_log_group_preview_help
 	;;
 list-streams)
 	shift
 	_aws_log_stream_list_cmd "$@"
 	;;
-help-streams)
-	_aws_log_stream_help_interactive
+preview-help-streams)
+	_aws_log_stream_preview_help
 	;;
 view-group)
 	shift

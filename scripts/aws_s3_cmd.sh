@@ -165,7 +165,7 @@ _aws_s3_copy_object_key() {
 	_copy_to_clipboard "$key" "object key"
 }
 
-# _aws_s3_bucket_help_interactive()
+# _aws_s3_bucket_preview_help()
 #
 # Display interactive help for S3 bucket view
 #
@@ -173,12 +173,8 @@ _aws_s3_copy_object_key() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_s3_bucket_help_interactive() {
+_aws_s3_bucket_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -192,7 +188,7 @@ _aws_s3_bucket_help_interactive() {
 EOF
 }
 
-# _aws_s3_object_help_interactive()
+# _aws_s3_object_preview_help()
 #
 # Display interactive help for S3 object view
 #
@@ -200,12 +196,8 @@ EOF
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_s3_object_help_interactive() {
+_aws_s3_object_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -334,11 +326,11 @@ list-objects)
 	shift
 	_aws_s3_object_list_cmd "$@"
 	;;
-help-buckets)
-	_aws_s3_bucket_help_interactive
+preview-help-buckets)
+	_aws_s3_bucket_preview_help
 	;;
-help-objects)
-	_aws_s3_object_help_interactive
+preview-help-objects)
+	_aws_s3_object_preview_help
 	;;
 view-bucket)
 	shift

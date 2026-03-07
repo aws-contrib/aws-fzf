@@ -65,7 +65,8 @@ _aws_rds_instance_list() {
 	echo "$aws_rds_instance_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Instances $_fzf_split $aws_context" \
-		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-instances" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh preview-help-instances" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq . | gum pager)" \
@@ -132,7 +133,8 @@ _aws_rds_aws_rds_cluster_list() {
 	echo "$aws_rds_cluster_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon RDS Clusters $_fzf_split $aws_context" \
-		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh help-clusters" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_rds_source_dir/aws_rds_cmd.sh preview-help-clusters" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq . | gum pager)" \

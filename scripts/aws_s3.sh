@@ -77,7 +77,8 @@ _aws_s3_aws_s3_bucket_list() {
 	echo "$aws_s3_bucket_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Buckets $_fzf_split $aws_context" \
-		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-buckets" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh preview-help-buckets" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
 		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
@@ -161,7 +162,8 @@ _aws_s3_aws_s3_object_list() {
 	echo "$aws_s3_object_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket" \
-		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh help-objects" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_s3_source_dir/aws_s3_cmd.sh preview-help-objects" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object '$bucket' {1})" \

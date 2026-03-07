@@ -119,7 +119,7 @@ _aws_dynamodb_copy_name() {
 	_copy_to_clipboard "$table" "table name"
 }
 
-# _aws_dynamodb_help_interactive()
+# _aws_dynamodb_preview_help()
 #
 # Display interactive help for DynamoDB commands
 #
@@ -127,12 +127,8 @@ _aws_dynamodb_copy_name() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_dynamodb_help_interactive() {
+_aws_dynamodb_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -222,8 +218,8 @@ list)
 	shift
 	_aws_dynamodb_table_list_cmd "$@"
 	;;
-preview)
-	_aws_dynamodb_help_interactive
+preview-help)
+	_aws_dynamodb_preview_help
 	;;
 view-table)
 	shift

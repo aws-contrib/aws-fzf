@@ -137,7 +137,7 @@ _aws_secret_copy_name() {
 	_copy_to_clipboard "$secret_name" "secret name"
 }
 
-# _aws_secret_help_interactive()
+# _aws_secret_preview_help()
 #
 # Display interactive help for secret commands
 #
@@ -145,12 +145,8 @@ _aws_secret_copy_name() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_secret_help_interactive() {
+_aws_secret_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -240,8 +236,8 @@ list)
 	shift
 	_aws_secret_list_cmd "$@"
 	;;
-preview)
-	_aws_secret_help_interactive
+preview-help)
+	_aws_secret_preview_help
 	;;
 copy-value)
 	shift

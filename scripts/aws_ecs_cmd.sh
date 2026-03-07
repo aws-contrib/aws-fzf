@@ -324,7 +324,7 @@ _aws_ecs_copy_task_arn() {
 	_copy_to_clipboard "$task" "task ARN"
 }
 
-# _aws_ecs_cluster_help_interactive()
+# _aws_ecs_cluster_preview_help()
 #
 # Display interactive help for ECS clusters view
 #
@@ -332,12 +332,8 @@ _aws_ecs_copy_task_arn() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_ecs_cluster_help_interactive() {
+_aws_ecs_cluster_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -351,7 +347,7 @@ _aws_ecs_cluster_help_interactive() {
 EOF
 }
 
-# _aws_ecs_service_help_interactive()
+# _aws_ecs_service_preview_help()
 #
 # Display interactive help for ECS services view
 #
@@ -359,12 +355,8 @@ EOF
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_ecs_service_help_interactive() {
+_aws_ecs_service_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -378,7 +370,7 @@ _aws_ecs_service_help_interactive() {
 EOF
 }
 
-# _aws_ecs_task_help_interactive()
+# _aws_ecs_task_preview_help()
 #
 # Display interactive help for ECS tasks view
 #
@@ -386,12 +378,8 @@ EOF
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_ecs_task_help_interactive() {
+_aws_ecs_task_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -568,14 +556,14 @@ list-tasks)
 	shift
 	_aws_ecs_task_list_cmd "$@"
 	;;
-help-clusters)
-	_aws_ecs_cluster_help_interactive
+preview-help-clusters)
+	_aws_ecs_cluster_preview_help
 	;;
-help-services)
-	_aws_ecs_service_help_interactive
+preview-help-services)
+	_aws_ecs_service_preview_help
 	;;
-help-tasks)
-	_aws_ecs_task_help_interactive
+preview-help-tasks)
+	_aws_ecs_task_preview_help
 	;;
 batch-describe-clusters)
 	shift

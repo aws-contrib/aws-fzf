@@ -65,7 +65,8 @@ _aws_aws_param_list() {
 	echo "$aws_param_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
-		--preview "$_aws_param_source_dir/aws_param_cmd.sh preview" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_param_source_dir/aws_param_cmd.sh preview-help" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \

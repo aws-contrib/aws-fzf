@@ -201,7 +201,7 @@ _aws_sso_copy_account_id() {
 	_copy_to_clipboard "$account_id" "account ID"
 }
 
-# _aws_sso_help_interactive()
+# _aws_sso_preview_help()
 #
 # Display interactive help for SSO commands
 #
@@ -209,12 +209,8 @@ _aws_sso_copy_account_id() {
 #   Shows keyboard shortcuts and available actions in a formatted help panel
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
-_aws_sso_help_interactive() {
+_aws_sso_preview_help() {
 	gum format <<'EOF'
-# Help
-
-## Keyboard Shortcuts
-
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
@@ -285,8 +281,8 @@ list)
 	shift
 	_aws_sso_profile_list_cmd "$@"
 	;;
-preview)
-	_aws_sso_help_interactive
+preview-help)
+	_aws_sso_preview_help
 	;;
 login)
 	shift

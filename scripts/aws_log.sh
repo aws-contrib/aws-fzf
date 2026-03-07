@@ -65,7 +65,8 @@ _aws_log_aws_log_group_list() {
 	echo "$aws_log_group_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context" \
-		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-groups" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_log_source_dir/aws_log_cmd.sh preview-help-groups" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-group {1})" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
@@ -151,7 +152,8 @@ _aws_log_aws_log_stream_list() {
 	echo "$aws_log_stream_list" | fzf "${_fzf_options[@]}" \
 		--with-nth 1.. --accept-nth 1 \
 		--footer "$_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name" \
-		--preview "$_aws_log_source_dir/aws_log_cmd.sh help-streams" \
+		--preview-label " Keyboard Shortcuts " \
+		--preview "$_aws_log_source_dir/aws_log_cmd.sh preview-help-streams" \
 		--bind "ctrl-r:reload($reload_cmd)" \
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name '$log_group_name' --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \
 		--bind "ctrl-o:execute-silent($_aws_log_source_dir/aws_log_cmd.sh view-stream '$log_group_name' {1})" \
