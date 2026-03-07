@@ -44,7 +44,7 @@ source "$_aws_sso_cmd_source_dir/aws_core.sh"
 #
 _aws_sso_profile_list_cmd() {
 	local config_file="${AWS_CONFIG_FILE:-$HOME/.aws/config}"
-	awk -f "$_aws_sso_cmd_source_dir/aws_sso.awk" "$config_file" | column -t -s $'\t' | _colorize_status
+	awk -f "$_aws_sso_cmd_source_dir/aws_sso.awk" "$config_file" | awk -v styles="bold,normal,faint,faint,normal,faint" -f "$_aws_sso_cmd_source_dir/aws_render.awk"
 }
 
 # _aws_sso_login()

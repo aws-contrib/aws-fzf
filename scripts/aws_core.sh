@@ -105,53 +105,6 @@ _aws_fzf_options() {
 #   _copy_to_clipboard()        - Copy text to clipboard (cross-platform)
 #   _parse_duration()           - Parse duration string into seconds
 
-# _colorize_status()
-#
-# Colorize known AWS status/state values in tabular output
-#
-# DESCRIPTION:
-#   Reads lines from stdin and applies ANSI color codes to known AWS status
-#   values. Skips the header line (line 1). Designed to be piped after
-#   `column -t` so that column alignment is not disturbed.
-#
-#   Color scheme:
-#     Green  - healthy/running:     available, ACTIVE, RUNNING
-#     Red    - stopped/failed:      stopped, STOPPED, INACTIVE, failed
-#     Yellow - transitional:        creating, modifying, PENDING, DRAINING,
-#                                   PROVISIONING, DEPROVISIONING, starting,
-#                                   stopping, STOPPING, deleting, upgrading,
-#                                   maintenance, rebooting
-#
-# USAGE:
-#   jq -r "$query" | column -t -s $'\t' | _colorize_status
-#
-_colorize_status() {
-	sed \
-		-e '2,$s/available/{{ Foreground "2" "available" }}/g' \
-		-e '2,$s/ACTIVE/{{ Foreground "2" "ACTIVE" }}/g' \
-		-e '2,$s/RUNNING/{{ Foreground "2" "RUNNING" }}/g' \
-		-e '2,$s/stopped/{{ Foreground "1" "stopped" }}/g' \
-		-e '2,$s/STOPPED/{{ Foreground "1" "STOPPED" }}/g' \
-		-e '2,$s/INACTIVE/{{ Foreground "1" "INACTIVE" }}/g' \
-		-e '2,$s/failed/{{ Foreground "1" "failed" }}/g' \
-		-e '2,$s/creating/{{ Foreground "3" "creating" }}/g' \
-		-e '2,$s/CREATING/{{ Foreground "3" "CREATING" }}/g' \
-		-e '2,$s/modifying/{{ Foreground "3" "modifying" }}/g' \
-		-e '2,$s/PENDING/{{ Foreground "3" "PENDING" }}/g' \
-		-e '2,$s/pending/{{ Foreground "3" "pending" }}/g' \
-		-e '2,$s/DRAINING/{{ Foreground "3" "DRAINING" }}/g' \
-		-e '2,$s/PROVISIONING/{{ Foreground "3" "PROVISIONING" }}/g' \
-		-e '2,$s/DEPROVISIONING/{{ Foreground "3" "DEPROVISIONING" }}/g' \
-		-e '2,$s/starting/{{ Foreground "3" "starting" }}/g' \
-		-e '2,$s/stopping/{{ Foreground "3" "stopping" }}/g' \
-		-e '2,$s/STOPPING/{{ Foreground "3" "STOPPING" }}/g' \
-		-e '2,$s/deleting/{{ Foreground "3" "deleting" }}/g' \
-		-e '2,$s/upgrading/{{ Foreground "3" "upgrading" }}/g' \
-		-e '2,$s/maintenance/{{ Foreground "3" "maintenance" }}/g' \
-		-e '2,$s/rebooting/{{ Foreground "3" "rebooting" }}/g' |
-		gum format --type=template
-}
-
 # _get_aws_region()
 #
 # Get the AWS region for console URLs

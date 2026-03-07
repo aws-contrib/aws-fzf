@@ -147,7 +147,7 @@ _aws_lambda_list_cmd() {
 
 	# Fetch and format Lambda functions (without gum spin - caller handles that)
 	aws lambda list-functions "${list_args[@]}" --output json |
-		jq -r "$function_list_jq" | column -t -s $'\t' | _colorize_status
+		jq -r "$function_list_jq" | awk -v styles="bold,faint,faint" -f "$_aws_lambda_cmd_source_dir/aws_render.awk"
 }
 
 # _aws_lambda_cmd_help()
