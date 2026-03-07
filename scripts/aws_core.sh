@@ -41,7 +41,7 @@ fi
 #
 # PARAMETERS:
 #   $1 - Optional command identifier (e.g., "SECRET", "S3_BUCKET", "ECS_CLUSTER")
-#        Used to lookup per-command environment variable FZF_AWS_${command_id}_OPTS
+#        Used to lookup per-command environment variable FZF_AWS_${cmd_id}_OPTS
 #
 # RETURNS:
 #   Sets _fzf_options array with merged options
@@ -56,7 +56,7 @@ fi
 #   echo "$data" | fzf "${_fzf_options[@]}" ...
 #
 _aws_fzf_options() {
-	local command_id="${1:-}"
+	local cmd_id="${1:-}"
 
 	# Default fzf options for aws-fzf
 	_fzf_options=(
@@ -79,8 +79,8 @@ _aws_fzf_options() {
 	fi
 
 	# Add per-command fzf options (highest precedence)
-	if [[ -n "$command_id" ]]; then
-		local var_name="FZF_AWS_${command_id}_OPTS"
+	if [[ -n "$cmd_id" ]]; then
+		local var_name="FZF_AWS_${cmd_id}_OPTS"
 		local cmd_flags="${!var_name:-}"
 		if [[ -n "$cmd_flags" ]]; then
 			local cmd_flags_array=()
