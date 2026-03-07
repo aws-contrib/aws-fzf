@@ -80,11 +80,12 @@ _aws_secret_list() {
 		--footer "$_fzf_icon Secret Manager Secrets $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_secret_source_dir/aws_secret_cmd.sh preview-help" \
-		--bind "ctrl-r:reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "load:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context)" \
+		--bind "ctrl-o:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq . | gum pager)" \
-		--bind "ctrl-o:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
-		--bind "alt-a:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})" \
+		--bind "alt-a:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
+		--bind "alt-n:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})" \
 		--bind "alt-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh copy-value {1})" \
 		--bind "alt-h:toggle-preview"
 }

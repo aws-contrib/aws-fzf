@@ -60,12 +60,13 @@ _aws_dsql_aws_dsql_cluster_list() {
 		--footer "$_fzf_icon DSQL Clusters $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_dsql_source_dir/aws_dsql_cmd.sh preview-help" \
-		--bind "ctrl-r:reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${aws_dsql_cluster_args[*]})" \
-		--bind "ctrl-o:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
+		--bind "ctrl-r:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($_aws_dsql_source_dir/aws_dsql_cmd.sh list ${aws_dsql_cluster_args[*]})" \
+		--bind "load:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context)" \
+		--bind "ctrl-o:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})" \
-		--bind "alt-a:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-name {1})" \
+		--bind "alt-a:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-arn {1})" \
+		--bind "alt-n:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 

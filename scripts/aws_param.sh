@@ -67,11 +67,12 @@ _aws_aws_param_list() {
 		--footer "$_fzf_icon System Manager Parameters $_fzf_split $aws_context" \
 		--preview-label " Keyboard Shortcuts " \
 		--preview "$_aws_param_source_dir/aws_param_cmd.sh preview-help" \
-		--bind "ctrl-r:reload($reload_cmd)" \
+		--bind "ctrl-r:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Reloading...)+reload($reload_cmd)" \
+		--bind "load:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context)" \
+		--bind "ctrl-o:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq . | gum pager)" \
-		--bind "ctrl-o:execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
-		--bind "alt-a:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
-		--bind "alt-n:execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})" \
+		--bind "alt-a:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
+		--bind "alt-n:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})" \
 		--bind "alt-v:execute($_aws_param_source_dir/aws_param_cmd.sh copy-value {1})" \
 		--bind "alt-h:toggle-preview"
 }
