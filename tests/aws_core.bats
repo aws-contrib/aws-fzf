@@ -206,25 +206,65 @@ MOCK
 # _get_aws_context
 # ---------------------------------------------------------------------------
 
-@test "_get_aws_context: returns the context as account-region" {
-	cat > "$MOCK_BIN/aws" << 'MOCK'
-#!/usr/bin/env bash
-case "$1 $2 $3" in
-  "sts get-caller-identity") echo '{"Account":"123456789012","Arn":"arn:aws:iam::123456789012:user/test"}' ;;
-  "configure get region") echo "us-east-1" ;;
-  *) echo "{}" ;;
-esac
-MOCK
-	chmod +x "$MOCK_BIN/aws"
-
+@test "_get_aws_context: returns AWS_ACCOUNT_ID-AWS_REGION when both are set" {
 	run bash -c "
-		export PATH='$MOCK_BIN:\$PATH'
+		export AWS_ACCOUNT_ID=123456789012
 		export AWS_REGION=us-east-1
 		source '$PROJECT_ROOT/scripts/aws_core.sh'
 		_get_aws_context
 	"
 	[ "$status" -eq 0 ]
-	[[ "$output" =~ -us-east-1$ ]]
+	[ "$output" = "123456789012-us-east-1" ]
+}
+
+@test "_get_aws_context: returns AWS_ACCOUNT_ID-AWS_DEFAULT_REGION when AWS_REGION is unset" {
+	run bash -c "
+		export AWS_ACCOUNT_ID=123456789012
+		unset AWS_REGION
+		export AWS_DEFAULT_REGION=eu-west-1
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		_get_aws_context
+	"
+	[ "$status" -eq 0 ]
+	[ "$output" = "123456789012-eu-west-1" ]
+}
+
+@test "_get_aws_context: falls back to AWS_PROFILE when AWS_ACCOUNT_ID is unset" {
+	run bash -c "
+		unset AWS_ACCOUNT_ID
+		export AWS_PROFILE=my-profile
+		export AWS_REGION=eu-west-1
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		_get_aws_context
+	"
+	[ "$status" -eq 0 ]
+	[ "$output" = "my-profile" ]
+}
+
+@test "_get_aws_context: falls back to AWS_PROFILE when AWS_REGION is unset" {
+	run bash -c "
+		export AWS_ACCOUNT_ID=123456789012
+		unset AWS_REGION
+		unset AWS_DEFAULT_REGION
+		export AWS_PROFILE=my-profile
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		_get_aws_context
+	"
+	[ "$status" -eq 0 ]
+	[ "$output" = "my-profile" ]
+}
+
+@test "_get_aws_context: returns unknown when AWS_ACCOUNT_ID, AWS_REGION, and AWS_PROFILE are all unset" {
+	run bash -c "
+		unset AWS_ACCOUNT_ID
+		unset AWS_REGION
+		unset AWS_DEFAULT_REGION
+		unset AWS_PROFILE
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		_get_aws_context
+	"
+	[ "$status" -eq 0 ]
+	[ "$output" = "unknown" ]
 }
 
 # ---------------------------------------------------------------------------

@@ -137,16 +137,16 @@ _get_aws_region() {
 #   Returns "unknown-region" if STS call fails
 #
 _get_aws_account_id() {
-	aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown"
+	echo "${AWS_ACCOUNT_ID:-$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo 'unknown')}"
 }
 
 _get_aws_context() {
-	local account_id
-	account_id=$(_get_aws_account_id)
-
-	local region
-	region=$(_get_aws_region)
-	echo "${account_id}-${region}"
+	local AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-}}"
+	if [ -n "${AWS_ACCOUNT_ID:-}" ] && [ -n "$AWS_REGION" ]; then
+		echo "${AWS_ACCOUNT_ID}-${AWS_REGION}"
+	else
+		echo "${AWS_PROFILE:-unknown}"
+	fi
 }
 
 # _open_url()
