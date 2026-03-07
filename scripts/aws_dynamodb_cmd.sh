@@ -135,8 +135,8 @@ _aws_dynamodb_preview_help() {
 | **`enter`** | View details |
 | **`ctrl-o`** | Open overview |
 | **`alt-enter`** | Open items (scan) |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

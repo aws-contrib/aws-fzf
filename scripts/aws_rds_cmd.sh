@@ -456,8 +456,8 @@ _aws_rds_instance_preview_help() {
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-c`** | Connect (psql) |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy identifier |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy identifier |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
@@ -479,8 +479,8 @@ _aws_rds_cluster_preview_help() {
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-c`** | Connect (psql) |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy identifier |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy identifier |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

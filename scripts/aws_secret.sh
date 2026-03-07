@@ -84,8 +84,8 @@ _aws_secret_list() {
 		--bind "load:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh view-secret {1})" \
 		--bind "enter:execute(aws secretsmanager describe-secret --secret-id {1} | jq . | gum pager)" \
-		--bind "alt-a:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon Secret Manager Secrets $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_secret_source_dir/aws_secret_cmd.sh copy-name {1})" \
 		--bind "alt-v:execute($_aws_secret_source_dir/aws_secret_cmd.sh copy-value {1})" \
 		--bind "alt-h:toggle-preview"
 }
@@ -114,8 +114,8 @@ KEYBOARD SHORTCUTS:
         enter       Show secret metadata (without value)
         ctrl-o      Open secret in AWS Console
         alt-v       Copy secret value to clipboard
-        alt-a       Copy secret ARN to clipboard
-        alt-n       Copy secret name to clipboard
+        ctrl-y      Copy secret name to clipboard
+        alt-y       Copy secret ARN to clipboard
 
 PERFORMANCE:
     The list-secrets API paginates results automatically.

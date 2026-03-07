@@ -326,8 +326,8 @@ _aws_log_group_preview_help() {
 | **`alt-enter`** | List streams |
 | **`alt-t`** | Tail logs |
 | **`alt-l`** | Read logs |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
@@ -350,8 +350,8 @@ _aws_log_stream_preview_help() {
 | **`ctrl-o`** | Open in console |
 | **`alt-t`** | Tail logs |
 | **`alt-l`** | Read logs |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

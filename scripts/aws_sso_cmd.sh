@@ -218,8 +218,8 @@ _aws_sso_preview_help() {
 | **`ctrl-o`** | Open console |
 | **`alt-enter`** | Login |
 | **`alt-x`** | Logout |
-| **`alt-n`** | Copy name |
-| **`alt-a`** | Copy account ID |
+| **`ctrl-y`** | Copy name |
+| **`alt-y`** | Copy account ID |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

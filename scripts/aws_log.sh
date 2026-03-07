@@ -73,8 +73,8 @@ _aws_log_aws_log_group_list() {
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log {1})" \
 		--bind "alt-enter:execute($_aws_log_source_dir/aws_log.sh stream list --log-group-name {1})" \
-		--bind "alt-a:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon CloudWatch Log Groups $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -161,8 +161,8 @@ _aws_log_aws_log_stream_list() {
 		--bind "enter:execute(aws logs describe-log-streams --log-group-name '$log_group_name' --log-stream-name-prefix {1} --max-items 1 | jq . | gum pager)" \
 		--bind "alt-t:execute($_aws_log_source_dir/aws_log_cmd.sh tail-log '$log_group_name' {1})" \
 		--bind "alt-l:execute($_aws_log_source_dir/aws_log_cmd.sh read-log '$log_group_name' {1})" \
-		--bind "alt-a:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Copying ARN...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
-		--bind "alt-n:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Copying name...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Copying ARN...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-group-arn '$log_group_name')" \
+		--bind "ctrl-y:change-footer($_fzf_icon CloudWatch Log Streams $_fzf_split $aws_context $_fzf_split $log_group_name $_fzf_split Copying name...)+execute-silent($_aws_log_source_dir/aws_log_cmd.sh copy-stream-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -194,8 +194,8 @@ KEYBOARD SHORTCUTS:
         alt-t       Tail all streams in log group (terminal)
         alt-l       View historical logs (last N hours)
         alt-enter   List streams in log group
-        alt-a       Copy log group ARN to clipboard
-        alt-n       Copy log group name to clipboard
+        ctrl-y      Copy log group name to clipboard
+        alt-y       Copy log group ARN to clipboard
 
     Log Streams:
         ctrl-r      Reload the list
@@ -203,8 +203,8 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open log stream in AWS Console
         alt-t       Tail logs in terminal (follow new events)
         alt-l       View historical logs from this stream
-        alt-a       Copy log group ARN to clipboard
-        alt-n       Copy log stream name to clipboard
+        ctrl-y      Copy log stream name to clipboard
+        alt-y       Copy log group ARN to clipboard
 
 PERFORMANCE:
     Log group listing is paginated automatically (up to 50 per page).

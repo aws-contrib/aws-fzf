@@ -65,8 +65,8 @@ _aws_dynamodb_aws_dynamodb_table_list() {
 		--bind "ctrl-o:change-footer($_fzf_icon DynamoDB Tables $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-table {1})" \
 		--bind "alt-enter:change-footer($_fzf_icon DynamoDB Tables $_fzf_split $aws_context $_fzf_split Opening items...)+execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh view-items {1})" \
 		--bind "enter:execute(aws dynamodb describe-table --table-name {1} | jq . | gum pager)" \
-		--bind "alt-a:change-footer($_fzf_icon DynamoDB Tables $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon DynamoDB Tables $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon DynamoDB Tables $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon DynamoDB Tables $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_dynamodb_source_dir/aws_dynamodb_cmd.sh copy-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -92,8 +92,8 @@ KEYBOARD SHORTCUTS:
         enter       View table details (full JSON)
         ctrl-o      Open table in AWS Console (overview)
         alt-enter   Open items explorer in AWS Console
-        alt-a       Copy table ARN to clipboard
-        alt-n       Copy table name to clipboard
+        ctrl-y      Copy table name to clipboard
+        alt-y       Copy table ARN to clipboard
 
 PERFORMANCE:
     Table listing is optimized for speed - only table names are fetched initially.

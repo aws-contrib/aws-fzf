@@ -65,8 +65,8 @@ _aws_dsql_aws_dsql_cluster_list() {
 		--bind "ctrl-o:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws dsql get-cluster --identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_dsql_source_dir/aws_dsql_cmd.sh connect-cluster {1})" \
-		--bind "alt-a:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon DSQL Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_dsql_source_dir/aws_dsql_cmd.sh copy-cluster-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -92,8 +92,8 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open cluster in AWS Console
         enter       View cluster details (full JSON)
         alt-c       Connect to cluster with psql (IAM auth)
-        alt-a       Copy cluster ARN to clipboard
-        alt-n       Copy cluster identifier to clipboard
+        ctrl-y      Copy cluster identifier to clipboard
+        alt-y       Copy cluster ARN to clipboard
 
 SECURITY:
     DSQL cluster connections (alt-c) require:

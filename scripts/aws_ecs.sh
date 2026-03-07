@@ -85,8 +85,8 @@ _aws_ecs_cluster_list() {
 		--bind "load:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-cluster {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh service list --cluster {1})" \
-		--bind "alt-a:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon ECS Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-cluster-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -171,8 +171,8 @@ _aws_ecs_aws_ecs_service_list() {
 		--bind "load:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster)" \
 		--bind "ctrl-o:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Opening in console...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-service '$cluster' {1})" \
 		--bind "alt-enter:execute($_aws_ecs_source_dir/aws_ecs.sh task list --cluster '$cluster' --service-name {1})" \
-		--bind "alt-a:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Copying ARN...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn '$cluster' {1})" \
-		--bind "alt-n:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Copying name...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Copying ARN...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-arn '$cluster' {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon ECS Services $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Copying name...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-service-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -257,7 +257,7 @@ _aws_ecs_aws_ecs_task_list() {
 		--bind "load:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster)" \
 		--bind "ctrl-o:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Opening in console...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh view-task '$cluster' {1})" \
 		--bind "enter:execute(aws ecs describe-tasks --cluster '$cluster' --tasks {1} | jq . | gum pager)" \
-		--bind "alt-a:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Copying ARN...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})" \
+		--bind "alt-y:change-footer($_fzf_icon ECS Tasks $_fzf_split $aws_context $_fzf_split $cluster $_fzf_split Copying ARN...)+execute-silent($_aws_ecs_source_dir/aws_ecs_cmd.sh copy-task-arn {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -287,21 +287,21 @@ KEYBOARD SHORTCUTS:
         ctrl-r      Reload the list
         ctrl-o      Open cluster in AWS Console
         alt-enter   List services in cluster
-        alt-a       Copy cluster ARN to clipboard
-        alt-n       Copy cluster name to clipboard
+        ctrl-y      Copy cluster name to clipboard
+        alt-y       Copy cluster ARN to clipboard
 
     Services:
         ctrl-r      Reload the list
         ctrl-o      Open service in AWS Console
         alt-enter   List tasks for service
-        alt-a       Copy service ARN to clipboard
-        alt-n       Copy service name to clipboard
+        ctrl-y      Copy service name to clipboard
+        alt-y       Copy service ARN to clipboard
 
     Tasks:
         ctrl-r      Reload the list
         enter       Show task details
         ctrl-o      Open task in AWS Console
-        alt-a       Copy task ARN to clipboard
+        alt-y       Copy task ARN to clipboard
 
 PERFORMANCE:
     ECS resources are fetched in batches to handle API limits:

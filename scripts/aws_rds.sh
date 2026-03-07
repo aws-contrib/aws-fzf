@@ -72,8 +72,8 @@ _aws_rds_instance_list() {
 		--bind "ctrl-o:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-instance {1})" \
 		--bind "enter:execute(aws rds describe-db-instances --db-instance-identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-instance {1})" \
-		--bind "alt-a:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon RDS Instances $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-instance-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -141,8 +141,8 @@ _aws_rds_aws_rds_cluster_list() {
 		--bind "ctrl-o:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh view-cluster {1})" \
 		--bind "enter:execute(aws rds describe-db-clusters --db-cluster-identifier {1} | jq . | gum pager)" \
 		--bind "alt-c:become($_aws_rds_source_dir/aws_rds_cmd.sh connect-cluster {1})" \
-		--bind "alt-a:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon RDS Clusters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_rds_source_dir/aws_rds_cmd.sh copy-cluster-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -170,8 +170,8 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open resource in AWS Console
         enter       View resource details (full JSON)
         alt-c       Connect to database with psql (PostgreSQL only, requires IAM auth)
-        alt-a       Copy resource ARN to clipboard
-        alt-n       Copy resource identifier to clipboard
+        ctrl-y      Copy resource identifier to clipboard
+        alt-y       Copy resource ARN to clipboard
 
 SECURITY:
     Database connections (alt-c) require:

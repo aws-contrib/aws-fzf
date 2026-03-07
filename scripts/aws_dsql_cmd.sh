@@ -202,8 +202,8 @@ _aws_dsql_preview_help() {
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-c`** | Connect (psql) |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

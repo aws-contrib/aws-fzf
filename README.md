@@ -90,8 +90,8 @@ aws fzf secret list --filters Key=name,Values=prod*
 | `enter` | Show secret metadata |
 | `ctrl-o` | Open in AWS Console |
 | `alt-v` | Copy secret value to clipboard |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 ## Parameter Store
@@ -107,8 +107,8 @@ aws fzf param list --max-results 100
 | `enter` | Show parameter metadata |
 | `ctrl-o` | Open in AWS Console |
 | `alt-v` | Copy parameter value to clipboard |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 ## Lambda
@@ -123,8 +123,8 @@ aws fzf lambda list --region us-west-2
 | `enter` | Show function configuration |
 | `ctrl-o` | Open in AWS Console |
 | `alt-t` | Tail function logs in real-time |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 ## CloudWatch Logs
@@ -143,8 +143,8 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 | `alt-t` | Tail all streams in group |
 | `alt-l` | Read historical logs |
 | `alt-enter` | List streams in group |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 **Log Streams**
@@ -155,8 +155,8 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 | `ctrl-o` | Open in AWS Console |
 | `alt-t` | Tail logs from stream |
 | `alt-l` | Read historical logs from stream |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 
 ## ECS
 
@@ -172,8 +172,8 @@ aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
 |-----|--------|
 | `ctrl-o` | Open in AWS Console |
 | `alt-enter` | List services in cluster |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 **Services**
@@ -182,8 +182,8 @@ aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
 |-----|--------|
 | `ctrl-o` | Open in AWS Console |
 | `alt-enter` | List tasks for service |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 
 **Tasks**
 
@@ -191,7 +191,7 @@ aws fzf ecs task list --cluster my-cluster --desired-status RUNNING
 |-----|--------|
 | `enter` | View task details |
 | `ctrl-o` | Open in AWS Console |
-| `alt-a` | Copy ARN to clipboard |
+| `alt-y` | Copy ARN to clipboard |
 
 ## S3
 
@@ -207,8 +207,8 @@ aws fzf s3 object list --bucket my-bucket --prefix logs/2024/ --max-items 5000
 |-----|--------|
 | `ctrl-o` | Open in AWS Console |
 | `alt-enter` | List objects in bucket |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 **Objects**
@@ -217,8 +217,8 @@ aws fzf s3 object list --bucket my-bucket --prefix logs/2024/ --max-items 5000
 |-----|--------|
 | `enter` | View object metadata |
 | `ctrl-o` | Open in AWS Console |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy key to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy key to clipboard |
 
 ## RDS
 
@@ -235,8 +235,8 @@ aws fzf rds instance list --region us-west-2
 | `enter` | View instance details |
 | `ctrl-o` | Open in AWS Console |
 | `alt-c` | Connect with psql (IAM auth, PostgreSQL only) |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy identifier to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy identifier to clipboard |
 | `alt-h` | Toggle help |
 
 **DB Clusters (Aurora)**
@@ -246,8 +246,8 @@ aws fzf rds instance list --region us-west-2
 | `enter` | View cluster details |
 | `ctrl-o` | Open in AWS Console |
 | `alt-c` | Connect with psql (IAM auth, PostgreSQL only) |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy identifier to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy identifier to clipboard |
 
 > `alt-c` requires IAM database authentication enabled on the instance and `psql` installed.
 > A temporary 15-minute auth token is generated automatically.
@@ -264,8 +264,8 @@ aws fzf dsql cluster list --region us-east-1
 | `enter` | View cluster details |
 | `ctrl-o` | Open in AWS Console |
 | `alt-c` | Connect with psql (IAM auth) |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy identifier to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy identifier to clipboard |
 | `alt-h` | Toggle help |
 
 > `alt-c` requires `psql` installed. A 1-hour auth token is generated automatically.
@@ -283,8 +283,8 @@ aws fzf dynamodb table list --region us-east-1
 | `enter` | View table details (schema, indexes, throughput) |
 | `ctrl-o` | Open table overview in AWS Console |
 | `alt-enter` | Open item explorer in AWS Console |
-| `alt-a` | Copy ARN to clipboard |
-| `alt-n` | Copy name to clipboard |
+| `alt-y` | Copy ARN to clipboard |
+| `ctrl-y` | Copy name to clipboard |
 | `alt-h` | Toggle help |
 
 ## SSO
@@ -302,8 +302,8 @@ that has `sso_start_url` set.
 | `alt-enter` | Login (opens browser for SSO authentication) |
 | `ctrl-r` | Reload profile list |
 | `ctrl-o` | Open AWS Console |
-| `alt-n` | Copy profile name to clipboard |
-| `alt-a` | Copy account ID to clipboard |
+| `ctrl-y` | Copy profile name to clipboard |
+| `alt-y` | Copy account ID to clipboard |
 | `alt-x` | Logout from profile |
 | `alt-h` | Toggle help |
 

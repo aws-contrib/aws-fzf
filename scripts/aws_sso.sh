@@ -59,8 +59,8 @@ _aws_sso_profile_list() {
 		--bind "load:change-footer($_fzf_icon SSO Profiles)" \
 		--bind "ctrl-o:execute($_aws_sso_source_dir/aws_sso_cmd.sh open {1})+abort" \
 		--bind "alt-enter:execute($_aws_sso_source_dir/aws_sso_cmd.sh login {1})+abort" \
-		--bind "alt-n:change-footer($_fzf_icon SSO Profiles $_fzf_split Copying name...)+execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-profile-name {1})" \
-		--bind "alt-a:change-footer($_fzf_icon SSO Profiles $_fzf_split Copying account ID...)+execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-account-id {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon SSO Profiles $_fzf_split Copying name...)+execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-profile-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon SSO Profiles $_fzf_split Copying account ID...)+execute-silent($_aws_sso_source_dir/aws_sso_cmd.sh copy-account-id {1})" \
 		--bind "alt-x:change-footer($_fzf_icon SSO Profiles $_fzf_split Logging out...)+execute($_aws_sso_source_dir/aws_sso_cmd.sh logout {1})+reload($_aws_sso_source_dir/aws_sso_cmd.sh list)" \
 		--bind "alt-h:toggle-preview" |
 		awk '{print $1}'
@@ -86,8 +86,8 @@ KEYBOARD SHORTCUTS:
 	alt-enter   Login to selected profile (opens browser for SSO, then exits fzf)
 	ctrl-r      Reload the profile list
 	ctrl-o      Open AWS console in browser and exit (bypasses account selection)
-	alt-n       Copy profile name to clipboard
-	alt-a       Copy account ID to clipboard
+	ctrl-y      Copy profile name to clipboard
+	alt-y       Copy account ID to clipboard
 	alt-x       Logout from selected profile (then reload list)
 
 PROFILE DISCOVERY:

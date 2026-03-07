@@ -117,8 +117,8 @@ _aws_lambda_preview_help() {
 | **`ctrl-o`** | Open in console |
 | **`alt-t`** | Tail logs |
 | **`alt-l`** | Read logs |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

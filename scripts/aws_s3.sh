@@ -83,8 +83,8 @@ _aws_s3_aws_s3_bucket_list() {
 		--bind "load:change-footer($_fzf_icon S3 Buckets $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon S3 Buckets $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-bucket {1})" \
 		--bind "alt-enter:execute($_aws_s3_source_dir/aws_s3.sh object list --bucket {1})" \
-		--bind "alt-a:change-footer($_fzf_icon S3 Buckets $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon S3 Buckets $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon S3 Buckets $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon S3 Buckets $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-bucket-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -169,8 +169,8 @@ _aws_s3_aws_s3_object_list() {
 		--bind "load:change-footer($_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket)" \
 		--bind "ctrl-o:change-footer($_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket $_fzf_split Opening in console...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh view-object '$bucket' {1})" \
 		--bind "enter:execute(aws s3api head-object --bucket \"$bucket\" --key {1} | jq . | gum pager)" \
-		--bind "alt-a:change-footer($_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket $_fzf_split Copying ARN...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn '$bucket' {1})" \
-		--bind "alt-n:change-footer($_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket $_fzf_split Copying key...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})" \
+		--bind "alt-y:change-footer($_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket $_fzf_split Copying ARN...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-arn '$bucket' {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon S3 Objects $_fzf_split $aws_context $_fzf_split $bucket $_fzf_split Copying key...)+execute-silent($_aws_s3_source_dir/aws_s3_cmd.sh copy-object-key {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -209,15 +209,15 @@ KEYBOARD SHORTCUTS:
         ctrl-r      Reload the list
         ctrl-o      Open bucket in AWS Console
         alt-enter   List objects in bucket
-        alt-a       Copy bucket ARN to clipboard
-        alt-n       Copy bucket name to clipboard
+        ctrl-y      Copy bucket name to clipboard
+        alt-y       Copy bucket ARN to clipboard
 
     Objects:
         ctrl-r      Reload the list
         enter       View object metadata
         ctrl-o      Open object in AWS Console
-        alt-a       Copy object ARN to clipboard
-        alt-n       Copy object key to clipboard
+        ctrl-y      Copy object key to clipboard
+        alt-y       Copy object ARN to clipboard
 
 EXAMPLES:
     # Bucket listing

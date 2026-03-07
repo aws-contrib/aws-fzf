@@ -181,8 +181,8 @@ _aws_s3_bucket_preview_help() {
 | **`enter`** | Return bucket name |
 | **`ctrl-o`** | Open in console |
 | **`alt-enter`** | List objects |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
@@ -203,8 +203,8 @@ _aws_s3_object_preview_help() {
 | **`ctrl-r`** | Reload list |
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy key |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy key |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

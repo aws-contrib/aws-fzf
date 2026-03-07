@@ -71,8 +71,8 @@ _aws_aws_param_list() {
 		--bind "load:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context)" \
 		--bind "ctrl-o:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Opening in console...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh view-parameter {1})" \
 		--bind "enter:execute(aws ssm describe-parameters --filters 'Key=Name,Values={1}' | jq . | gum pager)" \
-		--bind "alt-a:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon System Manager Parameters $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_param_source_dir/aws_param_cmd.sh copy-name {1})" \
 		--bind "alt-v:execute($_aws_param_source_dir/aws_param_cmd.sh copy-value {1})" \
 		--bind "alt-h:toggle-preview"
 }
@@ -101,8 +101,8 @@ KEYBOARD SHORTCUTS:
         enter       Show parameter metadata (without value)
         ctrl-o      Open parameter in AWS Console
         alt-v       Copy parameter value to clipboard (prompts for SecureString)
-        alt-a       Copy parameter ARN to clipboard
-        alt-n       Copy parameter name to clipboard
+        ctrl-y      Copy parameter name to clipboard
+        alt-y       Copy parameter ARN to clipboard
 
 SECURITY:
     SecureString parameters require explicit confirmation before decryption.

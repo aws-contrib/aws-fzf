@@ -340,8 +340,8 @@ _aws_ecs_cluster_preview_help() {
 | **`enter`** | Return cluster name |
 | **`ctrl-o`** | Open in console |
 | **`alt-enter`** | List services |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
@@ -363,8 +363,8 @@ _aws_ecs_service_preview_help() {
 | **`enter`** | Return service name |
 | **`ctrl-o`** | Open in console |
 | **`alt-enter`** | List tasks |
-| **`alt-a`** | Copy ARN |
-| **`alt-n`** | Copy name |
+| **`alt-y`** | Copy ARN |
+| **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
@@ -385,7 +385,7 @@ _aws_ecs_task_preview_help() {
 | **`ctrl-r`** | Reload list |
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
-| **`alt-a`** | Copy ARN |
+| **`alt-y`** | Copy ARN |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF

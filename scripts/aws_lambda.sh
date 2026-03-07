@@ -85,8 +85,8 @@ _aws_lambda_list() {
 		--bind "enter:execute(aws lambda get-function --function-name {1} | jq . | gum pager)" \
 		--bind "alt-t:execute($_aws_lambda_source_dir/aws_log_cmd.sh tail-log /aws/lambda/{1})" \
 		--bind "alt-l:execute($_aws_lambda_source_dir/aws_log_cmd.sh read-log /aws/lambda/{1})" \
-		--bind "alt-a:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-arn {1})" \
-		--bind "alt-n:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-name {1})" \
+		--bind "alt-y:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Copying ARN...)+execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-arn {1})" \
+		--bind "ctrl-y:change-footer($_fzf_icon Lambda Functions $_fzf_split $aws_context $_fzf_split Copying name...)+execute-silent($_aws_lambda_source_dir/aws_lambda_cmd.sh copy-name {1})" \
 		--bind "alt-h:toggle-preview"
 }
 
@@ -115,8 +115,8 @@ KEYBOARD SHORTCUTS:
         ctrl-o      Open function in AWS Console
         alt-t       Tail function logs from CloudWatch
         alt-l       View historical logs from CloudWatch
-        alt-a       Copy function ARN to clipboard
-        alt-n       Copy function name to clipboard
+        ctrl-y      Copy function name to clipboard
+        alt-y       Copy function ARN to clipboard
 
 PERFORMANCE:
     The list-functions API paginates results automatically.
