@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.0](https://github.com/aws-contrib/aws-fzf/compare/v0.3.1...v0.4.0) (2026-03-07)
+
+
+### Features
+
+* add ANSI color support to all service list views ([4738367](https://github.com/aws-contrib/aws-fzf/commit/47383675017092744d3c3cb2b1e25b32f6eeae43))
+* add aws_render.awk column-aware TSV renderer with per-column styling ([e9c6fe4](https://github.com/aws-contrib/aws-fzf/commit/e9c6fe458ad165fbf9835e507d3cc13f02156569))
+* add change-footer status messages to fzf bindings ([88a4df2](https://github.com/aws-contrib/aws-fzf/commit/88a4df209b70badf77b772ef1bf4fc0535e6959d))
+* add packages.default to flake and document nix installation ([05bf8c2](https://github.com/aws-contrib/aws-fzf/commit/05bf8c263951e365eac292fbff765c657fd2cab1))
+
+
+### Bug Fixes
+
+* add default value syntax to indirect variable expansion ([499c9c8](https://github.com/aws-contrib/aws-fzf/commit/499c9c87b1ec7418dfe4b5377be519d091ead6d0))
+
+
+### Performance Improvements
+
+* remove STS context call from SSO profile list ([e293283](https://github.com/aws-contrib/aws-fzf/commit/e2932834a42f74dee5311d17f5b64557c86af2cd))
+* replace STS call in _get_aws_context with env var lookup ([07bc58b](https://github.com/aws-contrib/aws-fzf/commit/07bc58b7c3698ee41b2d084e9308806587f805db))
+
 ## [0.3.1](https://github.com/aws-contrib/aws-fzf/compare/v0.3.0...v0.3.1) (2026-02-27)
 
 
