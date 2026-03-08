@@ -44,6 +44,23 @@ Add the following to `~/.aws/cli/alias` (create the file if it doesn't exist):
 fzf = !aws-fzf
 ```
 
+### Zsh Plugin
+
+The plugin adds `aws-fzf` to your `$PATH` so the AWS CLI alias can resolve it without a hardcoded path.
+
+> **Note:** Bash 4.4+ is still required. On macOS: `brew install bash`.
+
+```zsh
+zinit light aws-contrib/aws-fzf
+```
+
+Then add to `~/.aws/cli/alias`:
+
+```ini
+[toplevel]
+fzf = !aws-fzf
+```
+
 ### Manual
 
 ```bash
