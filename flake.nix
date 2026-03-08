@@ -34,6 +34,15 @@
             makeWrapper $out/share/aws-fzf/aws-fzf $out/bin/aws-fzf \
               --prefix PATH : ${pkgs.lib.makeBinPath runtimeDeps}
           '';
+
+          meta = with pkgs.lib; {
+            description = "Interactive terminal UI for AWS using fuzzy search";
+            homepage = "https://github.com/aws-contrib/aws-fzf";
+            license = licenses.mit;
+            maintainers = [ ];
+            mainProgram = "aws-fzf";
+            platforms = platforms.unix;
+          };
         };
 
         devShells.default = pkgs.mkShell {
