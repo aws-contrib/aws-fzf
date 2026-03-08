@@ -16,7 +16,13 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        runtimeDeps = with pkgs; [ bash fzf gum jq awscli2 ];
+        runtimeDeps = with pkgs; [
+          bash
+          fzf
+          gum
+          jq
+          awscli2
+        ];
       in
       {
         packages.default = pkgs.stdenv.mkDerivation {
@@ -43,6 +49,7 @@
             mainProgram = "aws-fzf";
             platforms = platforms.unix;
           };
+
         };
 
         devShells.default = pkgs.mkShell {
