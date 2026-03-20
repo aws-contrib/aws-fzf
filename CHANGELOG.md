@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/aws-contrib/aws-fzf/compare/v0.4.0...v0.5.0) (2026-03-20)
+
+
+### Features
+
+* add zsh plugin for zinit installation ([fb10fc9](https://github.com/aws-contrib/aws-fzf/commit/fb10fc92e0290b1bddf01fcdf3769a9e1e426718))
+
+
+### Bug Fixes
+
+* exclude tests from Nix package installPhase ([1ae2c34](https://github.com/aws-contrib/aws-fzf/commit/1ae2c3455e8e0f6b88f3548c92f3ee9896f8ea30))
+
 ## [0.4.0](https://github.com/aws-contrib/aws-fzf/compare/v0.3.1...v0.4.0) (2026-03-07)
 
 
