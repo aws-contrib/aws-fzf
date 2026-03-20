@@ -53,6 +53,7 @@
         };
 
         devShells.default = pkgs.mkShell {
+          name = "aws-fzf";
           packages = with pkgs; [
             bash
             fzf
