@@ -1,10 +1,10 @@
 # aws-fzf
 
-An interactive terminal UI for AWS that lets you quickly discover, inspect, and manage resources using fuzzy search.
+> An interactive terminal UI for AWS that lets you quickly discover, inspect, and manage resources using fuzzy search.
 
 [![test](https://github.com/aws-contrib/aws-fzf/actions/workflows/test.yml/badge.svg)](https://github.com/aws-contrib/aws-fzf/actions/workflows/test.yml)
+[![Version](https://img.shields.io/github/v/release/aws-contrib/aws-fzf)](https://github.com/aws-contrib/aws-fzf/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Version](https://img.shields.io/github/v/release/aws-contrib/aws-fzf)
 
 ## Prerequisites
 
