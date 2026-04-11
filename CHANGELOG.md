@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/aws-contrib/aws-fzf/compare/v0.5.0...v0.5.1) (2026-04-11)
+
+
+### Bug Fixes
+
+* add postCreateCommand to restore nix volume permissions ([39a763b](https://github.com/aws-contrib/aws-fzf/commit/39a763b09dc70888c6c33292dd01e6d65bae82ff))
+
 ## [0.5.0](https://github.com/aws-contrib/aws-fzf/compare/v0.4.0...v0.5.0) (2026-03-20)
 
 
