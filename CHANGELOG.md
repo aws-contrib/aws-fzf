@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/aws-contrib/aws-fzf/compare/v0.5.1...v0.5.2) (2026-05-04)
+
+
+### Bug Fixes
+
+* **github:** correct action versions in update.yml ([b574593](https://github.com/aws-contrib/aws-fzf/commit/b574593fcb93398789fdb5c837817835a5c17629))
+
 ## [0.5.1](https://github.com/aws-contrib/aws-fzf/compare/v0.5.0...v0.5.1) (2026-04-23)
 
 
