@@ -386,6 +386,6 @@ DEBUG=1 aws fzf secret list
 
 ## License
 
-[MIT](LICENSE) — Copyright (c) 2025 aws-contrib
+[MIT](LICENSE)
 
 <!-- markdownlint-disable-file MD013 -->
