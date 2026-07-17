@@ -115,6 +115,15 @@ MOCK
 	[ "$status" -eq 0 ]
 }
 
+@test "_aws_fzf_options: includes --no-hscroll to keep columns aligned" {
+	run bash -c "
+		source '$PROJECT_ROOT/scripts/aws_core.sh'
+		_aws_fzf_options
+		printf '%s\n' \"\${_fzf_options[@]}\" | grep -qx -- '--no-hscroll'
+	"
+	[ "$status" -eq 0 ]
+}
+
 @test "_aws_fzf_options: includes --layout in the default options" {
 	run bash -c "
 		source '$PROJECT_ROOT/scripts/aws_core.sh'
