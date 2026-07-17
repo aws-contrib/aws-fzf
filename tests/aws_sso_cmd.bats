@@ -206,3 +206,19 @@ MOCK
 	[ "$status" -eq 0 ]
 	[[ "$output" =~ "123456789012" ]]
 }
+
+@test "list: discovers profiles that inherit sso_start_url from an [sso-session] block" {
+	AWS_CONFIG_FILE="$FIXTURES/aws-config-sso-session.ini" \
+		run bash "$CMD" list
+	[ "$status" -eq 0 ]
+	[[ "$output" =~ "dev-account" ]]
+	[[ "$output" =~ "prod-account" ]]
+	[[ "$output" =~ "123456789012" ]]
+}
+
+@test "list: excludes non-SSO profiles when using the sso-session format" {
+	AWS_CONFIG_FILE="$FIXTURES/aws-config-sso-session.ini" \
+		run bash "$CMD" list
+	[ "$status" -eq 0 ]
+	[[ ! "$output" =~ "static-keys" ]]
+}

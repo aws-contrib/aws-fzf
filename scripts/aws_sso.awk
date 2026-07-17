@@ -8,48 +8,75 @@
 #
 # OUTPUT:
 #   Tab-separated rows: PROFILE  NAME  TYPE  ACCOUNT  ROLE  REGION
-#   Only profiles with sso_start_url are emitted.
+#   Emits profiles that resolve to an sso_start_url, whether it is set
+#   directly on the profile (legacy format) or inherited from an
+#   [sso-session] block via sso_session = <name> (AWS CLI v2 format).
 
 BEGIN { print "PROFILE\tNAME\tTYPE\tACCOUNT\tROLE\tREGION" }
 
 # Skip comment and blank lines
 /^[[:space:]]*[#;]/ || /^[[:space:]]*$/ { next }
 
-# New section — flush previous profile, reset state
+# New section — save the previous one, then classify this header.
+# We can't emit yet: a profile may reference an [sso-session] block that
+# appears later in the file, so everything is buffered until END.
 /^\[/ {
-	flush()
-	s = $0; gsub(/^\[|\]/, "", s)
-	if      (s == "default")  profile = "default"
-	else if (s ~ /^profile /) profile = substr(s, 9)
-	else                      profile = ""
-	sso_url = account = role = region = name = type = ""
+	save()
+	s = $0
+	sub(/[[:space:]]*[#;].*$/, "", s)       # strip inline comment
+	gsub(/^\[[[:space:]]*|[[:space:]]*\].*$/, "", s)  # strip [ ] and padding
+	stype = ""; sname = ""
+	if      (s == "default")                { stype = "profile"; sname = "default" }
+	else if (s ~ /^profile[[:space:]]+/)    { stype = "profile"; sname = s; sub(/^profile[[:space:]]+/, "", sname) }
+	else if (s ~ /^sso-session[[:space:]]+/) { stype = "session"; sname = s; sub(/^sso-session[[:space:]]+/, "", sname) }
+	sso_url = account = role = region = name = type = sess = ""
+	next
 }
 
-# Key=value lines inside a recognised profile section
-profile != "" && /=/ {
+# Key=value lines inside a recognised section
+stype != "" && index($0, "=") {
 	eq = index($0, "=")
-	k = substr($0, 1, eq-1); sub(/[[:space:]]+$/, "", k)
-	v = substr($0, eq+1);    sub(/^[[:space:]]+/, "", v)
-	if (k == "sso_start_url")  sso_url = v
-	if (k == "sso_account_id") account  = v
-	if (k == "sso_role_name")  role     = v
-	if (k == "region")         region   = v
-	if (k == "name")           name     = v
-	if (k == "type")           type     = v
+	k = substr($0, 1, eq-1); gsub(/[[:space:]]/, "", k)
+	v = substr($0, eq+1); sub(/^[[:space:]]+/, "", v); sub(/[[:space:]]+$/, "", v)
+	if      (k == "sso_start_url")  sso_url = v
+	else if (k == "sso_account_id") account = v
+	else if (k == "sso_role_name")  role    = v
+	else if (k == "region")         region  = v
+	else if (k == "name")           name    = v
+	else if (k == "type")           type    = v
+	else if (k == "sso_session")    sess    = v
 }
 
-# Emit a profile row if it has sso_start_url
-# Extra params after the space are local variables (idiomatic awk)
-function flush(    n, t, a, r, g) {
-	if (profile != "" && sso_url != "") {
-		n = (name    != "") ? name    : "N/A"
-		t = (type    != "") ? type    : "N/A"
-		a = (account != "") ? account : "N/A"
-		r = (role    != "") ? role    : "N/A"
-		g = (region  != "") ? region  : "N/A"
-		print profile "\t" n "\t" t "\t" a "\t" r "\t" g
+# Buffer the section that just ended into the appropriate table.
+function save() {
+	if (stype == "profile" && sname != "") {
+		order[++n]        = sname
+		p_url[sname]      = sso_url
+		p_account[sname]  = account
+		p_role[sname]     = role
+		p_region[sname]   = region
+		p_name[sname]     = name
+		p_type[sname]     = type
+		p_sess[sname]     = sess
+	} else if (stype == "session" && sname != "") {
+		sess_url[sname] = sso_url
+	}
+	stype = ""; sname = ""
+}
+
+# Resolve references and emit. Extra params after the space are locals.
+END {
+	save()
+	for (i = 1; i <= n; i++) {
+		prof = order[i]
+		url  = p_url[prof]
+		if (url == "" && p_sess[prof] != "") url = sess_url[p_sess[prof]]
+		if (url == "") continue
+		nm = (p_name[prof]    != "") ? p_name[prof]    : "N/A"
+		tp = (p_type[prof]    != "") ? p_type[prof]    : "N/A"
+		ac = (p_account[prof] != "") ? p_account[prof] : "N/A"
+		rl = (p_role[prof]    != "") ? p_role[prof]    : "N/A"
+		rg = (p_region[prof]  != "") ? p_region[prof]  : "N/A"
+		print prof "\t" nm "\t" tp "\t" ac "\t" rl "\t" rg
 	}
 }
-
-# Handle the last profile (no following [ to trigger flush)
-END { flush() }
