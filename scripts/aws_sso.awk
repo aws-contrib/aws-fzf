@@ -7,12 +7,15 @@
 #   AWS_CONFIG_FILE=~/.aws/config awk -f aws_sso.awk ~/.aws/config
 #
 # OUTPUT:
-#   Tab-separated rows: PROFILE  NAME  TYPE  ACCOUNT  ROLE  REGION
+#   Tab-separated rows: PROFILE  NAME  ROLE
 #   Emits profiles that resolve to an sso_start_url, whether it is set
 #   directly on the profile (legacy format) or inherited from an
 #   [sso-session] block via sso_session = <name> (AWS CLI v2 format).
+#   Account and region are omitted from the display because they are
+#   already encoded in most profile names; they remain available via
+#   `aws configure get` (see aws_sso_cmd.sh).
 
-BEGIN { print "PROFILE\tNAME\tTYPE\tACCOUNT\tROLE\tREGION" }
+BEGIN { print "PROFILE\tNAME\tROLE" }
 
 # Skip comment and blank lines
 /^[[:space:]]*[#;]/ || /^[[:space:]]*$/ { next }
@@ -72,11 +75,8 @@ END {
 		url  = p_url[prof]
 		if (url == "" && p_sess[prof] != "") url = sess_url[p_sess[prof]]
 		if (url == "") continue
-		nm = (p_name[prof]    != "") ? p_name[prof]    : "N/A"
-		tp = (p_type[prof]    != "") ? p_type[prof]    : "N/A"
-		ac = (p_account[prof] != "") ? p_account[prof] : "N/A"
-		rl = (p_role[prof]    != "") ? p_role[prof]    : "N/A"
-		rg = (p_region[prof]  != "") ? p_region[prof]  : "N/A"
-		print prof "\t" nm "\t" tp "\t" ac "\t" rl "\t" rg
+		nm = (p_name[prof] != "") ? p_name[prof] : "N/A"
+		rl = (p_role[prof] != "") ? p_role[prof] : "N/A"
+		print prof "\t" nm "\t" rl
 	}
 }
