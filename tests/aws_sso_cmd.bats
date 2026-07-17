@@ -200,11 +200,20 @@ MOCK
 	[[ "$output" =~ "prod-account" ]]
 }
 
-@test "list: includes the account IDs in the output" {
+@test "list: includes the ROLE column in the output" {
 	AWS_CONFIG_FILE="$FIXTURES/aws-config-sso.ini" \
 		run bash "$CMD" list
 	[ "$status" -eq 0 ]
-	[[ "$output" =~ "123456789012" ]]
+	[[ "$output" =~ "ROLE" ]]
+	[[ "$output" =~ "DeveloperAccess" ]]
+}
+
+@test "list: omits the account and region columns" {
+	AWS_CONFIG_FILE="$FIXTURES/aws-config-sso.ini" \
+		run bash "$CMD" list
+	[ "$status" -eq 0 ]
+	[[ ! "$output" =~ "ACCOUNT" ]]
+	[[ ! "$output" =~ "REGION" ]]
 }
 
 @test "list: discovers profiles that inherit sso_start_url from an [sso-session] block" {
@@ -213,7 +222,6 @@ MOCK
 	[ "$status" -eq 0 ]
 	[[ "$output" =~ "dev-account" ]]
 	[[ "$output" =~ "prod-account" ]]
-	[[ "$output" =~ "123456789012" ]]
 }
 
 @test "list: excludes non-SSO profiles when using the sso-session format" {

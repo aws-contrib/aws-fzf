@@ -99,11 +99,12 @@ PROFILE DISCOVERY:
 PROFILE FORMAT:
 	Profiles are displayed with the following columns:
 	- PROFILE: Profile name
-	- NAME: Display name (if configured)
-	- TYPE: Profile type (if configured)
-	- ACCOUNT: AWS account ID
+	- NAME: Display name (if configured, else N/A)
 	- ROLE: SSO role name
-	- REGION: AWS region
+
+	Account ID and region are omitted from the table (they are usually
+	already encoded in the profile name) but remain available via the
+	copy shortcuts and 'aws configure get'.
 
 LOGIN BEHAVIOR:
 	When you press alt-enter on a profile:
