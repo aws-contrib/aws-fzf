@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.3](https://github.com/aws-contrib/aws-fzf/compare/v0.5.2...v0.5.3) (2026-07-17)
+
+
+### Bug Fixes
+
+* **fzf:** add --no-hscroll so columnar lists stay aligned with the header ([#27](https://github.com/aws-contrib/aws-fzf/issues/27)) ([54239ba](https://github.com/aws-contrib/aws-fzf/commit/54239ba9ad6e398391766bcd553655ea8e00469c))
+* **sso:** discover profiles that inherit sso_start_url from [sso-session] blocks ([#25](https://github.com/aws-contrib/aws-fzf/issues/25)) ([dd88f3e](https://github.com/aws-contrib/aws-fzf/commit/dd88f3e0ac75c4d92dc311a54268d26201992fc2))
+* **sso:** slim profile list to PROFILE/NAME/ROLE so it fits the terminal ([#28](https://github.com/aws-contrib/aws-fzf/issues/28)) ([0b6d968](https://github.com/aws-contrib/aws-fzf/commit/0b6d968d0adc811196a8036b1dd53bb1e65642e7))
+
 ## [0.5.2](https://github.com/aws-contrib/aws-fzf/compare/v0.5.1...v0.5.2) (2026-05-04)
 
 
