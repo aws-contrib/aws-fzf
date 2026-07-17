@@ -59,8 +59,13 @@ _aws_fzf_options() {
 	local cmd_id="${1:-}"
 
 	# Default fzf options for aws-fzf
+	# --no-hscroll keeps every row anchored at column 0 so the fixed-width
+	# columns produced by aws_render.awk stay aligned with the header. Without
+	# it, fzf scrolls individual matching lines to reveal a match in a far-right
+	# column, which slides the left columns off and makes rows look misaligned.
 	_fzf_options=(
 		--ansi
+		--no-hscroll
 		--header-lines='1'
 		--header-border='sharp'
 		--footer-border='sharp'
