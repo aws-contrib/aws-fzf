@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/aws-contrib/aws-fzf/compare/v0.5.3...v0.5.4) (2026-11-07)
+
+
+### Bug Fixes
+
+* **ci:** merge with the App token so main gets its CI run ([#47](https://github.com/aws-contrib/aws-fzf/issues/47)) ([7402472](https://github.com/aws-contrib/aws-fzf/commit/74024729566c60eae15295d3f1304ee8d7a5f82a))
+
 ## [0.5.3](https://github.com/aws-contrib/aws-fzf/compare/v0.5.2...v0.5.3) (2026-10-01)
 
 
