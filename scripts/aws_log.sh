@@ -53,6 +53,9 @@ _aws_log_aws_log_group_list() {
 
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "LOGS_GROUP"
+	if "$_aws_log_source_dir/aws_tmux_view.sh" available; then
+		_fzf_options+=(--bind "alt-w:execute-silent($_aws_log_source_dir/aws_tmux_view.sh open {1})")
+	fi
 
 	# Pre-build reload command with properly quoted args
 	local aws_log_group_list_reload
@@ -141,6 +144,9 @@ _aws_log_aws_log_stream_list() {
 
 	# Build fzf options with user-provided flags
 	_aws_fzf_options "LOGS_STREAM"
+	if "$_aws_log_source_dir/aws_tmux_view.sh" available; then
+		_fzf_options+=(--bind "alt-w:execute-silent($_aws_log_source_dir/aws_tmux_view.sh open $(printf '%q' "$log_group_name") {1})")
+	fi
 
 	# Pre-build reload command with properly quoted args
 	local aws_log_stream_list_reload
