@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/aws-contrib/aws-fzf/compare/v0.5.4...v0.6.0) (2026-11-23)
+
+
+### Features
+
+* **logs:** add optional tmux floating live tail ([#52](https://github.com/aws-contrib/aws-fzf/issues/52)) ([8fbfd1a](https://github.com/aws-contrib/aws-fzf/commit/8fbfd1af81badd31123c7d9d02d95cac9604a93f))
+
 ## [0.5.4](https://github.com/aws-contrib/aws-fzf/compare/v0.5.3...v0.5.4) (2026-11-07)
 
 
