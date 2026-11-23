@@ -159,6 +159,7 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 | ----------- | ------------------------- |
 | `ctrl-o`    | Open in AWS Console       |
 | `alt-t`     | Tail all streams in group |
+| `alt-w`     | Float a live tail (tmux 3.8+) |
 | `alt-l`     | Read historical logs      |
 | `alt-enter` | List streams in group     |
 | `alt-y`     | Copy ARN to clipboard     |
@@ -172,9 +173,15 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 | `enter`  | View stream metadata             |
 | `ctrl-o` | Open in AWS Console              |
 | `alt-t`  | Tail logs from stream            |
+| `alt-w`  | Float a live tail (tmux 3.8+)   |
 | `alt-l`  | Read historical logs from stream |
 | `alt-y`  | Copy ARN to clipboard            |
 | `ctrl-y` | Copy name to clipboard           |
+
+`alt-w` is offered only inside a tmux 3.8+ server. It opens a non-modal pane;
+press `q` there to stop tailing and close it. `alt-t` still works without tmux.
+For switching between the finder and floating panes, run the finder in a normal
+tmux pane rather than an `aws fzf --tmux` client popup.
 
 ## ECS
 

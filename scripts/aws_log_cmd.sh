@@ -78,7 +78,7 @@ _aws_log_tail() {
 		log_tail_cmd+=(--log-stream-names "$log_stream_name")
 	fi
 
-	"${log_tail_cmd[@]}"
+	exec "${log_tail_cmd[@]}"
 }
 
 # _aws_log_read()
