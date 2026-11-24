@@ -318,19 +318,26 @@ _aws_log_stream_list_cmd() {
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
 _aws_log_group_preview_help() {
-	gum format <<'EOF'
+	{
+		cat <<'EOF'
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
 | **`ctrl-o`** | Open in console |
 | **`alt-enter`** | List streams |
 | **`alt-t`** | Tail logs |
+EOF
+		if "$_aws_log_cmd_source_dir/aws_tmux_view.sh" available; then
+			printf '%s\n' '| **`alt-w`** | Float a live tail |'
+		fi
+		cat <<'EOF'
 | **`alt-l`** | Read logs |
 | **`alt-y`** | Copy ARN |
 | **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
+	} | gum format
 }
 
 # _aws_log_stream_preview_help()
@@ -342,19 +349,26 @@ EOF
 #   using gum format with markdown. Designed to be used in fzf preview window.
 #
 _aws_log_stream_preview_help() {
-	gum format <<'EOF'
+	{
+		cat <<'EOF'
 | Key | Action |
 |-----|--------|
 | **`ctrl-r`** | Reload list |
 | **`enter`** | View details |
 | **`ctrl-o`** | Open in console |
 | **`alt-t`** | Tail logs |
+EOF
+		if "$_aws_log_cmd_source_dir/aws_tmux_view.sh" available; then
+			printf '%s\n' '| **`alt-w`** | Float a live tail |'
+		fi
+		cat <<'EOF'
 | **`alt-l`** | Read logs |
 | **`alt-y`** | Copy ARN |
 | **`ctrl-y`** | Copy name |
 | **`alt-h`** | Toggle help |
 | **`ESC`** | Exit |
 EOF
+	} | gum format
 }
 
 # _aws_log_cmd_help()
