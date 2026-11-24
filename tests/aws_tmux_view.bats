@@ -8,10 +8,12 @@ setup() {
 if [[ $1 == display-message ]]; then
   printf '%s\n' "$MOCK_TMUX_VERSION"
 else
-  printf '%s\n' "$@" > "$TMUX_ARGS"
+  printf '%s\n' "$@" >> "$TMUX_ARGS"
 fi
 EOF
   chmod +x "$BATS_TEST_TMPDIR/bin/tmux"
+  printf '#!/usr/bin/env bash\n' > "$BATS_TEST_TMPDIR/bin/tmux-view"
+  chmod +x "$BATS_TEST_TMPDIR/bin/tmux-view"
   export PATH="$BATS_TEST_TMPDIR/bin:$PATH"
   export TMUX=/tmp/test-socket
   export TMUX_ARGS="$BATS_TEST_TMPDIR/tmux.args"
@@ -38,8 +40,31 @@ EOF
   [ "$status" -eq 0 ]
   grep -qx -- 'new-pane' "$TMUX_ARGS"
   grep -qx -- '80%' "$TMUX_ARGS"
-  grep -qx -- 'watch' "$TMUX_ARGS"
+  grep -qx -- 'tmux-view' "$TMUX_ARGS"
+  grep -qx -- 'aws' "$TMUX_ARGS"
+  grep -qx -- 'tail' "$TMUX_ARGS"
   grep -qx -- '/aws/lambda/hello world' "$TMUX_ARGS"
+  grep -qx -- '--log-stream-names' "$TMUX_ARGS"
   grep -qx -- 'stream name' "$TMUX_ARGS"
   ! grep -qx -- '-W' "$TMUX_ARGS"
+}
+
+@test 'open enables floating border titles without changing user border formats' {
+  export MOCK_TMUX_VERSION=3.8
+  run "$VIEW" open 'group#name'
+  [ "$status" -eq 0 ]
+  grep -qx -- 'top-floating' "$TMUX_ARGS"
+  grep -qx -- ' CloudWatch groupname ' "$TMUX_ARGS"
+  ! grep -qx -- '--log-stream-names' "$TMUX_ARGS"
+}
+
+@test 'unavailable without tmux-view' {
+  export MOCK_TMUX_VERSION=3.8
+  rm "$BATS_TEST_TMPDIR/bin/tmux-view"
+  ln -s "$(command -v bash)" "$BATS_TEST_TMPDIR/bin/bash"
+  export PATH="$BATS_TEST_TMPDIR/bin:/usr/bin:/bin"
+  run "$VIEW" available
+  [ "$status" -ne 0 ]
+  run "$VIEW" open group
+  [ "$status" -ne 0 ]
 }
