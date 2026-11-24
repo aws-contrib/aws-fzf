@@ -38,6 +38,33 @@ teardown() {
 	[ "$status" -eq 0 ]
 }
 
+@test "preview help hides alt-w outside tmux" {
+	unset TMUX
+	for preview in preview-help-groups preview-help-streams; do
+		run bash "$CMD" "$preview"
+		[ "$status" -eq 0 ]
+		[[ "$output" != *'alt-w'* ]]
+	done
+}
+
+@test "preview help shows alt-w only when the floating view is available" {
+	cat > "$MOCK_BIN/tmux" <<'EOF'
+#!/usr/bin/env bash
+printf '3.8\n'
+EOF
+	printf '#!/usr/bin/env bash\n' > "$MOCK_BIN/tmux-view"
+	chmod +x "$MOCK_BIN/tmux" "$MOCK_BIN/tmux-view"
+	export TMUX=/tmp/test-socket
+	for preview in preview-help-groups preview-help-streams; do
+		run bash "$CMD" "$preview"
+		[ "$status" -eq 0 ]
+		[[ "$output" == *'alt-w'* ]]
+	done
+	printf '#!/usr/bin/env bash\nprintf "3.7\\n"\n' > "$MOCK_BIN/tmux"
+	run bash "$CMD" preview-help-groups
+	[[ "$output" != *'alt-w'* ]]
+}
+
 @test "fails for an unrecognised subcommand" {
 	run bash "$CMD" unknown-cmd
 	[ "$status" -eq 1 ]
