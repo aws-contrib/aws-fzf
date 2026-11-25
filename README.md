@@ -13,7 +13,6 @@
 - [Fzf](https://github.com/junegunn/fzf) (`fzf >= 0.58.0`) — macOS: `brew install fzf`
 - [Jq](https://github.com/jqlang/jq) (`jq`) — macOS: `brew install jq`
 - [Gum](https://github.com/charmbracelet/gum) (`gum`) — macOS: `brew install gum`
-- [tmux-view](https://github.com/tmux-contrib/tmux-view) (`tmux-view`, optional — enables `alt-w` in tmux 3.8+) — install with `nix profile install github:tmux-contrib/tmux-view` or `cargo install tmux-view`
 
 ## Installation
 
@@ -179,11 +178,12 @@ aws fzf logs stream list --log-group-name /aws/lambda/my-function
 | `alt-y`  | Copy ARN to clipboard            |
 | `ctrl-y` | Copy name to clipboard           |
 
-`alt-w` is offered only inside a tmux 3.8+ server with `tmux-view` installed.
-It opens a titled, non-modal floating pane; press `q` there to stop tailing and
-close it. `alt-t` still works without tmux-view.
-For switching between the finder and floating panes, run the finder in a normal
-tmux pane rather than an `aws fzf --tmux` client popup.
+`alt-w` is offered only inside a tmux 3.8+ server. It opens a titled, modal
+floating pane. Press Escape or Ctrl-C to stop a live tail and close the pane;
+when a tail exits, its output remains until you press any key. No `tmux-view`
+installation is needed. `alt-t` still works without tmux.
+Run the finder in a normal tmux pane rather than an `aws fzf --tmux` client
+popup to use floating panes.
 
 ## ECS
 

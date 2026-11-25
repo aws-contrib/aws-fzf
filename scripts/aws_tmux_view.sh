@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Called from an fzf execute-silent binding. Never wait for the floating pane.
+# Called from an fzf execute-silent binding. The modal pane closes on Escape/C-c
+# while running, or on any key after the command exits.
 case "${1:-}" in
 available)
-	[[ -n "${TMUX:-}" ]] && command -v tmux-view &>/dev/null || exit 1
+	[[ -n "${TMUX:-}" ]] || exit 1
 	version=$(tmux display-message -p '#{version}' 2>/dev/null) || exit 1
 	[[ $version =~ ^([0-9]+)\.([0-9]+) ]] || exit 1
 	(( 10#${BASH_REMATCH[1]} > 3 || (10#${BASH_REMATCH[1]} == 3 && 10#${BASH_REMATCH[2]} >= 8) ))
@@ -25,8 +26,9 @@ open)
 	if [[ $# -ge 2 ]]; then
 		command+=(--log-stream-names "$2")
 	fi
-	tmux new-pane -x '80%' -y '70%' -X '10%' -Y '15%' -c "$PWD" \
-		-T " CloudWatch $title " -- tmux-view -- "${command[@]}"
+	# -O -D makes the pane modal; read holds completed output until one key.
+	tmux new-pane -O -D -x '80%' -y '70%' -X '10%' -Y '15%' -c "$PWD" \
+		-T " CloudWatch $title " -- bash -c '"$@"; read -rsn1' _ "${command[@]}"
 	;;
 *) exit 1 ;;
 esac
