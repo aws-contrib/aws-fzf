@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/aws-contrib/aws-fzf/compare/v0.6.0...v0.7.0) (2026-11-25)
+
+
+### Features
+
+* **tmux:** use modal panes for CloudWatch log tails ([#55](https://github.com/aws-contrib/aws-fzf/issues/55)) ([4cd4443](https://github.com/aws-contrib/aws-fzf/commit/4cd4443c454568ad97bd3458599c3b9b9ff87bf6))
+
 ## [0.6.0](https://github.com/aws-contrib/aws-fzf/compare/v0.5.4...v0.6.0) (2026-11-23)
 
 
