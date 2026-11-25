@@ -52,8 +52,7 @@ teardown() {
 #!/usr/bin/env bash
 printf '3.8\n'
 EOF
-	printf '#!/usr/bin/env bash\n' > "$MOCK_BIN/tmux-view"
-	chmod +x "$MOCK_BIN/tmux" "$MOCK_BIN/tmux-view"
+	chmod +x "$MOCK_BIN/tmux"
 	export TMUX=/tmp/test-socket
 	for preview in preview-help-groups preview-help-streams; do
 		run bash "$CMD" "$preview"

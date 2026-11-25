@@ -12,8 +12,6 @@ else
 fi
 EOF
   chmod +x "$BATS_TEST_TMPDIR/bin/tmux"
-  printf '#!/usr/bin/env bash\n' > "$BATS_TEST_TMPDIR/bin/tmux-view"
-  chmod +x "$BATS_TEST_TMPDIR/bin/tmux-view"
   export PATH="$BATS_TEST_TMPDIR/bin:$PATH"
   export TMUX=/tmp/test-socket
   export TMUX_ARGS="$BATS_TEST_TMPDIR/tmux.args"
@@ -34,13 +32,16 @@ EOF
   [ "$status" -ne 0 ]
 }
 
-@test 'open creates a centered non-waiting pane with preserved arguments' {
+@test 'open creates a centered modal pane with preserved arguments' {
   export MOCK_TMUX_VERSION=3.8
   run "$VIEW" open '/aws/lambda/hello world' 'stream name'
   [ "$status" -eq 0 ]
   grep -qx -- 'new-pane' "$TMUX_ARGS"
   grep -qx -- '80%' "$TMUX_ARGS"
-  grep -qx -- 'tmux-view' "$TMUX_ARGS"
+  grep -qx -- '-O' "$TMUX_ARGS"
+  grep -qx -- '-D' "$TMUX_ARGS"
+  grep -qx -- 'bash' "$TMUX_ARGS"
+  grep -qx -- '"$@"; read -rsn1' "$TMUX_ARGS"
   grep -qx -- 'aws' "$TMUX_ARGS"
   grep -qx -- 'tail' "$TMUX_ARGS"
   grep -qx -- '/aws/lambda/hello world' "$TMUX_ARGS"
@@ -58,13 +59,12 @@ EOF
   ! grep -qx -- '--log-stream-names' "$TMUX_ARGS"
 }
 
-@test 'unavailable without tmux-view' {
+@test 'available without tmux-view' {
   export MOCK_TMUX_VERSION=3.8
-  rm "$BATS_TEST_TMPDIR/bin/tmux-view"
   ln -s "$(command -v bash)" "$BATS_TEST_TMPDIR/bin/bash"
   export PATH="$BATS_TEST_TMPDIR/bin:/usr/bin:/bin"
   run "$VIEW" available
-  [ "$status" -ne 0 ]
+  [ "$status" -eq 0 ]
   run "$VIEW" open group
-  [ "$status" -ne 0 ]
+  [ "$status" -eq 0 ]
 }
